@@ -7,16 +7,20 @@
  ___/ / /_/ / /_/ / / /  / /  /  __/ /
 /____/\__, /\__,_/_/_/  /_/   \___/_/
 		/_/
+
 By julesontheroad:
 https://github.com/julesontheroad/
 Squirrel is a fork of NUT made to support NSC Builder
 https://github.com/julesontheroad/NSC_BUILDER
+
 The original NUT is made and actively supported by blawar
 https://github.com/blawar/nut
+
 This fork doesn't follow NUT's main line and strips many features from nut
 (like CDNSP support) while adds several functions based in new code.
 This program specialices in content building and file management for several
 Nintendo Switch formats.
+
 Squirrel original's purpose is to support NSC_Builder though it serves as a
 standalone program with many functions, some of them not being used currently in NSC_Builder.
 '''
@@ -3800,13 +3804,16 @@ if __name__ == '__main__':
 							fp=line.strip()
 							filelist.append(fp)
 
-					# for file in filelist:
-					# 	print(file)
-
+					'''
+					for file in filelist:
+						print(file)
+						pass
+					'''
 					prlist=list()
 					print ('Calculating final content:')
 					for filepath in filelist:
 						if filepath.endswith('.nsp') or filepath.endswith('.nsz'):
+							#print(filepath)
 							try:
 								c=list()
 								f = Fs.Nsp(filepath)
@@ -3962,7 +3969,6 @@ if __name__ == '__main__':
 									elif basefile.endswith('.nsp') or basefile.endswith('.nsz') :
 										f = Fs.Nsp(basefile)
 									ctitl=f.get_title(baseid,roman)
-									print(ctitl)
 									f.flush()
 									f.close()
 									if ctitl=='DLC' or ctitl=='-':
@@ -4640,7 +4646,7 @@ if __name__ == '__main__':
 			else:
 				for filepath in args.joinfile:
 					filepath=filepath
-			#print(filepath)
+			print(filepath)
 			file_list=list()
 			try:
 				bname=os.path.basename(os.path.abspath(filepath))
@@ -5107,7 +5113,7 @@ if __name__ == '__main__':
 							date=now.strftime("%x")+". "+now.strftime("%X")
 							errfile.write(date+' Error in "ADD TO DATABASE" function:'+'\n')
 							errfile.write("Route "+str(filename)+'\n')
-							errfile.write('- Exception0292: ' + str(e)+ '\n')
+							errfile.write('- Exception: ' + str(e)+ '\n')
 				if (filename.lower()).endswith('.xci') or (filename.lower()).endswith('.xcz'):
 					try:
 						infile=r''
@@ -5124,7 +5130,7 @@ if __name__ == '__main__':
 							date=now.strftime("%x")+". "+now.strftime("%X")
 							errfile.write(date+' Error in "ADD TO DATABASE" function:'+'\n')
 							errfile.write("Route "+str(filename)+'\n')
-							errfile.write('- Exception0294: ' + str(e)+ '\n')
+							errfile.write('- Exception: ' + str(e)+ '\n')
 
 		#parser.add_argument('-nscdb_new', '--addtodb_new', nargs='+', help='Adds content to database')
 		if args.addtodb_new:
