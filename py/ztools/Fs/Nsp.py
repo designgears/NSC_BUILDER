@@ -406,7 +406,7 @@ class Nsp(Pfs0):
 				break
 		old_tk_name=name		
 		for nca in self:
-			if type(nca) == Fs.Nca and str(nca.header.contentType) == Type.Content.META:
+			if type(nca) == Fs.Nca and nca.header.contentType == Type.Content.META:
 				crypto1=nca.header.getCryptoType()
 				crypto2=nca.header.getCryptoType2()
 				if crypto2>crypto1:
