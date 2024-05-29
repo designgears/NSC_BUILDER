@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 
 '''
+   _____			 _				__
+  / ___/____ ___  __(_)____________  / /
+  \\__ \\/ __ `/ / / / / ___/ ___/ _ \\/ /
+ ___/ / /_/ / /_/ / / /  / /  /  __/ /
+/____/\\__, /\\__,_/_/_/  /_/   \\___/_/
+		/_/
+
 By julesontheroad:
 https://github.com/julesontheroad/
 Squirrel is a fork of NUT made to support NSC Builder
