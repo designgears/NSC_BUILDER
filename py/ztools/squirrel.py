@@ -1,5 +1,25 @@
 # -*- coding: utf-8 -*-
 
+'''
+   _____			 _				__
+  / ___/____ ___  __(_)____________  / /
+  \__ \/ __ `/ / / / / ___/ ___/ _ \/ /
+ ___/ / /_/ / /_/ / / /  / /  /  __/ /
+/____/\__, /\__,_/_/_/  /_/   \___/_/
+		/_/
+By julesontheroad:
+https://github.com/julesontheroad/
+Squirrel is a fork of NUT made to support NSC Builder
+https://github.com/julesontheroad/NSC_BUILDER
+The original NUT is made and actively supported by blawar
+https://github.com/blawar/nut
+This fork doesn't follow NUT's main line and strips many features from nut
+(like CDNSP support) while adds several functions based in new code.
+This program specialices in content building and file management for several
+Nintendo Switch formats.
+Squirrel original's purpose is to support NSC_Builder though it serves as a
+standalone program with many functions, some of them not being used currently in NSC_Builder.
+'''
 import argparse
 import sys
 import os
