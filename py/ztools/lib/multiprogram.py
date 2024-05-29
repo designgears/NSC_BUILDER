@@ -34,7 +34,7 @@ def groupncabyid_and_idoffset(filepath,ofolder,export,buffer=65536,fat='exfat',f
 		if str(nspF._path)=="secure":
 			for nca in nspF:					
 				if type(nca) == Nca:
-					if 	str(nca.header.contentType) == 'Content.META':
+					if 	nca.header.contentType == Type.Content.META:
 						crypto1=nca.header.getCryptoType()
 						crypto2=nca.header.getCryptoType2()	
 						if crypto1 == 2:

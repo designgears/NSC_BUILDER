@@ -244,7 +244,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							titleid=str(nca.header.titleId)
 							return titleid
 
@@ -310,7 +310,7 @@ class ChromeXci(File):
 			if "secure" == str(nspF._path):
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for file in f:
 									nca.rewind()
@@ -438,7 +438,7 @@ class ChromeXci(File):
 								self.change_mkrev_nca(target, keypatch)
 						target.close()
 						if metapatch == 'true':
-							if 	str(nca.header.contentType) == 'Content.META':
+							if 	nca.header.contentType == Type.Content.META:
 								for pfs0 in nca:
 									for cnmt in pfs0:
 										check=str(cnmt._path)
@@ -465,7 +465,7 @@ class ChromeXci(File):
 					vfragment="false"
 					if type(nca) == Nca:
 						vfragment="false"
-						if 	str(nca.header.contentType) == 'Content.DATA':
+						if 	nca.header.contentType == Type.Content.DATA:
 							for f in nca:
 									for file in f:
 										filename = str(file._path)
@@ -501,7 +501,7 @@ class ChromeXci(File):
 									self.change_mkrev_nca(target, keypatch)
 							target.close()
 							if metapatch == 'true':
-								if 	str(nca.header.contentType) == 'Content.META':
+								if 	nca.header.contentType == Type.Content.META:
 									for pfs0 in nca:
 										for cnmt in pfs0:
 											check=str(cnmt._path)
@@ -614,7 +614,7 @@ class ChromeXci(File):
 									self.change_mkrev_nca(target, keypatch)
 							target.close()
 							if metapatch == 'true':
-								if 	str(nca.header.contentType) == 'Content.META':
+								if 	nca.header.contentType == Type.Content.META:
 									for pfs0 in nca:
 										for cnmt in pfs0:
 											check=str(cnmt._path)
@@ -665,7 +665,7 @@ class ChromeXci(File):
 					vfragment="false"
 					if type(nca) == Nca:
 						vfragment="false"
-						if 	str(nca.header.contentType) == 'Content.DATA':
+						if 	nca.header.contentType == Type.Content.DATA:
 							for f in nca:
 									for file in f:
 										filename = str(file._path)
@@ -741,7 +741,7 @@ class ChromeXci(File):
 										self.change_mkrev_nca(target, keypatch)
 								target.close()
 								if metapatch == 'true':
-									if 	str(nca.header.contentType) == 'Content.META':
+									if 	nca.header.contentType == Type.Content.META:
 										for pfs0 in nca:
 											for cnmt in pfs0:
 												check=str(cnmt._path)
@@ -900,7 +900,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							titleid2=nca.header.titleId
 							feed=self.html_feed(feed,1,message=str('TITLEID: ' + str(titleid2).upper()))
 							offset=nca.get_nacp_offset()
@@ -1003,7 +1003,7 @@ class ChromeXci(File):
 				if str(nspF._path)=="secure":
 					for nca in nspF:
 						if type(nca) == Fs.Nca and nca.header.getRightsId() == 0:
-							if 	str(nca.header.contentType) == 'Content.PROGRAM':
+							if 	nca.header.contentType == Type.Content.PROGRAM:
 								titleid2=nca.header.titleId
 								feed=self.html_feed(feed,1,message=str('TITLEID: ' + str(titleid2).upper()))
 								feed+='<p style="font-size: 1.86vh;text-align: left;white-space: pre-line;margin-top:0.2vh;"><strong><span">'
@@ -1033,7 +1033,7 @@ class ChromeXci(File):
 												feed+='</span></strong></p>'
 												return feed
 						if type(nca) == Fs.Nca and nca.header.getRightsId() != 0:
-							if 	str(nca.header.contentType) == 'Content.PROGRAM':
+							if 	nca.header.contentType == Type.Content.PROGRAM:
 								titleid2=nca.header.titleId
 								feed=self.html_feed(feed,1,message=str('TITLEID: ' + str(titleid2).upper()))
 								feed+='<p style="font-size: 1.86vh;text-align: left;white-space: pre-line;margin-top:0.2vh;"><strong><span">'
@@ -1143,7 +1143,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Fs.Nca:
-						if 	str(nca.header.contentType) == 'Content.PROGRAM':
+						if 	nca.header.contentType == Type.Content.PROGRAM:
 							if target==None:
 								target=str(nca._path)
 							if str(nca._path)==target:
@@ -1245,7 +1245,7 @@ class ChromeXci(File):
 					if str(nspF._path)=="secure":
 						for nca in nspF:
 							if type(nca) == Fs.Nca:
-								if 	str(nca.header.contentType) == 'Content.PROGRAM':
+								if 	nca.header.contentType == Type.Content.PROGRAM:
 									if target==None or str(nca._path)==target:
 										nca3type=Nca(nca)
 										nca3type._path=nca._path
@@ -1506,7 +1506,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							titleid2=nca.header.titleId
 							feed=self.html_feed(feed,1,message=str('TITLEID: ' + str(titleid2).upper()))
 							for f in nca:
@@ -1539,7 +1539,7 @@ class ChromeXci(File):
 									message=["Table offset:",(str(hx((offset+0x20).to_bytes(2, byteorder='big'))))];feed=self.html_feed(feed,3,message)
 									message=["Number of content:",(str(content_entries))];feed=self.html_feed(feed,3,message)
 									message=["Number of meta entries:",(str(meta_entries))];feed=self.html_feed(feed,3,message)
-									message=["Application id\Patch id:",((str(hx(original_ID.to_bytes(8, byteorder='big')))[2:-1]).upper())];feed=self.html_feed(feed,3,message)
+									message=[r"Application id\Patch id:",((str(hx(original_ID.to_bytes(8, byteorder='big')))[2:-1]).upper())];feed=self.html_feed(feed,3,message)
 
 									content_name=str(cnmt._path)
 									content_name=content_name[:-22]
@@ -1672,7 +1672,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -1853,7 +1853,7 @@ class ChromeXci(File):
 				if token == str(nspF._path):
 					for nca in nspF:
 						if type(nca) == Nca:
-							if 	str(nca.header.contentType) == 'Content.META':
+							if 	nca.header.contentType == Type.Content.META:
 								for f in nca:
 									for cnmt in f:
 										cnmt.rewind()
@@ -1968,7 +1968,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									content_name=str(cnmt._path)
@@ -2105,7 +2105,7 @@ class ChromeXci(File):
 								target.close()
 								#///////////////////////////////////
 							if metapatch == 'true':
-								if 	str(nca.header.contentType) == 'Content.META':
+								if 	nca.header.contentType == Type.Content.META:
 									for pfs0 in nca:
 										for cnmt in pfs0:
 											check=str(cnmt._path)
@@ -2166,7 +2166,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -2239,7 +2239,7 @@ class ChromeXci(File):
 				for nca in nspF:
 					size1=0;size2=0;size3=0
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -2481,7 +2481,7 @@ class ChromeXci(File):
 						if filename == nca_name:
 							size=nca.header.size
 							size_pr=sq_tools.getSize(size)
-							content=str(nca.header.contentType)
+							content=nca.header.contentType
 							content=content[8:]+": "
 							ncatype=sq_tools.getTypeFromCNMT(ncatype)
 							if ncatype != "Meta: ":
@@ -2494,7 +2494,7 @@ class ChromeXci(File):
 						ncztype._path=nca._path
 						size=ncztype.header.size
 						size_pr=sq_tools.getSize(size)
-						content=str(ncztype.header.contentType)
+						content=ncztype.header.contentType
 						content=content[8:]+": "
 						ncatype=sq_tools.getTypeFromCNMT(ncatype)
 						if ncatype != "Meta: ":
@@ -2567,7 +2567,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.DATA':
+						if 	nca.header.contentType == Type.Content.DATA:
 							for f in nca:
 									for file in f:
 										filename = str(file._path)
@@ -2639,7 +2639,7 @@ class ChromeXci(File):
 				for nca in nspF:
 					size1=0;size2=0;size3=0
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.PROGRAM':
+						if 	nca.header.contentType == Type.Content.PROGRAM:
 							target=str(nca._path)
 							tit=str(nca.header.titleId).upper()
 							entry=ncadb[target]
@@ -2664,7 +2664,7 @@ class ChromeXci(File):
 				for nca in nspF:
 					size1=0;size2=0;size3=0
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -2772,7 +2772,7 @@ class ChromeXci(File):
 					if type(nca) == Nca:
 						nca_id=nca.header.titleId
 						if str(titid[:-3]).upper() == str(nca_id[:-3]).upper():
-							if 	str(nca.header.contentType) == 'Content.PROGRAM':
+							if 	nca.header.contentType == Type.Content.PROGRAM:
 								programSDKversion=nca.get_sdkversion()
 								break
 		if 	programSDKversion=='':
@@ -2782,7 +2782,7 @@ class ChromeXci(File):
 						if type(nca) == Nca:
 							nca_id=nca.header.titleId
 							if str(titid[:-3]).upper() == str(nca_id[:-3]).upper():
-								if 	str(nca.header.contentType) == 'Content.CONTROL':
+								if 	nca.header.contentType == Type.Content.CONTROL:
 									programSDKversion=nca.get_sdkversion()
 									break
 		if 	programSDKversion=='':
@@ -2792,7 +2792,7 @@ class ChromeXci(File):
 						if type(nca) == Nca:
 							nca_id=nca.header.titleId
 							if str(titid[:-3]).upper() == str(nca_id[:-3]).upper():
-								if 	str(nca.header.contentType) == 'Content.PUBLIC_DATA':
+								if 	nca.header.contentType == Type.Content.PUBLIC_DATA:
 									dataSDKversion = nca.get_sdkversion()
 									break
 		return 	programSDKversion,dataSDKversion
@@ -2803,7 +2803,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -3049,7 +3049,7 @@ class ChromeXci(File):
 				if token == str(nspF._path):
 					for nca in nspF:
 						if type(nca) == Nca:
-							if 	str(nca.header.contentType) == 'Content.META':
+							if 	nca.header.contentType == Type.Content.META:
 								for f in nca:
 									for cnmt in f:
 										cnmt.rewind()
@@ -3079,7 +3079,7 @@ class ChromeXci(File):
 				for nca in nspF:
 					if type(nca) == Nca:
 						if nca_name == str(nca._path):
-							if 	str(nca.header.contentType) == 'Content.CONTROL':
+							if 	nca.header.contentType == Type.Content.CONTROL:
 								title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock(title,roman)
 								return(title,editor,ediver,SupLg,regionstr,isdemo)
 		regionstr="0|0|0|0|0|0|0|0|0|0|0|0|0|0"
@@ -3394,7 +3394,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -4038,9 +4038,9 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							if metapatch == 'true':
-								if 	str(nca.header.contentType) == 'Content.META':
+								if 	nca.header.contentType == Type.Content.META:
 									filename=nca
 									try:
 										f = Fs.Nca(filename, 'r+b')
@@ -4095,7 +4095,7 @@ class ChromeXci(File):
 		for nspF in self.hfs0:
 			if str(nspF._path)=="secure":
 				for nca in nspF:
-					if type(nca) == Nca and str(nca.header.contentType) == 'Content.META':
+					if type(nca) == Nca and nca.header.contentType == Type.Content.META:
 						nca.rewind()
 						crypto1=nca.header.getCryptoType()
 						crypto2=nca.header.getCryptoType2()
@@ -4133,7 +4133,7 @@ class ChromeXci(File):
 						if metapatch == 'true':
 							target = Fs.Nca(filepath, 'r+b')
 							target.rewind()
-							if 	str(target.header.contentType) == 'Content.META':
+							if 	target.header.contentType == Type.Content.META:
 								for pfs0 in target:
 									for cnmt in pfs0:
 										check=str(cnmt._path)
@@ -4159,7 +4159,7 @@ class ChromeXci(File):
 				for nca in nspF:
 					vfragment="false"
 					if type(nca) == Nca:
-						if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+						if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 							for f in nca:
 								for file in f:
 									filename = str(file._path)
@@ -4168,7 +4168,7 @@ class ChromeXci(File):
 						if str(vfragment)=="true":
 							continue
 						contentlist.append(nca._path)
-						if str(nca.header.contentType) == 'Content.META':
+						if nca.header.contentType == Type.Content.META:
 							xmlname=nca._path
 							xmlname=xmlname[:-3]+'xml'
 							contentlist.append(xmlname)
@@ -4180,7 +4180,7 @@ class ChromeXci(File):
 				for nca in nspF:
 					vfragment="false"
 					if type(nca) == Nca:
-						if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+						if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 							for f in nca:
 								for file in f:
 									filename = str(file._path)
@@ -4189,7 +4189,7 @@ class ChromeXci(File):
 						if str(vfragment)=="true":
 							continue
 						totSize=totSize+nca.header.size
-						if str(nca.header.contentType) == 'Content.META':
+						if nca.header.contentType == Type.Content.META:
 							xmlname=nca._path
 							xmlname=xmlname[:-3]+'xml'
 							xmlpath = os.path.join(ofolder, xmlname)
@@ -4238,8 +4238,8 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					vfragment="false"
-					if type(nca) == Nca and (str(nca.header.contentType) != 'Content.META'):
-						if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+					if type(nca) == Nca and (nca.header.contentType != Type.Content.META):
+						if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 							for f in nca:
 								for file in f:
 									filename = str(file._path)
@@ -4334,7 +4334,7 @@ class ChromeXci(File):
 								if not data:
 									nca.close()
 									break
-					if type(nca) == Nca and str(nca.header.contentType) == 'Content.META':
+					if type(nca) == Nca and nca.header.contentType == Type.Content.META:
 						filename = str(nca._path)
 						filepath = os.path.join(outfolder, filename)
 						xml_file=filepath[:-3]+'xml'
@@ -4555,8 +4555,8 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					vfragment="false"
-					if type(nca) == Nca and (str(nca.header.contentType) != 'Content.META'):
-						if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+					if type(nca) == Nca and (nca.header.contentType != Type.Content.META):
+						if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 							for f in nca:
 								for file in f:
 									filename = str(file._path)
@@ -4661,7 +4661,7 @@ class ChromeXci(File):
 									outf.flush()
 								if not data:
 									break
-					if type(nca) == Nca and str(nca.header.contentType) == 'Content.META':
+					if type(nca) == Nca and nca.header.contentType == Type.Content.META:
 						nca.rewind()
 						crypto1=nca.header.getCryptoType()
 						crypto2=nca.header.getCryptoType2()
@@ -4710,7 +4710,7 @@ class ChromeXci(File):
 						if metapatch == 'true':
 							target = Fs.Nca(filepath, 'r+b')
 							target.rewind()
-							if 	str(target.header.contentType) == 'Content.META':
+							if 	target.header.contentType == Type.Content.META:
 								for pfs0 in target:
 									for cnmt in pfs0:
 										check=str(cnmt._path)
@@ -4854,7 +4854,7 @@ class ChromeXci(File):
 				for file in nspF:
 					vfragment="false"
 					if type(file) == Nca:
-						if (delta == False) and (str(file.header.contentType) == 'Content.DATA'):
+						if (delta == False) and (file.header.contentType == Type.Content.DATA):
 							for f in file:
 								for fn in f:
 									filename = str(fn._path)
@@ -5078,7 +5078,7 @@ class ChromeXci(File):
 				for nca in nspF:
 					vfragment="false"
 					if type(nca) == Nca:
-						if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+						if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 							for f in nca:
 								for file in f:
 									filename = str(file._path)
@@ -5087,7 +5087,7 @@ class ChromeXci(File):
 						if str(vfragment)=="true":
 							continue
 						fileSizes.append(nca.header.size)
-						if str(nca.header.contentType) == 'Content.META' and inc_xml==True:
+						if nca.header.contentType == Type.Content.META and inc_xml==True:
 							xmlname=nca._path
 							xmlname=xmlname[:-3]+'xml'
 							xmlpath = os.path.join(ofolder, xmlname)
@@ -5126,7 +5126,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							crypto1=nca.header.getCryptoType()
 							crypto2=nca.header.getCryptoType2()
 							if crypto1 == 2:
@@ -5845,7 +5845,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							crypto1=nca.header.getCryptoType()
 							crypto2=nca.header.getCryptoType2()
 							if crypto1 == 2:
@@ -5979,7 +5979,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for file in nspF:
 					if type(file) == Nca:
-						if 	str(file.header.contentType) != 'Content.META' and str(file.header.contentType) != 'Content.CONTROL':
+						if 	file.header.contentType != Type.Content.META and file.header.contentType != Type.Content.CONTROL:
 							continue
 						else:
 							completefilelist.append(str(file._path))
@@ -5992,7 +5992,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							crypto1=nca.header.getCryptoType()
 							crypto2=nca.header.getCryptoType2()
 							if crypto1 == 2:
@@ -6094,7 +6094,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -6139,7 +6139,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock(title,roman)
 							return(title)
 
@@ -6149,7 +6149,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -6181,7 +6181,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock(title)
 							languetag='('
 							if ("US (eng)" in SupLg) or ("UK (eng)" in SupLg):
@@ -6242,10 +6242,10 @@ class ChromeXci(File):
 						else:
 							nca_id=file.header.titleId
 							if nca_id.endswith('000') or nca_id.endswith('800'):
-								if 	str(file.header.contentType) == 'Content.PROGRAM':
+								if 	file.header.contentType == Type.Content.PROGRAM:
 									docheck=True
 							else:
-								if 	str(file.header.contentType) == 'Content.DATA':
+								if 	file.header.contentType == Type.Content.DATA:
 									docheck=True
 							if docheck == True:
 								crypto1=file.header.getCryptoType()
@@ -6278,7 +6278,7 @@ class ChromeXci(File):
 								fp.flush()
 								if not data:
 									break
-							if str(file.header.contentType) == 'Content.META' and includexml==True:
+							if file.header.contentType == Type.Content.META and includexml==True:
 								target=str(file._path)
 								xmlname=target[:-3]+'xml'
 								t.write(tabs+'- Appending: ' + xmlname)
@@ -6384,7 +6384,7 @@ class ChromeXci(File):
 									if keypatch < file.header.getCryptoType2():
 										encKeyBlock,crypto1,crypto2=self.get_new_cryptoblock(file, keypatch,encKeyBlock,t)
 								newheader=self.get_newheader(file,encKeyBlock,crypto1,crypto2,hcrypto,gc_flag)
-							if 	str(file.header.contentType) != 'Content.META':
+							if 	file.header.contentType != Type.Content.META:
 								i=0
 								sha=sha256()
 								fp = open(outf, 'ab')
@@ -6463,7 +6463,7 @@ class ChromeXci(File):
 								#t.write(tabs+'new hash: '+sha)
 								#t.write(tabs+'new name: '+newname)
 								fp.close()
-							elif str(file.header.contentType) == 'Content.META':
+							elif file.header.contentType == Type.Content.META:
 								metaname = str(file._path)
 								dir=os.path.dirname(os.path.abspath(outf))
 								metafile=os.path.join(dir, metaname)
@@ -6538,7 +6538,7 @@ class ChromeXci(File):
 								if metapatch == 'true' or keypatch != 'false':
 									target = Fs.Nca(metafile, 'r+b')
 									target.rewind()
-									if 	str(target.header.contentType) == 'Content.META':
+									if 	target.header.contentType == Type.Content.META:
 										for pfs0 in target:
 											for cnmt in pfs0:
 												check=str(cnmt._path)
@@ -6681,7 +6681,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for pfs0 in nca:
 								for cnmt in pfs0:
 									cnmt.rewind()
@@ -6740,7 +6740,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -7159,7 +7159,7 @@ class ChromeXci(File):
 						if str(nspF._path)=="secure":
 							for f in nspF:
 								if str(f._path) == file:
-									message=(str(f.header.titleId)+' - '+str(f.header.contentType));feed+=message+'\n'
+									message=(str(f.header.titleId)+' - '+f.header.contentType);feed+=message+'\n'
 									for nf in f:
 										nf.rewind()
 										test=nf.read(0x4)
@@ -7174,11 +7174,11 @@ class ChromeXci(File):
 						if str(nspF._path)=="secure":
 							for f in nspF:
 								if str(f._path) == file:
-									message=(str(f.header.titleId)+' - '+str(f.header.contentType));feed+=message+'\n'
-									if str(f.header.contentType) != 'Content.PROGRAM':
+									message=(str(f.header.titleId)+' - '+f.header.contentType);feed+=message+'\n'
+									if f.header.contentType != Type.Content.PROGRAM:
 										correct = self.verify_enforcer(file)
 										if correct == True:
-											if str(f.header.contentType) == 'Content.PUBLIC_DATA' and f.header.getRightsId() == 0:
+											if f.header.contentType == Type.Content.PUBLIC_DATA and f.header.getRightsId() == 0:
 												correct = f.pr_noenc_check_dlc()
 												if correct == False:
 													baddec=True
@@ -7211,7 +7211,7 @@ class ChromeXci(File):
 								if str(f._path)[:-1] == file[:-1]:
 									ncztype=Nca(f)
 									ncztype._path=f._path
-									message=(str(ncztype.header.titleId)+' - '+str(ncztype.header.contentType));feed+=message+'\n'
+									message=(str(ncztype.header.titleId)+' - '+ncztype.header.contentType);feed+=message+'\n'
 									correct=self.verify_ncz(file)
 									break
 				elif file.endswith('.tik'):
@@ -7228,7 +7228,7 @@ class ChromeXci(File):
 							if checktik==False and str(self._path).endswith('.xcz'):
 								checktik='xcz'
 							else:
-								message=('Content.TICKET');feed+=message+'\n'
+								message=(Type.Content.TICKET);feed+=message+'\n'
 							correct = checktik
 				else:
 					correct=False
@@ -7256,7 +7256,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -7357,7 +7357,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for f in nspF:
 					if type(f) == Nca and f.header.contentType != Type.Content.META:
-						message=(str(f.header.titleId)+' - '+str(f.header.contentType));feed+=message+'\n'
+						message=(str(f.header.titleId)+' - '+f.header.contentType);feed+=message+'\n'
 						verify,origheader,ncaname,feed,origkg,tr,tkey,iGC=f.verify(feed)
 						headerlist.append([ncaname,origheader,hlisthash,tr,tkey,iGC])
 						keygenerationlist.append([ncaname,origkg])
@@ -7381,7 +7381,7 @@ class ChromeXci(File):
 					if type(f) == Nca and f.header.contentType == Type.Content.META:
 						meta_nca=f._path
 						f.rewind();meta_dat=f.read()
-						message=(str(f.header.titleId)+' - '+str(f.header.contentType));feed+=message+'\n'
+						message=(str(f.header.titleId)+' - '+f.header.contentType);feed+=message+'\n'
 						targetkg,minrsv=self.find_addecuatekg(meta_nca,keygenerationlist)
 						verify,origheader,ncaname,feed,origkg,tr,tkey,iGC=f.verify(feed)
 						#print(targetkg)
@@ -7499,7 +7499,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							if nca._path == ncameta:
 								for f in nca:
 									for cnmt in f:
@@ -7532,7 +7532,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							if nca._path == ncameta:
 								crypto1=nca.header.getCryptoType()
 								crypto2=nca.header.getCryptoType2()
@@ -7560,7 +7560,7 @@ class ChromeXci(File):
 								origheader=headerlist[i][1]
 								break
 						#print(origheader)
-						message=(str(f.header.titleId)+' - '+str(f.header.contentType));feed+=message+'\n'
+						message=(str(f.header.titleId)+' - '+f.header.contentType);feed+=message+'\n'
 						ncasize=f.header.size
 						t = tqdm(total=ncasize, unit='B', unit_scale=True, leave=False)
 						i=0
@@ -7790,7 +7790,7 @@ class ChromeXci(File):
 										else:
 											return True
 
-								if fs.fsType == Type.Fs.ROMFS and fs.cryptoType == Type.Crypto.BKTR and str(f.header.contentType) == 'Content.PROGRAM':
+								if fs.fsType == Type.Fs.ROMFS and fs.cryptoType == Type.Crypto.BKTR and f.header.contentType == Type.Content.PROGRAM:
 									f.seek(0)
 									ncaHeader = NcaHeader()
 									ncaHeader.open(MemoryFile(f.read(0x400), Type.Crypto.XTS, uhx(Keys.get('header_key'))))
@@ -7823,7 +7823,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							ctrl_list.append(nca._path)
 						else:
 							pass
@@ -7834,7 +7834,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							if item == False or nca._path == item:
 								check=nca.patch_netlicense()
 								return check
@@ -7844,7 +7844,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							if item == False or nca._path == item:
 								print('-------------------------------------------------')
 								print('Get Current IVFC level data:')
@@ -7857,7 +7857,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							if item == False or nca._path == item:
 								print('-------------------------------------------------')
 								print('Rebuild hashes for IVFC level '+str(j)+':')
@@ -7869,7 +7869,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							if item == False or nca._path == item:
 								print('-------------------------------------------------')
 								print('Rebuild IVFC superhash:')
@@ -7881,7 +7881,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							if item == False or nca._path == item:
 								print('-------------------------------------------------')
 								print('Rebuild nca hash-table:')
@@ -8121,7 +8121,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							cnmtnames.append(str(nca._path))
 		for file in cnmtnames:
 			DBdict=self.getDBdict(file,trans)
@@ -8138,7 +8138,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							cnmtnames.append(str(nca._path))
 		content_number=len(cnmtnames)
 		if content_number>1:
@@ -8368,7 +8368,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							if str(nca._path)==cnmtname:
 								crypto1=nca.header.getCryptoType()
 								crypto2=nca.header.getCryptoType2()
@@ -8493,7 +8493,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							if target==str(nca._path):
 								offset=nca.get_nacp_offset()
 								for f in nca:
@@ -8518,7 +8518,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							if target==str(nca._path):
 								title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock('DLC',roman=True)
 								if ctype=='GAME':
@@ -8560,7 +8560,7 @@ class ChromeXci(File):
 			if str(nspF._path)=="secure":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							tk=nca.header.titleKeyDec
 							for i in range(len(files_list)):
 								if str(nca._path) == files_list[i][0]:
@@ -8717,7 +8717,7 @@ class ChromeXci(File):
 								origheader=headerlist[i][1]
 								listedhash=headerlist[i][2]
 								break
-						message=(str(f.header.titleId)+' - '+str(f.header.contentType));feed+=message+'\n'
+						message=(str(f.header.titleId)+' - '+f.header.contentType);feed+=message+'\n'
 						ncasize=f.header.size
 						t = tqdm(total=ncasize, unit='B', unit_scale=True, leave=False)
 						i=0

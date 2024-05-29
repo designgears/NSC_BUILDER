@@ -685,7 +685,7 @@ def gen_xci_parts_spec0(filepath,target_cnmt=None,cachefolder=None,keypatch=Fals
 						written+=len(newheader)
 						nca.seek(0xC00)
 						movoffset+=0xC00
-						if (str(nca.header.contentType) != 'Content.PROGRAM'):
+						if (nca.header.contentType != Type.Content.PROGRAM):
 							data=nca.read()
 							nca.close()
 							outf.write(data)

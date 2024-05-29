@@ -2075,7 +2075,7 @@ class Nsp(Pfs0):
 				if filename == nca_name:
 					size=nca.header.size
 					size_pr=sq_tools.getSize(size)
-					content=str(nca.header.contentType)
+					content=nca.header.contentType
 					content=content[8:]+": "
 					ncatype=sq_tools.getTypeFromCNMT(ncatype)
 					if ncatype != "Meta: ":
@@ -2092,7 +2092,7 @@ class Nsp(Pfs0):
 				ncztype._path=nca._path
 				size=ncztype.header.size
 				size_pr=sq_tools.getSize(size)
-				content=str(ncztype.header.contentType)
+				content=ncztype.header.contentType
 				content=content[8:]+": "
 				ncatype=sq_tools.getTypeFromCNMT(ncatype)
 				if ncatype != "Meta: ":
@@ -2796,7 +2796,7 @@ class Nsp(Pfs0):
 						os.makedirs(outfolder)
 					textpath = os.path.join(outfolder, text_file)
 					with open(textpath, 'a') as tfile:
-						tfile.write(str(nca.header.contentType)+ ': ' + tabs + str(nca._path) + '\n')
+						tfile.write(nca.header.contentType+ ': ' + tabs + str(nca._path) + '\n')
 					fp = open(filepath, 'w+b')
 					nca.rewind()
 					t = tqdm(total=nca.header.size, unit='B', unit_scale=True, leave=False)
@@ -2919,7 +2919,7 @@ class Nsp(Pfs0):
 							os.makedirs(outfolder)
 						textpath = os.path.join(outfolder, text_file)
 						with open(textpath, 'a') as tfile:
-							tfile.write(str(nca.header.contentType)+ ': ' + tabs + str(nca._path)+'\n')
+							tfile.write(nca.header.contentType+ ': ' + tabs + str(nca._path)+'\n')
 						fp = open(filepath, 'w+b')
 						nca.rewind()
 						Print.info(tabs)
@@ -4134,7 +4134,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if (delta == False) and (str(nca.header.contentType) == Type.Content.DATA):
+				if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4143,7 +4143,7 @@ class Nsp(Pfs0):
 				if str(vfragment)=="true":
 					continue
 				fileSizes.append(nca.header.size)
-				if str(nca.header.contentType) == Type.Content.META and inc_xml==True:
+				if nca.header.contentType == Type.Content.META and inc_xml==True:
 					xmlname=nca._path
 					xmlname=xmlname[:-3]+'xml'
 					xmlpath = os.path.join(ofolder, xmlname)
@@ -4227,7 +4227,7 @@ class Nsp(Pfs0):
 							break
 
 		for nca in self:
-			if type(nca) == Nca and str(nca.header.contentType) == Type.Content.META:
+			if type(nca) == Nca and nca.header.contentType == Type.Content.META:
 				nca.rewind()
 				crypto1=nca.header.getCryptoType()
 				crypto2=nca.header.getCryptoType2()
@@ -4265,7 +4265,7 @@ class Nsp(Pfs0):
 				if metapatch == 'true':
 					target = Fs.Nca(filepath, 'r+b')
 					target.rewind()
-					if 	str(target.header.contentType) == Type.Content.META:
+					if 	target.header.contentType == Type.Content.META:
 						for pfs0 in target:
 							for cnmt in pfs0:
 								check=str(cnmt._path)
@@ -4289,7 +4289,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if (delta == False) and (str(nca.header.contentType) == Type.Content.DATA):
+				if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4298,7 +4298,7 @@ class Nsp(Pfs0):
 				if str(vfragment)=="true":
 					continue
 				contentlist.append(nca._path)
-				if str(nca.header.contentType) == Type.Content.META:
+				if nca.header.contentType == Type.Content.META:
 					xmlname=nca._path
 					xmlname=xmlname[:-3]+'xml'
 					contentlist.append(xmlname)
@@ -4313,7 +4313,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if (delta == False) and (str(nca.header.contentType) == Type.Content.DATA):
+				if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4322,7 +4322,7 @@ class Nsp(Pfs0):
 				if str(vfragment)=="true":
 					continue
 				totSize=totSize+nca.header.size
-				if str(nca.header.contentType) == Type.Content.META:
+				if nca.header.contentType == Type.Content.META:
 					xmlname=nca._path
 					xmlname=xmlname[:-3]+'xml'
 					xmlpath = os.path.join(ofolder, xmlname)
@@ -4374,8 +4374,8 @@ class Nsp(Pfs0):
 		outf.close()
 		for nca in self:
 			vfragment="false"
-			if type(nca) == Nca and (str(nca.header.contentType) != Type.Content.META):
-				if (delta == False) and (str(nca.header.contentType) == Type.Content.DATA):
+			if type(nca) == Nca and (nca.header.contentType != Type.Content.META):
+				if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4471,7 +4471,7 @@ class Nsp(Pfs0):
 						if not data:
 							break
 				outf.close()
-			elif type(nca) == Nca and str(nca.header.contentType) == Type.Content.META:
+			elif type(nca) == Nca and nca.header.contentType == Type.Content.META:
 				filename = str(nca._path)
 				filepath = os.path.join(outfolder, filename)
 				xml_file=filepath[:-3]+'xml'
@@ -5194,8 +5194,8 @@ class Nsp(Pfs0):
 
 		for nca in self:
 			vfragment="false"
-			if type(nca) == Nca and (str(nca.header.contentType) != Type.Content.META):
-				if (delta == False) and (str(nca.header.contentType) == Type.Content.DATA):
+			if type(nca) == Nca and (nca.header.contentType != Type.Content.META):
+				if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -5304,7 +5304,7 @@ class Nsp(Pfs0):
 						if not data:
 							break
 				outf.close()
-			elif type(nca) == Nca and str(nca.header.contentType) == Type.Content.META:
+			elif type(nca) == Nca and nca.header.contentType == Type.Content.META:
 				nca.rewind()
 				crypto1=nca.header.getCryptoType()
 				crypto2=nca.header.getCryptoType2()
@@ -5355,7 +5355,7 @@ class Nsp(Pfs0):
 				if metapatch == 'true':
 					target = Fs.Nca(filepath, 'r+b')
 					target.rewind()
-					if 	str(target.header.contentType) == Type.Content.META:
+					if 	target.header.contentType == Type.Content.META:
 						for pfs0 in target:
 							for cnmt in pfs0:
 								check=str(cnmt._path)
@@ -5588,7 +5588,7 @@ class Nsp(Pfs0):
 	def metapatcher(self,number):
 		for nca in self:
 			if type(nca) == Nca:
-				if str(nca.header.contentType) == Type.Content.META:
+				if nca.header.contentType == Type.Content.META:
 					filename=nca
 					try:
 						f = Fs.Nca(filename, 'r+b')
@@ -6994,7 +6994,7 @@ class Nsp(Pfs0):
 						if metapatch == 'true' or keypatch != 'false':
 							target = Fs.Nca(metafile, 'r+b')
 							target.rewind()
-							if 	str(target.header.contentType) == Type.Content.META:
+							if 	target.header.contentType == Type.Content.META:
 								for pfs0 in target:
 									for cnmt in pfs0:
 										check=str(cnmt._path)
@@ -7182,7 +7182,7 @@ class Nsp(Pfs0):
 							if keypatch < ncztype.header.getCryptoType2():
 								encKeyBlock,crypto1,crypto2=self.get_new_cryptoblock(ncztype, keypatch,encKeyBlock,t)
 						newheader=self.get_newheader(ncztype,encKeyBlock,crypto1,crypto2,hcrypto,gc_flag)
-					if 	str(ncztype.header.contentType) != Type.Content.META:
+					if 	ncztype.header.contentType != Type.Content.META:
 						i=0
 						sha=sha256()
 						t.write('- Appending decompressed {}'.format(str(ncztype._path)))
@@ -8357,10 +8357,10 @@ class Nsp(Pfs0):
 				else:
 					nca_id=ncztype.header.titleId
 					if nca_id.endswith('000') or nca_id.endswith('800'):
-						if 	str(ncztype.header.contentType) == Type.Content.PROGRAM:
+						if 	ncztype.header.contentType == Type.Content.PROGRAM:
 							docheck=True
 					else:
-						if 	str(ncztype.header.contentType) == Type.Content.DATA:
+						if 	ncztype.header.contentType == Type.Content.DATA:
 							docheck=True
 					if docheck == True:
 						crypto1=ncztype.header.getCryptoType()
@@ -8412,7 +8412,7 @@ class Nsp(Pfs0):
 				if file.endswith('cnmt.nca'):
 					for f in self:
 						if str(f._path) == file:
-							message=(str(f.header.titleId)+' - '+str(f.header.contentType));print(message);feed+=message+'\n'
+							message=(str(f.header.titleId)+' - '+f.header.contentType);print(message);feed+=message+'\n'
 							for nf in f:
 								nf.rewind()
 								test=nf.read(0x4)
@@ -8425,12 +8425,12 @@ class Nsp(Pfs0):
 				elif file.endswith('.nca'):
 					for f in self:
 						if str(f._path) == file:
-							message=(str(f.header.titleId)+' - '+str(f.header.contentType));print(message);feed+=message+'\n'
+							message=(str(f.header.titleId)+' - '+f.header.contentType);print(message);feed+=message+'\n'
 
-							if str(f.header.contentType) != Type.Content.PROGRAM:
+							if f.header.contentType != Type.Content.PROGRAM:
 								correct = self.verify_enforcer(file)
 								if correct == True:
-									if str(f.header.contentType) == Type.Content.PUBLIC_DATA and f.header.getRightsId() == 0:
+									if f.header.contentType == Type.Content.PUBLIC_DATA and f.header.getRightsId() == 0:
 										correct = f.pr_noenc_check_dlc()
 										if correct == False:
 											baddec=True
@@ -8461,7 +8461,7 @@ class Nsp(Pfs0):
 						if str(f._path)[:-1] == file[:-1]:
 							ncztype=Nca(f)
 							ncztype._path=f._path
-							message=(str(ncztype.header.titleId)+' - '+str(ncztype.header.contentType));print(message);feed+=message+'\n'
+							message=(str(ncztype.header.titleId)+' - '+ncztype.header.contentType);print(message);feed+=message+'\n'
 							correct=self.verify_ncz(file)
 							break
 				elif file.endswith('.tik'):
@@ -8620,7 +8620,7 @@ class Nsp(Pfs0):
 		for f in self:
 			if type(f) == Nca and f.header.contentType != Type.Content.META:
 				hlisthash=False
-				message=(str(f.header.titleId)+' - '+str(f.header.contentType));print(message);feed+=message+'\n'
+				message=(str(f.header.titleId)+' - '+f.header.contentType);print(message);feed+=message+'\n'
 				verify,origheader,ncaname,feed,origkg,tr,tkey,iGC=f.verify(feed)
 				# headerlist.append([ncaname,origheader,hlisthash])
 				headerlist.append([ncaname,origheader,hlisthash,tr,tkey,iGC])
@@ -8645,7 +8645,7 @@ class Nsp(Pfs0):
 			if type(f) == Nca and f.header.contentType == Type.Content.META:
 				meta_nca=f._path
 				f.rewind();meta_dat=f.read()
-				message=(str(f.header.titleId)+' - '+str(f.header.contentType));print(message);feed+=message+'\n'
+				message=(str(f.header.titleId)+' - '+f.header.contentType);print(message);feed+=message+'\n'
 				targetkg,minrsv=self.find_addecuatekg(meta_nca,keygenerationlist)
 				verify,origheader,ncaname,feed,origkg,tr,tkey,iGC=f.verify(feed)
 				if verify == False and cnmt!='check':
@@ -8830,7 +8830,7 @@ class Nsp(Pfs0):
 						if listedhash=='patched':
 							listedhash=False
 						break
-				message=(str(f.header.titleId)+' - '+str(f.header.contentType));print(message);feed+=message+'\n'
+				message=(str(f.header.titleId)+' - '+f.header.contentType);print(message);feed+=message+'\n'
 				ncasize=f.header.size
 				t = tqdm(total=ncasize, unit='B', unit_scale=True, leave=False)
 				i=0
@@ -9100,7 +9100,7 @@ class Nsp(Pfs0):
 								else:
 									return True
 
-						if fs.fsType == Type.Fs.ROMFS and fs.cryptoType == Type.Crypto.BKTR and str(f.header.contentType) == Type.Content.PROGRAM:
+						if fs.fsType == Type.Fs.ROMFS and fs.cryptoType == Type.Crypto.BKTR and f.header.contentType == Type.Content.PROGRAM:
 							f.seek(0)
 							ncaHeader = NcaHeader()
 							ncaHeader.open(MemoryFile(f.read(0x400), Type.Crypto.XTS, uhx(Keys.get('header_key'))))
@@ -10258,7 +10258,7 @@ class Nsp(Pfs0):
 						origheader=headerlist[i][1]
 						listedhash=headerlist[i][2]
 						break
-				message=(str(f.header.titleId)+' - '+str(f.header.contentType));print(message);feed+=message+'\n'
+				message=(str(f.header.titleId)+' - '+f.header.contentType);print(message);feed+=message+'\n'
 				ncasize=f.header.size
 				t = tqdm(total=ncasize, unit='B', unit_scale=True, leave=False)
 				i=0

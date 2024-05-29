@@ -194,7 +194,7 @@ class uXci(File):
 								self.change_mkrev_nca(target, keypatch)
 						target.close()
 						if metapatch == 'true':
-							if 	str(nca.header.contentType) == 'Content.META':
+							if 	nca.header.contentType == Type.Content.META:
 								for pfs0 in nca:
 									for cnmt in pfs0:
 										check=str(cnmt._path)
@@ -226,7 +226,7 @@ class uXci(File):
 			if str(nspF._path)=="update":
 				for nca in nspF:
 					if type(nca) == Nca:
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for f in nca:
 								for cnmt in f:
 									nca.rewind()
@@ -370,7 +370,7 @@ class nXci(File):
 								self.change_mkrev_nca(target, keypatch)
 						target.close()
 						if metapatch == 'true':
-							if 	str(nca.header.contentType) == 'Content.META':
+							if 	nca.header.contentType == Type.Content.META:
 								for pfs0 in nca:
 									for cnmt in pfs0:
 										check=str(cnmt._path)

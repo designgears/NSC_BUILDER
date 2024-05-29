@@ -653,10 +653,10 @@ def file_hash(remote,target,files_list=None):
 		else:
 			nca_id=ncaHeader.titleId
 			if nca_id.endswith('000') or nca_id.endswith('800'):
-				if 	str(ncaHeader.contentType) == 'Content.PROGRAM':
+				if 	ncaHeader.contentType == Type.Content.PROGRAM:
 					docheck=True
 			else:
-				if 	str(ncaHeader.contentType) == 'Content.DATA':
+				if 	ncaHeader.contentType == Type.Content.DATA:
 					docheck=True
 			if docheck == True:
 				crypto1=ncaHeader.getCryptoType()

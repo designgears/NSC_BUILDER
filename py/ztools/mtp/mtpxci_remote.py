@@ -373,7 +373,7 @@ def gen_xci_parts_spec0(filepath=None,remote=None,target_cnmt=None,cachefolder=N
 			outf.write(newheader)
 			written+=len(newheader)
 			if content_type!="DLC":
-				if (str(ncaHeader.contentType) != 'Content.PROGRAM'):
+				if (ncaHeader.contentType != Type.Content.PROGRAM):
 					nca = Nca()
 					nca.open(MemoryFile(remote.read_at(off1,nca_size)))
 					nca.seek(0xC00)
@@ -387,7 +387,7 @@ def gen_xci_parts_spec0(filepath=None,remote=None,target_cnmt=None,cachefolder=N
 					# print(nca_name)
 					# print(len(newheader))
 			else:
-				if (str(ncaHeader.contentType) != 'Content.PUBLIC_DATA'):
+				if (ncaHeader.contentType != Type.Content.PUBLIC_DATA):
 					nca = Nca()
 					nca.open(MemoryFile(remote.read_at(off1,nca_size)))
 					nca.seek(0xC00)

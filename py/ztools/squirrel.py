@@ -1,13 +1,6 @@
 # -*- coding: utf-8 -*-
 
 '''
-   _____			 _				__
-  / ___/____ ___  __(_)____________  / /
-  \__ \/ __ `/ / / / / ___/ ___/ _ \/ /
- ___/ / /_/ / /_/ / / /  / /  /  __/ /
-/____/\__, /\__,_/_/_/  /_/   \___/_/
-		/_/
-
 By julesontheroad:
 https://github.com/julesontheroad/
 Squirrel is a fork of NUT made to support NSC Builder
@@ -5283,7 +5276,7 @@ if __name__ == '__main__':
 			if filename.endswith('.nca'):
 				try:
 					f = Fs.Nca(filename, 'rb')
-					if 	str(f.header.contentType) == 'Content.CONTROL':
+					if 	f.header.contentType == Type.Content.CONTROL:
 						feed=f.read_nacp()
 						f.flush()
 						f.close()
@@ -5794,7 +5787,7 @@ if __name__ == '__main__':
 			if filename.endswith('.nca'):
 				try:
 					f = Fs.Nca(filename, 'rb')
-					if 	str(f.header.contentType) == 'Content.META':
+					if 	f.header.contentType == Type.Content.META:
 						feed=f.read_cnmt()
 						f.flush()
 						f.close()

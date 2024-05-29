@@ -183,7 +183,7 @@ class NcaHeader(File):
 			if self.titleId.upper() in Titles.keys() and Titles.get(self.titleId.upper()).key:
 				rid=self.titleId.upper()
 				if not str(self.titleId).endswith('0'):
-					if str(nca.header.contentType) == 'Content.PROGRAM' or str(nca.header.contentType) == 'Content.DATA':
+					if nca.header.contentType == Type.Content.PROGRAM or nca.header.contentType == Type.Content.DATA:
 						rid=str(self.titleId.upper())[:-1]+'0'
 				self.titleKeyDec = Keys.decryptTitleKey(uhx(Titles.get(rid).key), self.masterKey)
 			else:
@@ -772,7 +772,7 @@ class Nca(File):
 		Print.info(str(self.header.titleId))
 
 	def print_nca_type(self, indent = 0):
-		Print.info(str(self.header.contentType))
+		Print.info(self.header.contentType)
 
 	def cardstate(self, indent = 0):
 		Print.info(hex(self.header.isGameCard))
@@ -838,7 +838,7 @@ class Nca(File):
 		message='Table offset = '+ str(hx((offset+0x20).to_bytes(2, byteorder='big')));print(message);feed+=message+'\n'
 		message='Number of content = '+ str(content_entries);print(message);feed+=message+'\n'
 		message='Number of meta entries = '+ str(meta_entries);print(message);feed+=message+'\n'
-		message='Application id\Patch id = ' + (str(hx(original_ID.to_bytes(8, byteorder='big')))[2:-1]).upper();print(message);feed+=message+'\n'
+		message=r'Application id\Patch id = ' + (str(hx(original_ID.to_bytes(8, byteorder='big')))[2:-1]).upper();print(message);feed+=message+'\n'
 		message='RequiredVersion = ' + str(min_sversion);print(message);feed+=message+'\n'
 		message='Length of exmeta = ' + str(length_of_emeta);print(message);feed+=message+'\n'
 		self.seek(cmt_offset+offset+0x20)
@@ -1388,7 +1388,7 @@ class Nca(File):
 		Print.info(tabs + 'titleId = ' + str(self.header.titleId))
 		Print.info(tabs + 'rightsId = ' + str(self.header.rightsId))
 		Print.info(tabs + 'isGameCard = ' + hex(self.header.isGameCard))
-		Print.info(tabs + 'contentType = ' + str(self.header.contentType))
+		Print.info(tabs + 'contentType = ' + self.header.contentType)
 		#Print.info(tabs + 'cryptoType = ' + str(self.header.getCryptoType()))
 		Print.info(tabs + 'SDK version = ' + self.get_sdkversion())
 		Print.info(tabs + 'Size: ' + str(self.header.size))
@@ -2271,7 +2271,7 @@ class Nca(File):
 		nca_id=self.header.titleId
 		cr2=str(hex(crypto2))[2:]
 		trstart=str(nca_id)
-		if str(self.header.contentType) == 'Content.PROGRAM' or str(self.header.contentType) == 'Content.MANUAL':
+		if self.header.contentType == Type.Content.PROGRAM or self.header.contentType == Type.Content.MANUAL:
 			trstart=nca_id[:-3]+'000'
 		if len(str(cr2))==1:
 			tr=trstart+'000000000000000'+str(cr2)
@@ -2348,7 +2348,7 @@ class Nca(File):
 					decKeyBlock = currdecKeyBlock
 					titleKeyEnc = Keys.encryptTitleKey(decKeyBlock, Keys.getMasterKeyIndex(masterKeyRev))
 					trstart=str(nca_id)
-					if str(self.header.contentType) == 'Content.PROGRAM':
+					if self.header.contentType == Type.Content.PROGRAM:
 						trstart=nca_id[:-3]+'000'
 					tr1=trstart+'000000000000000'+str(crypto2[1])
 					tr2=nca_id[:-3]+'800000000000000000'+str(crypto2[1])
@@ -2470,7 +2470,7 @@ class Nca(File):
 		return False,False,False,False,masterKeyRev
 
 	def ret_nacp(self):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			offset=self.get_nacp_offset()
 			for f in self:
 				f.seek(offset)
@@ -2478,7 +2478,7 @@ class Nca(File):
 
 #READ NACP FILE WITHOUT EXTRACTION
 	def read_nacp(self,feed=''):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			offset=self.get_nacp_offset()
 			for f in self:
 				f.seek(offset)
@@ -2572,7 +2572,7 @@ class Nca(File):
 
 #PATCH NETWORK LICENSE
 	def patch_netlicense(self):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			offset=self.get_nacp_offset()
 			for f in self:
 				nacp = Nacp()
@@ -2602,7 +2602,7 @@ class Nca(File):
 					nacp.par_getRequiredNetworkServiceLicenseOnLaunch(f.readInt8('little'))
 					return True
 	def redo_lvhashes(self):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			#offset=self.get_nacp_offset()
 			for fs in self.sectionFilesystems:
 				pfs0=fs
@@ -2614,7 +2614,7 @@ class Nca(File):
 				return leveldata,superhashoffset
 
 	def set_lv_hash(self,j,leveldata):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			for fs in self.sectionFilesystems:
 				levelnumb=leveldata[j][0]
 				lvoffs=leveldata[j][1]
@@ -2633,7 +2633,7 @@ class Nca(File):
 					print('New lv'+str(j)+' hash: '+str(newhash))
 
 	def set_lvsuperhash(self,leveldata,superhashoffset):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			for fs in self.sectionFilesystems:
 				memlv0 = io.BytesIO(fs.read((leveldata[0][2])*(len(leveldata)-1)))
 				memlv0.seek(0);newlvdata=memlv0.read()
@@ -2715,7 +2715,7 @@ class Nca(File):
 		message=('HASH TEST');print(message);feed+=message+'\n'
 		message='***************';print(message);feed+=message+'\n'
 
-		message=(str(self.header.titleId)+' - '+str(self.header.contentType));print(message);feed+=message+'\n'
+		message=(str(self.header.titleId)+' - '+self.header.contentType);print(message);feed+=message+'\n'
 		ncasize=self.header.size
 		t = tqdm(total=ncasize, unit='B', unit_scale=True, leave=False)
 		i=0

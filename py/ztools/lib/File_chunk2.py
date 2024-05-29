@@ -1050,7 +1050,7 @@ class chunk():
 		ncaHeader.rewind()
 		size=ncaHeader.size
 		size_pr=sq_tools.getSize(size)
-		content=str(ncaHeader.contentType)
+		content=ncaHeader.contentType
 		content=content[8:]+": "
 		ncatype=sq_tools.getTypeFromCNMT(ncatype)
 		if ncatype != "Meta: ":
@@ -1126,7 +1126,7 @@ class chunk():
 			ncaHeader = NcaHeader()
 			ncaHeader.open(MemoryFile(self.read_at(entry,0x0,0x400), Type.Crypto.XTS, uhx(Keys.get('header_key'))))
 			ncaHeader.rewind()
-			if 	str(ncaHeader.contentType) == 'Content.DATA':
+			if 	ncaHeader.contentType == Type.Content.DATA:
 				if 	filename in ncalist:
 					vfragment="true"
 					break
@@ -1396,7 +1396,7 @@ class chunk():
 			# if str(nspF._path)=="secure":
 				# for nca in nspF:
 					# if type(nca) == Fs.Nca:
-						# if 	str(nca.header.contentType) == 'Content.PROGRAM':
+						# if 	nca.header.contentType == Type.Content.PROGRAM:
 							# if nca.header.getRightsId() == 0:
 								# decKey=nca.header.titleKeyDec
 							# if nca.header.getRightsId() != 0:
@@ -1488,7 +1488,7 @@ class chunk():
 					# if str(nspF._path)=="secure":
 						# for nca in nspF:
 							# if type(nca) == Fs.Nca:
-								# if 	str(nca.header.contentType) == 'Content.PROGRAM':
+								# if 	nca.header.contentType == Type.Content.PROGRAM:
 									# nca3type=Nca(nca)
 									# nca3type._path=nca._path
 									# ModuleId=str(nca3type.buildId)
@@ -1532,7 +1532,7 @@ def icon_info(path):
 		nca=Nca()
 		nca.open(MemoryFile(inmemoryfile.read()))
 		nca.rewind()
-		if 	str(nca.header.contentType) == 'Content.CONTROL':
+		if 	nca.header.contentType == Type.Content.CONTROL:
 			tk=nca.header.titleKeyDec
 			checksums = list()
 			inmemoryfile.seek(0)

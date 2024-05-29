@@ -715,7 +715,7 @@ class Nca(File):
 		Print.info(str(self.header.titleId))
 
 	def print_nca_type(self, indent = 0):
-		Print.info(str(self.header.contentType))
+		Print.info(self.header.contentType)
 
 	def cardstate(self, indent = 0):
 		Print.info(hex(self.header.isGameCard))
@@ -779,7 +779,7 @@ class Nca(File):
 		message=["Table offset:",(str(hx((offset+0x20).to_bytes(2, byteorder='big'))))];feed=self.html_feed(feed,3,message)
 		message=["Number of content:",(str(content_entries))];feed=self.html_feed(feed,3,message)
 		message=["Number of meta entries:",(str(meta_entries))];feed=self.html_feed(feed,3,message)
-		message=["Application id\Patch id:",((str(hx(original_ID.to_bytes(8, byteorder='big')))[2:-1]).upper())];feed=self.html_feed(feed,3,message)
+		message=[r"Application id\Patch id:",((str(hx(original_ID.to_bytes(8, byteorder='big')))[2:-1]).upper())];feed=self.html_feed(feed,3,message)
 		message=["RequiredVersion:",str(min_sversion)];feed=self.html_feed(feed,3,message)
 		message=["Length of exmeta:",str(length_of_emeta)];feed=self.html_feed(feed,3,message)
 
@@ -1308,7 +1308,7 @@ class Nca(File):
 		Print.info(tabs + 'titleId = ' + str(self.header.titleId))
 		Print.info(tabs + 'rightsId = ' + str(self.header.rightsId))
 		Print.info(tabs + 'isGameCard = ' + hex(self.header.isGameCard))
-		Print.info(tabs + 'contentType = ' + str(self.header.contentType))
+		Print.info(tabs + 'contentType = ' + self.header.contentType)
 		#Print.info(tabs + 'cryptoType = ' + str(self.header.getCryptoType()))
 		Print.info(tabs + 'SDK version = ' + self.get_sdkversion())
 		Print.info(tabs + 'Size: ' + str(self.header.size))
@@ -2368,7 +2368,7 @@ class Nca(File):
 		return False,False,False,False,masterKeyRev
 
 	def ret_nacp(self):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			offset=self.get_nacp_offset()
 			for f in self:
 				f.seek(offset)
@@ -2376,7 +2376,7 @@ class Nca(File):
 
 #READ NACP FILE WITHOUT EXTRACTION
 	def read_nacp(self,feed=''):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			offset=self.get_nacp_offset()
 			for f in self:
 				f.seek(offset)
@@ -2470,7 +2470,7 @@ class Nca(File):
 
 #PATCH NETWORK LICENSE
 	def patch_netlicense(self):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			offset=self.get_nacp_offset()
 			for f in self:
 				nacp = Nacp()
@@ -2500,7 +2500,7 @@ class Nca(File):
 					nacp.par_getRequiredNetworkServiceLicenseOnLaunch(f.readInt8('little'))
 					return True
 	def redo_lvhashes(self):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			#offset=self.get_nacp_offset()
 			for fs in self.sectionFilesystems:
 				pfs0=fs
@@ -2512,7 +2512,7 @@ class Nca(File):
 				return leveldata,superhashoffset
 
 	def set_lv_hash(self,j,leveldata):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			for fs in self.sectionFilesystems:
 				levelnumb=leveldata[j][0]
 				lvoffs=leveldata[j][1]
@@ -2531,7 +2531,7 @@ class Nca(File):
 					print('New lv'+str(j)+' hash: '+str(newhash))
 
 	def set_lvsuperhash(self,leveldata,superhashoffset):
-		if 	str(self.header.contentType) == 'Content.CONTROL':
+		if 	self.header.contentType == Type.Content.CONTROL:
 			for fs in self.sectionFilesystems:
 				memlv0 = io.BytesIO(fs.read((leveldata[0][2])*(len(leveldata)-1)))
 				memlv0.seek(0);newlvdata=memlv0.read()
@@ -2613,7 +2613,7 @@ class Nca(File):
 		message=('HASH TEST');print(message);feed+=message+'\n'
 		message='***************';print(message);feed+=message+'\n'
 
-		message=(str(self.header.titleId)+' - '+str(self.header.contentType));print(message);feed+=message+'\n'
+		message=(str(self.header.titleId)+' - '+self.header.contentType);print(message);feed+=message+'\n'
 		ncasize=self.header.size
 		t = tqdm(total=ncasize, unit='B', unit_scale=True, leave=False)
 		i=0

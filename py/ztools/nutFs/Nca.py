@@ -284,7 +284,7 @@ class Nca(File):
 		Print.info(tabs + 'titleId = ' + str(self.header.titleId))
 		Print.info(tabs + 'rightsId = ' + str(self.header.rightsId))
 		Print.info(tabs + 'isGameCard = ' + hex(self.header.isGameCard))
-		Print.info(tabs + 'contentType = ' + str(self.header.contentType))
+		Print.info(tabs + 'contentType = ' + self.header.contentType)
 		Print.info(tabs + 'cryptoType = ' + str(self.cryptoType))
 		Print.info(tabs + 'Size: ' + str(self.header.size))
 		Print.info(tabs + 'crypto master key: ' + str(self.header.cryptoType))

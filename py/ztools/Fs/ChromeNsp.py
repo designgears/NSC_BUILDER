@@ -416,7 +416,7 @@ class ChromeNsp(Pfs0):
 		ctrl_list=list()
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					ctrl_list.append(nca._path)
 				else:
 					pass
@@ -425,7 +425,7 @@ class ChromeNsp(Pfs0):
 	def patch_netlicense(self,item=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					if item == False or nca._path == item:
 						check=nca.patch_netlicense()
 						return check
@@ -433,7 +433,7 @@ class ChromeNsp(Pfs0):
 	def reb_lv_hashes(self,item=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					if item == False or nca._path == item:
 						print('-------------------------------------------------')
 						print('Get Current IVFC level data:')
@@ -444,7 +444,7 @@ class ChromeNsp(Pfs0):
 	def set_lv_hash(self,j,leveldata,item=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					if item == False or nca._path == item:
 						print('-------------------------------------------------')
 						print('Rebuild hashes for IVFC level '+str(j)+':')
@@ -454,7 +454,7 @@ class ChromeNsp(Pfs0):
 	def set_lvsuperhash(self,leveldata,superhashoffset,item=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					if item == False or nca._path == item:
 						print('-------------------------------------------------')
 						print('Rebuild IVFC superhash:')
@@ -464,7 +464,7 @@ class ChromeNsp(Pfs0):
 	def ctrl_upd_hblock_hash(self,item=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					if item == False or nca._path == item:
 						print('-------------------------------------------------')
 						print('Rebuild nca hash-table:')
@@ -552,7 +552,7 @@ class ChromeNsp(Pfs0):
 	def nsptype(self):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							content_type_cnmt=str(cnmt._path)
@@ -652,7 +652,7 @@ class ChromeNsp(Pfs0):
 	def copy_nca_control(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -671,7 +671,7 @@ class ChromeNsp(Pfs0):
 	def copy_nca_meta(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -690,7 +690,7 @@ class ChromeNsp(Pfs0):
 	def copy_pfs0_meta(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						nca.rewind()
 						f.rewind()
@@ -712,7 +712,7 @@ class ChromeNsp(Pfs0):
 	def copy_cnmt(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for file in f:
 							nca.rewind()
@@ -737,7 +737,7 @@ class ChromeNsp(Pfs0):
 	def copy_nacp(self,ofolder,buffer=32768):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					ncaname =  str(nca._path)[:-4]+'_nca'
 					ncafolder = os.path.join(ofolder,ncaname)
 					filename = 'control.nacp'
@@ -890,7 +890,7 @@ class ChromeNsp(Pfs0):
 		try:
 			for nca in self:
 				if type(nca) == Fs.Nca and nca.header.getRightsId() == 0:
-					if 	str(nca.header.contentType) == 'Content.PROGRAM':
+					if 	nca.header.contentType == Type.Content.PROGRAM:
 						titleid2=nca.header.titleId
 						feed=self.html_feed(feed,1,message=str('TITLEID: ' + str(titleid2).upper()))
 						feed+='<p style="font-size: 1.86vh;text-align: left;white-space: pre-line;margin-top:0.2vh;"><strong><span">'
@@ -920,7 +920,7 @@ class ChromeNsp(Pfs0):
 										feed+='</span></strong></p>'
 										return feed
 				if type(nca) == Fs.Nca and nca.header.getRightsId() != 0:
-					if 	str(nca.header.contentType) == 'Content.PROGRAM':
+					if 	nca.header.contentType == Type.Content.PROGRAM:
 						titleid2=nca.header.titleId
 						feed=self.html_feed(feed,1,message=str('TITLEID: ' + str(titleid2).upper()))
 						feed+='<p style="font-size: 1.86vh;text-align: left;white-space: pre-line;margin-top:0.2vh;"><strong><span">'
@@ -1028,7 +1028,7 @@ class ChromeNsp(Pfs0):
 		# print(files_list)
 		for nca in self:
 			if type(nca) == Fs.Nca:
-				if 	str(nca.header.contentType) == 'Content.PROGRAM':
+				if 	nca.header.contentType == Type.Content.PROGRAM:
 					if target==None:
 						target=str(nca._path)
 					if str(nca._path)==target:
@@ -1125,7 +1125,7 @@ class ChromeNsp(Pfs0):
 				from nutFS.Nca import Nca as nca3type
 				for nca in self:
 					if type(nca) == Fs.Nca:
-						if 	str(nca.header.contentType) == 'Content.PROGRAM':
+						if 	nca.header.contentType == Type.Content.PROGRAM:
 							if target==None or str(nca._path)==target:
 								nca3type=Nca(nca)
 								nca3type._path=nca._path
@@ -1256,7 +1256,7 @@ class ChromeNsp(Pfs0):
 	def copy_nca_manual(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.MANUAL':
+				if 	nca.header.contentType == Type.Content.MANUAL:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -1275,7 +1275,7 @@ class ChromeNsp(Pfs0):
 	def copy_nca_program(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.PROGRAM':
+				if 	nca.header.contentType == Type.Content.PROGRAM:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -1294,7 +1294,7 @@ class ChromeNsp(Pfs0):
 	def test(self):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.PROGRAM':
+				if 	nca.header.contentType == Type.Content.PROGRAM:
 					masterKeyRev = nca.header.getCryptoType2()
 					encKeyBlock = nca.header.getKeyBlock()
 					key = Keys.keyAreaKey(Keys.getMasterKeyIndex(masterKeyRev), nca.header.keyIndex)
@@ -1325,7 +1325,7 @@ class ChromeNsp(Pfs0):
 	def copy_nca_data(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if 	nca.header.contentType == Type.Content.DATA:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -1344,7 +1344,7 @@ class ChromeNsp(Pfs0):
 	def copy_nca_pdata(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.PUBLIC_DATA':
+				if 	nca.header.contentType == Type.Content.PUBLIC_DATA:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -1472,7 +1472,7 @@ class ChromeNsp(Pfs0):
 	def copy_ndata(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if 	nca.header.contentType == Type.Content.DATA:
 					for f in nca:
 						for file in f:
 							nca.rewind()
@@ -1712,7 +1712,7 @@ class ChromeNsp(Pfs0):
 	def exist_control(self):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					return 'TRUE'
 		return 'FALSE'
 
@@ -1784,7 +1784,7 @@ class ChromeNsp(Pfs0):
 		for nca in self:
 			size1=0;size2=0;size3=0
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -2025,7 +2025,7 @@ class ChromeNsp(Pfs0):
 				if filename == nca_name:
 					size=nca.header.size
 					size_pr=sq_tools.getSize(size)
-					content=str(nca.header.contentType)
+					content=nca.header.contentType
 					content=content[8:]+": "
 					ncatype=sq_tools.getTypeFromCNMT(ncatype)
 					if ncatype != "Meta: ":
@@ -2038,7 +2038,7 @@ class ChromeNsp(Pfs0):
 				ncztype._path=nca._path
 				size=ncztype.header.size
 				size_pr=sq_tools.getSize(size)
-				content=str(ncztype.header.contentType)
+				content=ncztype.header.contentType
 				content=content[8:]+": "
 				ncatype=sq_tools.getTypeFromCNMT(ncatype)
 				if ncatype != "Meta: ":
@@ -2103,7 +2103,7 @@ class ChromeNsp(Pfs0):
 		vfragment="false"
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if 	nca.header.contentType == Type.Content.DATA:
 					for f in nca:
 							for file in f:
 								filename = str(file._path)
@@ -2166,7 +2166,7 @@ class ChromeNsp(Pfs0):
 		for nca in self:
 			size1=0;size2=0;size3=0
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.PROGRAM':
+				if 	nca.header.contentType == Type.Content.PROGRAM:
 					target=str(nca._path)
 					tit=str(nca.header.titleId).upper()
 					entry=ncadb[target]
@@ -2190,7 +2190,7 @@ class ChromeNsp(Pfs0):
 		for nca in self:
 			size1=0;size2=0;size3=0
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -2289,7 +2289,7 @@ class ChromeNsp(Pfs0):
 	def read_nacp(self,feed='',gui=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					titleid2=nca.header.titleId
 					feed=self.html_feed(feed,1,message=str('TITLEID: ' + str(titleid2).upper()))
 					offset=nca.get_nacp_offset()
@@ -2392,7 +2392,7 @@ class ChromeNsp(Pfs0):
 		feed=''
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					titleid2=nca.header.titleId
 					feed=self.html_feed(feed,1,message=str('TITLEID: ' + str(titleid2).upper()))
 					for f in nca:
@@ -2425,7 +2425,7 @@ class ChromeNsp(Pfs0):
 							message=["Table offset:",(str(hx((offset+0x20).to_bytes(2, byteorder='big'))))];feed=self.html_feed(feed,3,message)
 							message=["Number of content:",(str(content_entries))];feed=self.html_feed(feed,3,message)
 							message=["Number of meta entries:",(str(meta_entries))];feed=self.html_feed(feed,3,message)
-							message=["Application id\Patch id:",((str(hx(original_ID.to_bytes(8, byteorder='big')))[2:-1]).upper())];feed=self.html_feed(feed,3,message)
+							message=[r"Application id\Patch id:",((str(hx(original_ID.to_bytes(8, byteorder='big')))[2:-1]).upper())];feed=self.html_feed(feed,3,message)
 
 							content_name=str(cnmt._path)
 							content_name=content_name[:-22]
@@ -2676,7 +2676,7 @@ class ChromeNsp(Pfs0):
 	def get_cnmt_verID(self):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -2731,7 +2731,7 @@ class ChromeNsp(Pfs0):
 						os.makedirs(outfolder)
 					textpath = os.path.join(outfolder, text_file)
 					with open(textpath, 'a') as tfile:
-						tfile.write(str(nca.header.contentType)+ ': ' + tabs + str(nca._path) + '\n')
+						tfile.write(nca.header.contentType+ ': ' + tabs + str(nca._path) + '\n')
 					fp = open(filepath, 'w+b')
 					nca.rewind()
 					t = tqdm(total=nca.header.size, unit='B', unit_scale=True, leave=False)
@@ -2785,7 +2785,7 @@ class ChromeNsp(Pfs0):
 							self.change_mkrev_nca(target, keypatch)
 					target.close()
 					if metapatch == 'true':
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for pfs0 in nca:
 								for cnmt in pfs0:
 									check=str(cnmt._path)
@@ -2835,7 +2835,7 @@ class ChromeNsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if 	nca.header.contentType == Type.Content.DATA:
 					for f in nca:
 							for file in f:
 								filename = str(file._path)
@@ -2854,7 +2854,7 @@ class ChromeNsp(Pfs0):
 							os.makedirs(outfolder)
 						textpath = os.path.join(outfolder, text_file)
 						with open(textpath, 'a') as tfile:
-							tfile.write(str(nca.header.contentType)+ ': ' + tabs + str(nca._path)+'\n')
+							tfile.write(nca.header.contentType+ ': ' + tabs + str(nca._path)+'\n')
 						fp = open(filepath, 'w+b')
 						nca.rewind()
 						Print.info(tabs)
@@ -2915,7 +2915,7 @@ class ChromeNsp(Pfs0):
 						target.close()
 						#///////////////////////////////////
 					if metapatch == 'true':
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for pfs0 in nca:
 								for cnmt in pfs0:
 									check=str(cnmt._path)
@@ -2962,7 +2962,7 @@ class ChromeNsp(Pfs0):
 						self.change_mkrev_nca(target, keypatch)
 				target.close()
 				if metapatch == 'true':
-					if 	str(nca.header.contentType) == 'Content.META':
+					if 	nca.header.contentType == Type.Content.META:
 						for pfs0 in nca:
 							for cnmt in pfs0:
 								check=str(cnmt._path)
@@ -2987,7 +2987,7 @@ class ChromeNsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if 	nca.header.contentType == Type.Content.DATA:
 					for f in nca:
 							for file in f:
 								filename = str(file._path)
@@ -3023,7 +3023,7 @@ class ChromeNsp(Pfs0):
 							self.change_mkrev_nca(target, keypatch)
 					target.close()
 					if metapatch == 'true':
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for pfs0 in nca:
 								for cnmt in pfs0:
 									check=str(cnmt._path)
@@ -3041,7 +3041,7 @@ class ChromeNsp(Pfs0):
 	def splitter_read(self,ofolder,buffer,pathend):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -3185,7 +3185,7 @@ class ChromeNsp(Pfs0):
 		if nca_name=='false':
 			for nca in self:
 				if type(nca) == Nca:
-					if 	str(nca.header.contentType) == 'Content.META':
+					if 	nca.header.contentType == Type.Content.META:
 						for f in nca:
 							for cnmt in f:
 								cnmt.rewind()
@@ -3252,7 +3252,7 @@ class ChromeNsp(Pfs0):
 			if type(nca) == Nca:
 				nca_id=nca.header.titleId
 				if str(titid[:-3]).upper() == str(nca_id[:-3]).upper():
-					if 	str(nca.header.contentType) == 'Content.PROGRAM':
+					if 	nca.header.contentType == Type.Content.PROGRAM:
 						programSDKversion=nca.get_sdkversion()
 						break
 		if 	programSDKversion=='':
@@ -3260,7 +3260,7 @@ class ChromeNsp(Pfs0):
 				if type(nca) == Nca:
 					nca_id=nca.header.titleId
 					if str(titid[:-3]).upper() == str(nca_id[:-3]).upper():
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if 	nca.header.contentType == Type.Content.CONTROL:
 							programSDKversion=nca.get_sdkversion()
 							break
 		if 	programSDKversion=='':
@@ -3268,7 +3268,7 @@ class ChromeNsp(Pfs0):
 				if type(nca) == Nca:
 					nca_id=nca.header.titleId
 					if str(titid[:-3]).upper() == str(nca_id[:-3]).upper():
-						if 	str(nca.header.contentType) == 'Content.PUBLIC_DATA':
+						if 	nca.header.contentType == Type.Content.PUBLIC_DATA:
 							dataSDKversion = nca.get_sdkversion()
 							break
 		return 	programSDKversion,dataSDKversion
@@ -3277,7 +3277,7 @@ class ChromeNsp(Pfs0):
 		feed=''
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -3536,7 +3536,7 @@ class ChromeNsp(Pfs0):
 		if nca_name=='false' and title == 'DLC'	:
 			for nca in self:
 				if type(nca) == Nca:
-					if 	str(nca.header.contentType) == 'Content.META':
+					if 	nca.header.contentType == Type.Content.META:
 						for f in nca:
 							for cnmt in f:
 								cnmt.rewind()
@@ -3569,7 +3569,7 @@ class ChromeNsp(Pfs0):
 		for nca in self:
 			if type(nca) == Nca:
 				if nca_name == str(nca._path):
-					if 	str(nca.header.contentType) == 'Content.CONTROL':
+					if 	nca.header.contentType == Type.Content.CONTROL:
 						title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock(title,roman)
 						return(title,editor,ediver,SupLg,regionstr,isdemo)
 		regionstr="0|0|0|0|0|0|0|0|0|0|0|0|0|0"
@@ -3619,7 +3619,7 @@ class ChromeNsp(Pfs0):
 
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							content_name=str(cnmt._path)
@@ -3754,7 +3754,7 @@ class ChromeNsp(Pfs0):
 						target.close()
 						#///////////////////////////////////
 					if metapatch == 'true':
-						if 	str(nca.header.contentType) == 'Content.META':
+						if 	nca.header.contentType == Type.Content.META:
 							for pfs0 in nca:
 								for cnmt in pfs0:
 									check=str(cnmt._path)
@@ -3939,7 +3939,7 @@ class ChromeNsp(Pfs0):
 	def get_title(self,baseid,roman=True,tag=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -3982,7 +3982,7 @@ class ChromeNsp(Pfs0):
 		title='DLC'
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock(title,roman)
 					return(title)
 
@@ -3990,7 +3990,7 @@ class ChromeNsp(Pfs0):
 		languetag=False
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -4020,7 +4020,7 @@ class ChromeNsp(Pfs0):
 		title='DLC'
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock(title)
 					languetag='('
 					if ("US (eng)" in SupLg) or ("UK (eng)" in SupLg):
@@ -4071,7 +4071,7 @@ class ChromeNsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+				if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4080,7 +4080,7 @@ class ChromeNsp(Pfs0):
 				if str(vfragment)=="true":
 					continue
 				fileSizes.append(nca.header.size)
-				if str(nca.header.contentType) == 'Content.META' and inc_xml==True:
+				if nca.header.contentType == Type.Content.META and inc_xml==True:
 					xmlname=nca._path
 					xmlname=xmlname[:-3]+'xml'
 					xmlpath = os.path.join(ofolder, xmlname)
@@ -4142,7 +4142,7 @@ class ChromeNsp(Pfs0):
 							break
 
 		for nca in self:
-			if type(nca) == Nca and str(nca.header.contentType) == 'Content.META':
+			if type(nca) == Nca and nca.header.contentType == Type.Content.META:
 				nca.rewind()
 				crypto1=nca.header.getCryptoType()
 				crypto2=nca.header.getCryptoType2()
@@ -4180,7 +4180,7 @@ class ChromeNsp(Pfs0):
 				if metapatch == 'true':
 					target = Fs.Nca(filepath, 'r+b')
 					target.rewind()
-					if 	str(target.header.contentType) == 'Content.META':
+					if 	target.header.contentType == Type.Content.META:
 						for pfs0 in target:
 							for cnmt in pfs0:
 								check=str(cnmt._path)
@@ -4204,7 +4204,7 @@ class ChromeNsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+				if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4213,7 +4213,7 @@ class ChromeNsp(Pfs0):
 				if str(vfragment)=="true":
 					continue
 				contentlist.append(nca._path)
-				if str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					xmlname=nca._path
 					xmlname=xmlname[:-3]+'xml'
 					contentlist.append(xmlname)
@@ -4223,7 +4223,7 @@ class ChromeNsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+				if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4232,7 +4232,7 @@ class ChromeNsp(Pfs0):
 				if str(vfragment)=="true":
 					continue
 				totSize=totSize+nca.header.size
-				if str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					xmlname=nca._path
 					xmlname=xmlname[:-3]+'xml'
 					xmlpath = os.path.join(ofolder, xmlname)
@@ -4278,8 +4278,8 @@ class ChromeNsp(Pfs0):
 		block=4294901760
 		for nca in self:
 			vfragment="false"
-			if type(nca) == Nca and (str(nca.header.contentType) != 'Content.META'):
-				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+			if type(nca) == Nca and (nca.header.contentType != Type.Content.META):
+				if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4371,7 +4371,7 @@ class ChromeNsp(Pfs0):
 							outf.flush()
 						if not data:
 							break
-			if type(nca) == Nca and str(nca.header.contentType) == 'Content.META':
+			if type(nca) == Nca and nca.header.contentType == Type.Content.META:
 				filename = str(nca._path)
 				filepath = os.path.join(outfolder, filename)
 				xml_file=filepath[:-3]+'xml'
@@ -4464,7 +4464,7 @@ class ChromeNsp(Pfs0):
 	def addtodb(self,ofile,dbtype,roman=True):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -4961,8 +4961,8 @@ class ChromeNsp(Pfs0):
 
 		for nca in self:
 			vfragment="false"
-			if type(nca) == Nca and (str(nca.header.contentType) != 'Content.META'):
-				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+			if type(nca) == Nca and (nca.header.contentType != Type.Content.META):
+				if (delta == False) and (nca.header.contentType == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -5067,7 +5067,7 @@ class ChromeNsp(Pfs0):
 							outf.flush()
 						if not data:
 							break
-			if type(nca) == Nca and str(nca.header.contentType) == 'Content.META':
+			if type(nca) == Nca and nca.header.contentType == Type.Content.META:
 				nca.rewind()
 				crypto1=nca.header.getCryptoType()
 				crypto2=nca.header.getCryptoType2()
@@ -5118,7 +5118,7 @@ class ChromeNsp(Pfs0):
 				if metapatch == 'true':
 					target = Fs.Nca(filepath, 'r+b')
 					target.rewind()
-					if 	str(target.header.contentType) == 'Content.META':
+					if 	target.header.contentType == Type.Content.META:
 						for pfs0 in target:
 							for cnmt in pfs0:
 								check=str(cnmt._path)
@@ -5254,7 +5254,7 @@ class ChromeNsp(Pfs0):
 	def metapatcher(self,number):
 		for nca in self:
 			if type(nca) == Nca:
-				if str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					filename=nca
 					try:
 						f = Fs.Nca(filename, 'r+b')
@@ -5303,7 +5303,7 @@ class ChromeNsp(Pfs0):
 		for file in self:
 			vfragment="false"
 			if type(file) == Nca:
-				if (delta == False) and (str(file.header.contentType) == 'Content.DATA'):
+				if (delta == False) and (file.header.contentType == Type.Content.DATA):
 					for f in file:
 						for fn in f:
 							filename = str(fn._path)
@@ -5523,7 +5523,7 @@ class ChromeNsp(Pfs0):
 			vfragment=False
 			for nca in self:
 				if type(nca) == Nca:
-					if 	str(nca.header.contentType) == 'Content.DATA':
+					if 	nca.header.contentType == Type.Content.DATA:
 						try:
 							for f in nca:
 									for file in f:
@@ -5546,7 +5546,7 @@ class ChromeNsp(Pfs0):
 		self.rewind()
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -5724,7 +5724,7 @@ class ChromeNsp(Pfs0):
 		vfragment=False
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if 	nca.header.contentType == Type.Content.DATA:
 					for f in nca:
 							for file in f:
 								filename = str(file._path)
@@ -5741,7 +5741,7 @@ class ChromeNsp(Pfs0):
 			completefilelist.append(str(file._path))
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					crypto1=nca.header.getCryptoType()
 					crypto2=nca.header.getCryptoType2()
 					if crypto1 == 2:
@@ -5954,7 +5954,7 @@ class ChromeNsp(Pfs0):
 			completefilelist.append(str(file._path))
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					crypto1=nca.header.getCryptoType()
 					crypto2=nca.header.getCryptoType2()
 					if crypto1 == 2:
@@ -6086,7 +6086,7 @@ class ChromeNsp(Pfs0):
 		completefilelist=list()
 		for file in self:
 			if type(file) == Nca:
-				if 	str(file.header.contentType) != 'Content.META' and str(file.header.contentType) != 'Content.CONTROL':
+				if 	file.header.contentType != Type.Content.META and file.header.contentType != Type.Content.CONTROL:
 					continue
 				else:
 					completefilelist.append(str(file._path))
@@ -6097,7 +6097,7 @@ class ChromeNsp(Pfs0):
 		print (completefilelist)
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					crypto1=nca.header.getCryptoType()
 					crypto2=nca.header.getCryptoType2()
 					if crypto1 == 2:
@@ -6255,7 +6255,7 @@ class ChromeNsp(Pfs0):
 							fp.flush()
 						if not data:
 							break
-					if str(file.header.contentType) == 'Content.META':
+					if file.header.contentType == Type.Content.META:
 						target=str(file._path)
 						xmlname=target[:-3]+'xml'
 						t.write(tabs+'- Appending: ' + xmlname)
@@ -6406,7 +6406,7 @@ class ChromeNsp(Pfs0):
 							if keypatch < file.header.getCryptoType2():
 								encKeyBlock,crypto1,crypto2=self.get_new_cryptoblock(file, keypatch,encKeyBlock,t)
 						newheader=self.get_newheader(file,encKeyBlock,crypto1,crypto2,hcrypto,gc_flag)
-					if 	str(file.header.contentType) != 'Content.META':
+					if 	file.header.contentType != Type.Content.META:
 						i=0
 						sha=sha256()
 						fp = open(outf, 'ab')
@@ -6487,7 +6487,7 @@ class ChromeNsp(Pfs0):
 						#t.write(tabs+'new hash: '+sha)
 						#t.write(tabs+'new name: '+newname)
 						fp.close()
-					elif str(file.header.contentType) == 'Content.META':
+					elif file.header.contentType == Type.Content.META:
 						metaname = str(file._path)
 						dir=os.path.dirname(os.path.abspath(outf))
 						metafile=os.path.join(dir, metaname)
@@ -6563,7 +6563,7 @@ class ChromeNsp(Pfs0):
 						if metapatch == 'true' or keypatch != 'false':
 							target = Fs.Nca(metafile, 'r+b')
 							target.rewind()
-							if 	str(target.header.contentType) == 'Content.META':
+							if 	target.header.contentType == Type.Content.META:
 								for pfs0 in target:
 									for cnmt in pfs0:
 										check=str(cnmt._path)
@@ -6709,7 +6709,7 @@ class ChromeNsp(Pfs0):
 			completefilelist.append(str(file._path))
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					crypto1=nca.header.getCryptoType()
 					crypto2=nca.header.getCryptoType2()
 					if crypto1 == 2:
@@ -7411,10 +7411,10 @@ class ChromeNsp(Pfs0):
 				else:
 					nca_id=file.header.titleId
 					if nca_id.endswith('000') or nca_id.endswith('800'):
-						if 	str(file.header.contentType) == 'Content.PROGRAM':
+						if 	file.header.contentType == Type.Content.PROGRAM:
 							docheck=True
 					else:
-						if 	str(file.header.contentType) == 'Content.DATA':
+						if 	file.header.contentType == Type.Content.DATA:
 							docheck=True
 					if docheck == True:
 						crypto1=file.header.getCryptoType()
@@ -7460,7 +7460,7 @@ class ChromeNsp(Pfs0):
 				if file.endswith('cnmt.nca'):
 					for f in self:
 						if str(f._path) == file:
-							message=(str(f.header.titleId)+' - '+str(f.header.contentType));feed+=message+'\n'
+							message=(str(f.header.titleId)+' - '+f.header.contentType);feed+=message+'\n'
 							for nf in f:
 								nf.rewind()
 								test=nf.read(0x4)
@@ -7473,11 +7473,11 @@ class ChromeNsp(Pfs0):
 				elif file.endswith('.nca'):
 					for f in self:
 						if str(f._path) == file:
-							message=(str(f.header.titleId)+' - '+str(f.header.contentType));feed+=message+'\n'
-							if str(f.header.contentType) != 'Content.PROGRAM':
+							message=(str(f.header.titleId)+' - '+f.header.contentType);feed+=message+'\n'
+							if f.header.contentType != Type.Content.PROGRAM:
 								correct = self.verify_enforcer(file)
 								if correct == True:
-									if str(f.header.contentType) == 'Content.PUBLIC_DATA' and f.header.getRightsId() == 0:
+									if f.header.contentType == Type.Content.PUBLIC_DATA and f.header.getRightsId() == 0:
 										correct = f.pr_noenc_check_dlc()
 										if correct == False:
 											baddec=True
@@ -7508,7 +7508,7 @@ class ChromeNsp(Pfs0):
 						if str(f._path)[:-1] == file[:-1]:
 							ncztype=Nca(f)
 							ncztype._path=f._path
-							message=(str(ncztype.header.titleId)+' - '+str(ncztype.header.contentType));feed+=message+'\n'
+							message=(str(ncztype.header.titleId)+' - '+ncztype.header.contentType);feed+=message+'\n'
 							correct=self.verify_ncz(file)
 							break
 				elif file.endswith('.tik'):
@@ -7523,7 +7523,7 @@ class ChromeNsp(Pfs0):
 					if checktik==False and str(self._path).endswith('.nsz'):
 						checktik='nsz'
 					else:
-						message=('Content.TICKET');feed+=message+'\n'
+						message=(Type.Content.TICKET);feed+=message+'\n'
 					correct = checktik
 				else:
 					correct=False
@@ -7548,7 +7548,7 @@ class ChromeNsp(Pfs0):
 					message=(tabs+file+tabs+'  -> titlekey is INCORRECT <<<-');feed+=message+'\n'
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -7647,7 +7647,7 @@ class ChromeNsp(Pfs0):
 		feed=self.html_feed(feed,2,message=('\nSIGNATURE 1 TEST:'))
 		for f in self:
 			if type(f) == Nca and f.header.contentType != Type.Content.META:
-				message=(str(f.header.titleId)+' - '+str(f.header.contentType));feed+=message+'\n'
+				message=(str(f.header.titleId)+' - '+f.header.contentType);feed+=message+'\n'
 				verify,origheader,ncaname,feed,origkg,tr,tkey,iGC=f.verify(feed)
 				# headerlist.append([ncaname,origheader,hlisthash])
 				headerlist.append([ncaname,origheader,hlisthash,tr,tkey,iGC])
@@ -7670,7 +7670,7 @@ class ChromeNsp(Pfs0):
 			if type(f) == Nca and f.header.contentType == Type.Content.META:
 				meta_nca=f._path
 				f.rewind();meta_dat=f.read()
-				message=(str(f.header.titleId)+' - '+str(f.header.contentType));feed+=message+'\n'
+				message=(str(f.header.titleId)+' - '+f.header.contentType);feed+=message+'\n'
 				targetkg,minrsv=self.find_addecuatekg(meta_nca,keygenerationlist)
 				verify,origheader,ncaname,feed,origkg,tr,tkey,iGC=f.verify(feed)
 				#print(targetkg)
@@ -7792,7 +7792,7 @@ class ChromeNsp(Pfs0):
 		ncalist=list()
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					if nca._path == ncameta:
 						for f in nca:
 							for cnmt in f:
@@ -7823,7 +7823,7 @@ class ChromeNsp(Pfs0):
 										unknown = cnmt.read(0x1)
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					if nca._path == ncameta:
 						crypto1=nca.header.getCryptoType()
 						crypto2=nca.header.getCryptoType2()
@@ -7850,7 +7850,7 @@ class ChromeNsp(Pfs0):
 						origheader=headerlist[i][1]
 						listedhash=headerlist[i][2]
 						break
-				message=(str(f.header.titleId)+' - '+str(f.header.contentType));print(message);feed+=message+'\n'
+				message=(str(f.header.titleId)+' - '+f.header.contentType);print(message);feed+=message+'\n'
 				ncasize=f.header.size
 				t = tqdm(total=ncasize, unit='B', unit_scale=True, leave=False)
 				i=0
@@ -8073,7 +8073,7 @@ class ChromeNsp(Pfs0):
 								else:
 									return True
 
-						if fs.fsType == Type.Fs.ROMFS and fs.cryptoType == Type.Crypto.BKTR and str(f.header.contentType) == 'Content.PROGRAM':
+						if fs.fsType == Type.Fs.ROMFS and fs.cryptoType == Type.Crypto.BKTR and f.header.contentType == Type.Content.PROGRAM:
 							f.seek(0)
 							ncaHeader = NcaHeader()
 							ncaHeader.open(MemoryFile(f.read(0x400), Type.Crypto.XTS, uhx(Keys.get('header_key'))))
@@ -8104,7 +8104,7 @@ class ChromeNsp(Pfs0):
 		counter=0
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for pfs0 in nca:
 						for cnmt in pfs0:
 							cnmt.rewind()
@@ -8169,7 +8169,7 @@ class ChromeNsp(Pfs0):
 		cnmtnames=list()
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					cnmtnames.append(str(nca._path))
 		for file in cnmtnames:
 			DBdict=self.getDBdict(file,trans)
@@ -8184,7 +8184,7 @@ class ChromeNsp(Pfs0):
 		cnmtnames=list()
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					cnmtnames.append(str(nca._path))
 		content_number=len(cnmtnames)
 		if content_number>1:
@@ -8381,7 +8381,7 @@ class ChromeNsp(Pfs0):
 	def get_data_from_cnmt(self,cnmtname):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					if str(nca._path)==cnmtname:
 						crypto1=nca.header.getCryptoType()
 						crypto2=nca.header.getCryptoType2()
@@ -8503,7 +8503,7 @@ class ChromeNsp(Pfs0):
 		dict={}
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					if target==str(nca._path):
 						offset=nca.get_nacp_offset()
 						for f in nca:
@@ -8524,7 +8524,7 @@ class ChromeNsp(Pfs0):
 				target=str(entry['NcaId'])+'.nca'
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					if target==str(nca._path):
 						title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock('DLC',roman=True)
 						if ctype=='GAME':
@@ -8562,7 +8562,7 @@ class ChromeNsp(Pfs0):
 	def icon_info(self,files_list,buffer = 65536):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
 					tk=nca.header.titleKeyDec
 					for i in range(len(files_list)):
 						if str(nca._path) == files_list[i][0]:
@@ -9024,7 +9024,7 @@ class ChromeNsp(Pfs0):
 						origheader=headerlist[i][1]
 						listedhash=headerlist[i][2]
 						break
-				message=(str(f.header.titleId)+' - '+str(f.header.contentType));print(message);feed+=message+'\n'
+				message=(str(f.header.titleId)+' - '+f.header.contentType);print(message);feed+=message+'\n'
 				ncasize=f.header.size
 				t = tqdm(total=ncasize, unit='B', unit_scale=True, leave=False)
 				i=0

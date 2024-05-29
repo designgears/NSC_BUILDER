@@ -397,10 +397,10 @@ def decrypt_nax0(input,output=None,ofolder=None,relative_PATH=False):
 	else:
 		sz=ncaHeader.size
 		print(f'* {r_path} - Decryption Correct')
-		print(f'* NCA Type is {str(ncaHeader.contentType).replace("Content.","")}')		
+		print(f'* NCA Type is {ncaHeader.contentType.replace("Content.","")}')		
 		print(f'* NCA TitleID is {str(ncaHeader.titleId)}')	
 		print(f'* NCA size is {str(sq_tools.getSize(sz))}')					
-		if not str(ncaHeader.contentType)=='Content.META':		
+		if not ncaHeader.contentType==Type.Content.META:		
 			print(f'* Filename is {filename}')	
 		else:
 			filename=filename.replace('.nca','.cnmt.nca')
@@ -435,7 +435,7 @@ def dump_title(input_folder,output=None,ofolder=None,root_r_PATH=False):
 	title_name=None	
 	for e in File_DB:
 		dic=File_DB[e]
-		if dic['content_type']=='Content.CONTROL':
+		if dic['content_type']==Type.Content.CONTROL:
 			title_name=get_nsx_name(dic)
 			break		
 	cnmt_dict=get_cnmt_data(File_DB[meta_filename])
@@ -461,11 +461,11 @@ def return_nca_data(file_list):
 			first_chunk=crypto.decrypt(data)
 			ncaHeader = NcaHeader()
 			ncaHeader.open(MemoryFile(first_chunk, Type.Crypto.XTS, uhx(Keys.get('header_key'))))
-			# print(str(ncaHeader.contentType))
+			# print(ncaHeader.contentType)
 			if ncaHeader.magic not in [b'NCA3', b'NCA2']:		
 				pass
-			elif str(ncaHeader.contentType)=='Content.META':
-				if str(ncaHeader.contentType)=='Content.META':		
+			elif ncaHeader.contentType==Type.Content.META:
+				if ncaHeader.contentType==Type.Content.META:		
 					filename=filename.replace('.nca','.cnmt.nca')		
 					# meta_filename=filename
 					# meta_filepath=filepath
@@ -481,7 +481,7 @@ def return_nca_data(file_list):
 				'crypto1':ncaHeader.getCryptoType(),
 				'crypto2':ncaHeader.getCryptoType2()
 				}
-			print(f"{filename} - {ncaHeader.titleId} - {str(ncaHeader.contentType)} ({c}/{end})")	
+			print(f"{filename} - {ncaHeader.titleId} - {ncaHeader.contentType} ({c}/{end})")	
 			c+=1
 			ncaHeader.close()	
 		except:pass	
@@ -496,7 +496,7 @@ def scrape(reg_folder):
 	# print(File_DB.keys())
 	for e in File_DB:
 		dic=File_DB[e]
-		if str(dic['content_type'])=='Content.META':
+		if dic['content_type']==Type.Content.META:
 			get_cnmt_data	
 			cnmt_dict=get_cnmt_data(dic)			
 			ncadata=cnmt_dict['ncadata']

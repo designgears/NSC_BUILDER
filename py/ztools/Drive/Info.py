@@ -369,7 +369,7 @@ def read_nacp(path=None,TD=None,filter=None,file=None,feed='',roma=True):
 			if nca_name.endswith('.ncz') or nca_name.endswith('.nca'):
 				ncaHeader = NcaHeader()
 				ncaHeader.open(MemoryFile(remote.read_at(off1,0x400), Type.Crypto.XTS, uhx(Keys.get('header_key'))))
-				if 	str(ncaHeader.contentType) == 'Content.CONTROL':
+				if 	ncaHeader.contentType == Type.Content.CONTROL:
 					if count==0:
 						count+=1
 					else:
@@ -1080,7 +1080,7 @@ def print_nca_by_title(nca_name,ncatype,remote,files_list,feed=''):
 			ncaHeader.rewind()
 			size=ncaHeader.size
 			size_pr=sq_tools.getSize(size)
-			content=str(ncaHeader.contentType)
+			content=ncaHeader.contentType
 			content=content[8:]+": "
 			ncatype=sq_tools.getTypeFromCNMT(ncatype)
 			if ncatype != "Meta: ":
@@ -1101,7 +1101,7 @@ def actually_has_deltas(ncalist,remote,files_list):
 			ncaHeader = NcaHeader()
 			ncaHeader.open(MemoryFile(remote.read_at(off1,0x400), Type.Crypto.XTS, uhx(Keys.get('header_key'))))
 			ncaHeader.rewind()
-			if 	str(ncaHeader.contentType) == 'Content.DATA':
+			if 	ncaHeader.contentType == Type.Content.DATA:
 				if 	filename in ncalist:
 					vfragment="true"
 					break
@@ -1243,12 +1243,12 @@ def getsdkvertit(titid,remote,files_list):
 			ncaHeader.rewind()
 			nca_id=ncaHeader.titleId
 			if str(titid[:-3]).upper() == str(nca_id[:-3]).upper():
-				if 	str(ncaHeader.contentType) == 'Content.PROGRAM':
+				if 	ncaHeader.contentType == Type.Content.PROGRAM:
 					programSDKversion=str(ncaHeader.sdkVersion4)+'.'+str(ncaHeader.sdkVersion3)+'.'+str(ncaHeader.sdkVersion2)+'.'+str(ncaHeader.sdkVersion1)
 					break
-				elif str(ncaHeader.contentType) == 'Content.CONTROL' and controlSDKversion=='':
+				elif ncaHeader.contentType == Type.Content.CONTROL and controlSDKversion=='':
 					controlSDKversion=str(ncaHeader.sdkVersion4)+'.'+str(ncaHeader.sdkVersion3)+'.'+str(ncaHeader.sdkVersion2)+'.'+str(ncaHeader.sdkVersion1)
-				elif str(ncaHeader.contentType) == 'Content.PUBLIC_DATA' and dataSDKversion=='':
+				elif ncaHeader.contentType == Type.Content.PUBLIC_DATA and dataSDKversion=='':
 					dataSDKversion=str(ncaHeader.sdkVersion4)+'.'+str(ncaHeader.sdkVersion3)+'.'+str(ncaHeader.sdkVersion2)+'.'+str(ncaHeader.sdkVersion1)
 	if 	programSDKversion=='':
 		programSDKversion=controlSDKversion
