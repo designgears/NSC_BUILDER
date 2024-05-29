@@ -1901,8 +1901,8 @@ class Nca(File):
 								title=self.choose_name(title,ogname)
 								editor=self.choose_name(editor,ogeditor)
 							else:pass
-						title=re.sub(' +', ' ',title)
-						editor=re.sub(' +', ' ',editor)
+						title=re.sub(r' +', ' ',title)
+						editor=re.sub(r' +', ' ',editor)
 						return(title,editor,ediver,SupLg,regionstr[:-1],isdemo)
 				except:
 					pass

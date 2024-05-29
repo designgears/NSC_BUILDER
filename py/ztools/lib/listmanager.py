@@ -861,7 +861,7 @@ def calculate_name(filelist,romanize=True,ext='.xci'):
 	endname = re.sub(r'[òôóöø]', 'o', endname);endname = re.sub(r'[ÒÔÓÖØ]', 'O', endname)
 	endname = re.sub(r'[ùûúü]', 'u', endname);endname = re.sub(r'[ÙÛÚÜ]', 'U', endname)
 	endname = re.sub(r'[’]', "'", endname);endname = re.sub(r'[“”]', '"', endname)
-	endname = re.sub(' {3,}', ' ',endname);re.sub(' {2,}', ' ',endname);
+	endname = re.sub(r' {3,}', ' ',endname);re.sub(r' {2,}', ' ',endname);
 	try:
 		endname = endname.replace("( ", "(");endname = endname.replace(" )", ")")
 		endname = endname.replace("[ ", "[");endname = endname.replace(" ]", "]")

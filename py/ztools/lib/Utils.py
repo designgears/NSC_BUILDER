@@ -20,10 +20,10 @@ def memdump(data, length=16, message=''):
 	return '\n'.join(dump)
 
 def check_tkey(tkey):
-	return re.match('[a-fA-F0-9]{32}', tkey)
+	return re.match(r'[a-fA-F0-9]{32}', tkey)
 
 def check_tid(tid):
-	return re.match('0100[a-fA-F0-9]{12}', tid)
+	return re.match(r'0100[a-fA-F0-9]{12}', tid)
 
 def read_at(fp, off, len):
 	fp.seek(off)

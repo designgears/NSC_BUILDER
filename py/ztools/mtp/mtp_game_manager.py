@@ -554,7 +554,7 @@ def sanitize(filename,roma=True):
 	filename = re.sub(r'[òôóöø]', 'o', filename);filename = re.sub(r'[ÒÔÓÖØ]', 'O', filename)
 	filename = re.sub(r'[ùûúü]', 'u', filename);filename = re.sub(r'[ÙÛÚÜ]', 'U', filename)
 	filename = re.sub(r'[’]', "'", filename);filename = re.sub(r'[“”]', '"', filename)
-	filename = re.sub(' {3,}', ' ',filename);re.sub(' {2,}', ' ',filename);
+	filename = re.sub(r' {3,}', ' ',filename);re.sub(r' {2,}', ' ',filename);
 	filename = filename.replace("( ", "(");filename = filename.replace(" )", ")")
 	filename = filename.replace("[ ", "[");filename = filename.replace(" ]", "]")
 	filename = filename.replace("[ (", "[(");filename = filename.replace(") ]", ")]")

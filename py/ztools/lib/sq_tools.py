@@ -484,7 +484,7 @@ def verify_nkeys(fileName):
 	checkkeys = {}
 	with open(fileName, encoding="utf8") as f:
 		for line in f.readlines():
-			r = re.match('\s*([a-z0-9_]+)\s*=\s*([A-F0-9]+)\s*', line, re.I)
+			r = re.match(r'\s*([a-z0-9_]+)\s*=\s*([A-F0-9]+)\s*', line, re.I)
 			if r:
 				checkkeys[r.group(1)] = r.group(2)
 	print("")
@@ -785,7 +785,7 @@ def verify_nkeys_startup(fileName):
 	startup=False
 	with open(fileName, encoding="utf8") as f:
 		for line in f.readlines():
-			r = re.match('\s*([a-z0-9_]+)\s*=\s*([A-F0-9]+)\s*', line, re.I)
+			r = re.match(r'\s*([a-z0-9_]+)\s*=\s*([A-F0-9]+)\s*', line, re.I)
 			if r:
 				checkkeys[r.group(1)] = r.group(2)
 	print("")

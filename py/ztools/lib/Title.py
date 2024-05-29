@@ -299,7 +299,7 @@ class Title:
 		return self.baseId or '0000000000000000'
 
 	def setRegion(self, region):
-		if re.match('[A-Z]{2}', region):
+		if re.match(r'[A-Z]{2}', region):
 			self.region = region
 		
 	def getRegion(self):
@@ -311,7 +311,7 @@ class Title:
 		self.name = name
 		
 		if self.isDemo == None:
-			if re.match('.*\s[\(\[]?Demo[\)\]]?\s*$', self.name, re.I) or re.match('.*\s[\(\[]?Demo[\)\]]?\s+.*$', self.name, re.I):
+			if re.match(r'.*\s[\(\[]?Demo[\)\]]?\s*$', self.name, re.I) or re.match(r'.*\s[\(\[]?Demo[\)\]]?\s+.*$', self.name, re.I):
 				self.isDemo = True
 			else:
 				self.isDemo = False
@@ -552,13 +552,13 @@ class Title:
 							self.iconUrl = _json["applications"][0]['image_url']
 
 					if "catch_copy" in _json:
-						intro = re.sub('(?<!\n)\n(?!\n)', ' ',_json["catch_copy"])
-						intro = re.sub('  ', ' ', intro)
+						intro = re.sub(r'(?<!\n)\n(?!\n)', ' ',_json["catch_copy"])
+						intro = re.sub(r'  ', ' ', intro)
 						self.intro = intro
 
 					if "description" in _json:
-						desc = re.sub('(?<!\n)\n(?!\n)', ' ',_json["description"])
-						desc = re.sub('  ', ' ', desc)
+						desc = re.sub(r'(?<!\n)\n(?!\n)', ' ',_json["description"])
+						desc = re.sub(r'  ', ' ', desc)
 						self.description = desc
 			
 
@@ -636,7 +636,7 @@ class Title:
 								self.ratingContent = esrbcontent
 
 							if "number_of_players" in infoJson:
-								self.numberOfPlayers = re.sub('[^0-9]', '', infoJson["number_of_players"])
+								self.numberOfPlayers = re.sub(r'[^0-9]', '', infoJson["number_of_players"])
 
 							if "esrb_rating_ref" in infoJson:
 								if "esrb_rating" in infoJson["esrb_rating_ref"]:
@@ -678,12 +678,12 @@ class Title:
 										details = details.decode(formatter=None)
 									except:
 										details = details.decode()
-									details = re.sub('<[^<]+?>', '', details).strip()
-									details = re.sub(' +', ' ', details)
-									details = re.sub('\n ', '\n', details)
-									details = re.sub('\n\n+', '\n\n', details)
-									details = re.sub('(?<!\n)\n(?!\n)', ' ',details)
-									details = re.sub('  ', ' ', details)
+									details = re.sub(r'<[^<]+?>', '', details).strip()
+									details = re.sub(r' +', ' ', details)
+									details = re.sub(r'\n ', '\n', details)
+									details = re.sub(r'\n\n+', '\n\n', details)
+									details = re.sub(r'(?<!\n)\n(?!\n)', ' ',details)
+									details = re.sub(r'  ', ' ', details)
 									self.intro = details
 								except Exception as e:
 									pass
@@ -694,12 +694,12 @@ class Title:
 									details = details.decode(formatter=None)
 								except:
 									details = details.decode()
-								details = re.sub('<[^<]+?>', '', details).strip()
-								details = re.sub(' +', ' ', details)
-								details = re.sub('\n ', '\n', details)
-								details = re.sub('\n\n+', '\n\n', details)
-								details = re.sub('(?<!\n)\n(?!\n)', ' ',details)
-								details = re.sub('  ', ' ', details)
+								details = re.sub(r'<[^<]+?>', '', details).strip()
+								details = re.sub(r' +', ' ', details)
+								details = re.sub(r'\n ', '\n', details)
+								details = re.sub(r'\n\n+', '\n\n', details)
+								details = re.sub(r'(?<!\n)\n(?!\n)', ' ',details)
+								details = re.sub(r'  ', ' ', details)
 								self.description = details
 				#else:
 					#f = open("missing.txt", 'a', encoding="utf8")

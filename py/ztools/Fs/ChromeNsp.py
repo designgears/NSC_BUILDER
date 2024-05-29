@@ -233,7 +233,7 @@ class ChromeNsp(Pfs0):
 		return (1 if self.hasValidTicket and self.hasValidTicket == True else 0)
 
 	def setId(self, id):
-		if re.match('[A-F0-9]{16}', id, re.I):
+		if re.match(r'[A-F0-9]{16}', id, re.I):
 			self.titleId = id
 
 	def getId(self):
@@ -259,13 +259,13 @@ class ChromeNsp(Pfs0):
 		self.path = path
 		self.version = '0'
 
-		z = re.match('.*\[([a-zA-Z0-9]{16})\].*', path, re.I)
+		z = re.match(r'.*\[([a-zA-Z0-9]{16})\].*', path, re.I)
 		if z:
 			self.titleId = z.groups()[0].upper()
 		else:
 			self.titleId = None
 
-		z = re.match('.*\[v([0-9]+)\].*', path, re.I)
+		z = re.match(r'.*\[v([0-9]+)\].*', path, re.I)
 		if z:
 			self.version = z.groups()[0]
 
@@ -314,8 +314,8 @@ class ChromeNsp(Pfs0):
 		return True
 
 	def cleanFilename(self, s):
-		#s = re.sub('\s+\Demo\s*', ' ', s, re.I)
-		s = re.sub('\s*\[DLC\]\s*', '', s, re.I)
+		#s = re.sub(r'\s+\Demo\s*', ' ', s, re.I)
+		s = re.sub(r'\s*\[DLC\]\s*', '', s, re.I)
 		s = re.sub(r'[\/\\\:\*\?\"\<\>\|\.\s™©®()\~]+', ' ', s)
 		return s.strip()
 

@@ -52,7 +52,7 @@ def loadTitleBuffer(buffer, silent = False):
 			continue
 		if firstLine:
 			firstLine = False
-			if re.match('[A-Za-z\|\s]+', line, re.I):
+			if re.match(r'[A-Za-z\|\s]+', line, re.I):
 				map = line.split('|')
 				
 				i = 0
