@@ -232,7 +232,7 @@ class Nsp(Pfs0):
 		return (1 if self.hasValidTicket and self.hasValidTicket == True else 0)
 
 	def setId(self, id):
-		if re.match('[A-F0-9]{16}', id, re.I):
+		if re.match(r'[A-F0-9]{16}', id, re.I):
 			self.titleId = id
 
 	def getId(self):
@@ -258,13 +258,13 @@ class Nsp(Pfs0):
 		self.path = path
 		self.version = '0'
 
-		z = re.match('.*\[([a-zA-Z0-9]{16})\].*', path, re.I)
+		z = re.match(r'.*\[([a-zA-Z0-9]{16})\].*', path, re.I)
 		if z:
 			self.titleId = z.groups()[0].upper()
 		else:
 			self.titleId = None
 
-		z = re.match('.*\[v([0-9]+)\].*', path, re.I)
+		z = re.match(r'.*\[v([0-9]+)\].*', path, re.I)
 		if z:
 			self.version = z.groups()[0]
 
@@ -314,7 +314,7 @@ class Nsp(Pfs0):
 
 	def cleanFilename(self, s):
 		#s = re.sub('\s+\Demo\s*', ' ', s, re.I)
-		s = re.sub('\s*\[DLC\]\s*', '', s, re.I)
+		s = re.sub(r'\s*\[DLC\]\s*', '', s, re.I)
 		s = re.sub(r'[\/\\\:\*\?\"\<\>\|\.\s™©®()\~]+', ' ', s)
 		return s.strip()
 
@@ -406,7 +406,7 @@ class Nsp(Pfs0):
 				break
 		old_tk_name=name		
 		for nca in self:
-			if type(nca) == Fs.Nca and str(nca.header.contentType) == 'Content.META':
+			if type(nca) == Fs.Nca and str(nca.header.contentType) == Type.Content.META:
 				crypto1=nca.header.getCryptoType()
 				crypto2=nca.header.getCryptoType2()
 				if crypto2>crypto1:
@@ -439,7 +439,7 @@ class Nsp(Pfs0):
 		ctrl_list=list()
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					ctrl_list.append(nca._path)
 				else:
 					pass
@@ -448,7 +448,7 @@ class Nsp(Pfs0):
 	def patch_netlicense(self,item=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					if item == False or nca._path == item:
 						check=nca.patch_netlicense()
 						return check
@@ -456,7 +456,7 @@ class Nsp(Pfs0):
 	def reb_lv_hashes(self,item=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					if item == False or nca._path == item:
 						print('-------------------------------------------------')
 						print('Get Current IVFC level data:')
@@ -467,7 +467,7 @@ class Nsp(Pfs0):
 	def set_lv_hash(self,j,leveldata,item=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					if item == False or nca._path == item:
 						print('-------------------------------------------------')
 						print('Rebuild hashes for IVFC level '+str(j)+':')
@@ -477,7 +477,7 @@ class Nsp(Pfs0):
 	def set_lvsuperhash(self,leveldata,superhashoffset,item=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					if item == False or nca._path == item:
 						print('-------------------------------------------------')
 						print('Rebuild IVFC superhash:')
@@ -487,7 +487,7 @@ class Nsp(Pfs0):
 	def ctrl_upd_hblock_hash(self,item=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					if item == False or nca._path == item:
 						print('-------------------------------------------------')
 						print('Rebuild nca hash-table:')
@@ -575,7 +575,7 @@ class Nsp(Pfs0):
 		T_='UNKNOWN';
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							content_type_cnmt=str(cnmt._path)
@@ -759,7 +759,7 @@ class Nsp(Pfs0):
 	def copy_nca_control(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -778,7 +778,7 @@ class Nsp(Pfs0):
 	def copy_nca_meta(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -797,7 +797,7 @@ class Nsp(Pfs0):
 	def copy_pfs0_meta(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						nca.rewind()
 						f.rewind()
@@ -819,7 +819,7 @@ class Nsp(Pfs0):
 	def copy_cnmt(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for file in f:
 							nca.rewind()
@@ -844,7 +844,7 @@ class Nsp(Pfs0):
 	def copy_nacp(self,ofolder,buffer=32768):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					ncaname =  str(nca._path)[:-4]+'_nca'
 					ncafolder = os.path.join(ofolder,ncaname)
 					filename = 'control.nacp'
@@ -996,7 +996,7 @@ class Nsp(Pfs0):
 		feed=''
 		for nca in self:
 			if type(nca) == Fs.Nca and nca.header.getRightsId() == 0:
-				if 	str(nca.header.contentType) == 'Content.PROGRAM':
+				if nca.header.contentType == Type.Content.PROGRAM:
 					for i in range(len(files_list)):
 						if str(nca._path) == files_list[i][0]:
 							offset=files_list[i][1]
@@ -1021,7 +1021,7 @@ class Nsp(Pfs0):
 									print(n)
 									return n
 			if type(nca) == Fs.Nca and nca.header.getRightsId() != 0:
-				if 	str(nca.header.contentType) == 'Content.PROGRAM':
+				if nca.header.contentType == Type.Content.PROGRAM:
 					correct, tkey = self.verify_nca_key(str(nca._path))
 					if correct == True:
 						crypto1=nca.header.getCryptoType()
@@ -1121,7 +1121,7 @@ class Nsp(Pfs0):
 		# print(files_list)
 		for nca in self:
 			if type(nca) == Fs.Nca:
-				if 	str(nca.header.contentType) == 'Content.PROGRAM':
+				if nca.header.contentType == Type.Content.PROGRAM:
 					if nca.header.getRightsId() == 0:
 						decKey=nca.header.titleKeyDec
 					if nca.header.getRightsId() != 0:
@@ -1220,7 +1220,7 @@ class Nsp(Pfs0):
 				# from nutFs.Nca import Nca as nca3type
 				for nca in self:
 					if type(nca) == Fs.Nca:
-						if 	str(nca.header.contentType) == 'Content.PROGRAM':
+						if nca.header.contentType == Type.Content.PROGRAM:
 							# sections = []
 							# for i in range(2):
 								# sections.append(Section(nca))
@@ -1355,7 +1355,7 @@ class Nsp(Pfs0):
 	def copy_nca_manual(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.MANUAL':
+				if 	nca.header.contentType == Type.Content.MANUAL:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -1374,7 +1374,7 @@ class Nsp(Pfs0):
 	def copy_nca_program(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.PROGRAM':
+				if nca.header.contentType == Type.Content.PROGRAM:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -1393,7 +1393,7 @@ class Nsp(Pfs0):
 	def copy_nca_data(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if nca.header.contentType == Type.Content.DATA:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -1412,7 +1412,7 @@ class Nsp(Pfs0):
 	def copy_nca_pdata(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.PUBLIC_DATA':
+				if nca.header.contentType == Type.Content.PUBLIC_DATA:
 					nca.rewind()
 					filename =  str(nca._path)
 					outfolder = str(ofolder)+'/'
@@ -1540,7 +1540,7 @@ class Nsp(Pfs0):
 	def copy_ndata(self,ofolder,buffer):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if nca.header.contentType == Type.Content.DATA:
 					for f in nca:
 						for file in f:
 							nca.rewind()
@@ -1793,7 +1793,7 @@ class Nsp(Pfs0):
 	def exist_control(self):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					return 'TRUE'
 		return 'FALSE'
 
@@ -1835,7 +1835,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			size1=0;size2=0;size3=0
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -2157,7 +2157,7 @@ class Nsp(Pfs0):
 		vfragment="false"
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if nca.header.contentType == Type.Content.DATA:
 					for f in nca:
 							for file in f:
 								filename = str(file._path)
@@ -2228,7 +2228,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			size1=0;size2=0;size3=0
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -2327,7 +2327,7 @@ class Nsp(Pfs0):
 	def read_nacp(self,feed='',gui=False,roma=True):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					offset=nca.get_nacp_offset()
 					for f in nca:
 						f.seek(offset)
@@ -2440,7 +2440,7 @@ class Nsp(Pfs0):
 		feed=''
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -2471,7 +2471,7 @@ class Nsp(Pfs0):
 							message='Table offset = '+ str(hx((offset+0x20).to_bytes(2, byteorder='big')));print(message);feed+=message+'\n'
 							message='Number of content = '+ str(content_entries);print(message);feed+=message+'\n'
 							message='Number of meta entries = '+ str(meta_entries);print(message);feed+=message+'\n'
-							message='Application id\Patch id = ' + (str(hx(original_ID.to_bytes(8, byteorder='big')))[2:-1]).upper();print(message);feed+=message+'\n'
+							message=r'Application id\Patch id = ' + (str(hx(original_ID.to_bytes(8, byteorder='big')))[2:-1]).upper();print(message);feed+=message+'\n'
 							content_name=str(cnmt._path)
 							content_name=content_name[:-22]
 							if content_name == 'AddOnContent':
@@ -2741,7 +2741,7 @@ class Nsp(Pfs0):
 	def get_cnmt_verID(self):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -2850,7 +2850,7 @@ class Nsp(Pfs0):
 							self.change_mkrev_nca(target, keypatch)
 					target.close()
 					if metapatch == 'true':
-						if 	str(nca.header.contentType) == 'Content.META':
+						if nca.header.contentType == Type.Content.META:
 							for pfs0 in nca:
 								for cnmt in pfs0:
 									check=str(cnmt._path)
@@ -2900,7 +2900,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if nca.header.contentType == Type.Content.DATA:
 					for f in nca:
 							for file in f:
 								filename = str(file._path)
@@ -2980,7 +2980,7 @@ class Nsp(Pfs0):
 						target.close()
 						#///////////////////////////////////
 					if metapatch == 'true':
-						if 	str(nca.header.contentType) == 'Content.META':
+						if nca.header.contentType == Type.Content.META:
 							for pfs0 in nca:
 								for cnmt in pfs0:
 									check=str(cnmt._path)
@@ -3027,7 +3027,7 @@ class Nsp(Pfs0):
 						self.change_mkrev_nca(target, keypatch)
 				target.close()
 				if metapatch == 'true':
-					if 	str(nca.header.contentType) == 'Content.META':
+					if nca.header.contentType == Type.Content.META:
 						for pfs0 in nca:
 							for cnmt in pfs0:
 								check=str(cnmt._path)
@@ -3052,7 +3052,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if nca.header.contentType == Type.Content.DATA:
 					for f in nca:
 							for file in f:
 								filename = str(file._path)
@@ -3088,7 +3088,7 @@ class Nsp(Pfs0):
 							self.change_mkrev_nca(target, keypatch)
 					target.close()
 					if metapatch == 'true':
-						if 	str(nca.header.contentType) == 'Content.META':
+						if nca.header.contentType == Type.Content.META:
 							for pfs0 in nca:
 								for cnmt in pfs0:
 									check=str(cnmt._path)
@@ -3106,7 +3106,7 @@ class Nsp(Pfs0):
 	def splitter_read(self,ofolder,buffer,pathend):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -3250,7 +3250,7 @@ class Nsp(Pfs0):
 		if nca_name=='false':
 			for nca in self:
 				if type(nca) == Nca:
-					if 	str(nca.header.contentType) == 'Content.META':
+					if nca.header.contentType == Type.Content.META:
 						for f in nca:
 							for cnmt in f:
 								cnmt.rewind()
@@ -3317,7 +3317,7 @@ class Nsp(Pfs0):
 			if type(nca) == Nca:
 				nca_id=nca.header.titleId
 				if str(titid[:-3]).upper() == str(nca_id[:-3]).upper():
-					if 	str(nca.header.contentType) == 'Content.PROGRAM':
+					if nca.header.contentType == Type.Content.PROGRAM:
 						programSDKversion=nca.get_sdkversion()
 						break
 		if 	programSDKversion=='':
@@ -3325,7 +3325,7 @@ class Nsp(Pfs0):
 				if type(nca) == Nca:
 					nca_id=nca.header.titleId
 					if str(titid[:-3]).upper() == str(nca_id[:-3]).upper():
-						if 	str(nca.header.contentType) == 'Content.CONTROL':
+						if nca.header.contentType == Type.Content.CONTROL:
 							programSDKversion=nca.get_sdkversion()
 							break
 		if 	programSDKversion=='':
@@ -3333,7 +3333,7 @@ class Nsp(Pfs0):
 				if type(nca) == Nca:
 					nca_id=nca.header.titleId
 					if str(titid[:-3]).upper() == str(nca_id[:-3]).upper():
-						if 	str(nca.header.contentType) == 'Content.PUBLIC_DATA':
+						if nca.header.contentType == Type.Content.PUBLIC_DATA:
 							dataSDKversion = nca.get_sdkversion()
 							break
 		return 	programSDKversion,dataSDKversion
@@ -3342,7 +3342,7 @@ class Nsp(Pfs0):
 		feed=''
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -3600,7 +3600,7 @@ class Nsp(Pfs0):
 		if nca_name=='false' and title == 'DLC'	:
 			for nca in self:
 				if type(nca) == Nca:
-					if 	str(nca.header.contentType) == 'Content.META':
+					if nca.header.contentType == Type.Content.META:
 						for f in nca:
 							for cnmt in f:
 								cnmt.rewind()
@@ -3633,7 +3633,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			if type(nca) == Nca:
 				if nca_name == str(nca._path):
-					if 	str(nca.header.contentType) == 'Content.CONTROL':
+					if nca.header.contentType == Type.Content.CONTROL:
 						title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock(title,roman)
 						return(title,editor,ediver,SupLg,regionstr,isdemo)
 		regionstr="0|0|0|0|0|0|0|0|0|0|0|0|0|0"
@@ -3683,7 +3683,7 @@ class Nsp(Pfs0):
 
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							content_name=str(cnmt._path)
@@ -3818,7 +3818,7 @@ class Nsp(Pfs0):
 						target.close()
 						#///////////////////////////////////
 					if metapatch == 'true':
-						if 	str(nca.header.contentType) == 'Content.META':
+						if nca.header.contentType == Type.Content.META:
 							for pfs0 in nca:
 								for cnmt in pfs0:
 									check=str(cnmt._path)
@@ -4003,7 +4003,7 @@ class Nsp(Pfs0):
 	def get_title(self,baseid,roman=True,tag=False):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if 	nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -4046,7 +4046,8 @@ class Nsp(Pfs0):
 		title='DLC'
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if 	nca.header.contentType == Type.Content.CONTROL:
+					print(baseid)
 					title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock(title,roman)
 					return(title)
 
@@ -4054,7 +4055,7 @@ class Nsp(Pfs0):
 		languetag=False
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -4084,7 +4085,7 @@ class Nsp(Pfs0):
 		title='DLC'
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock(title)
 					languetag='('
 					if ("US (eng)" in SupLg) or ("UK (eng)" in SupLg):
@@ -4142,7 +4143,7 @@ class Nsp(Pfs0):
 				if str(vfragment)=="true":
 					continue
 				fileSizes.append(nca.header.size)
-				if str(nca.header.contentType) == 'Content.META' and inc_xml==True:
+				if str(nca.header.contentType) == Type.Content.META and inc_xml==True:
 					xmlname=nca._path
 					xmlname=xmlname[:-3]+'xml'
 					xmlpath = os.path.join(ofolder, xmlname)
@@ -4226,7 +4227,7 @@ class Nsp(Pfs0):
 							break
 
 		for nca in self:
-			if type(nca) == Nca and str(nca.header.contentType) == 'Content.META':
+			if type(nca) == Nca and str(nca.header.contentType) == Type.Content.META:
 				nca.rewind()
 				crypto1=nca.header.getCryptoType()
 				crypto2=nca.header.getCryptoType2()
@@ -4264,7 +4265,7 @@ class Nsp(Pfs0):
 				if metapatch == 'true':
 					target = Fs.Nca(filepath, 'r+b')
 					target.rewind()
-					if 	str(target.header.contentType) == 'Content.META':
+					if 	str(target.header.contentType) == Type.Content.META:
 						for pfs0 in target:
 							for cnmt in pfs0:
 								check=str(cnmt._path)
@@ -4297,7 +4298,7 @@ class Nsp(Pfs0):
 				if str(vfragment)=="true":
 					continue
 				contentlist.append(nca._path)
-				if str(nca.header.contentType) == 'Content.META':
+				if str(nca.header.contentType) == Type.Content.META:
 					xmlname=nca._path
 					xmlname=xmlname[:-3]+'xml'
 					contentlist.append(xmlname)
@@ -4321,7 +4322,7 @@ class Nsp(Pfs0):
 				if str(vfragment)=="true":
 					continue
 				totSize=totSize+nca.header.size
-				if str(nca.header.contentType) == 'Content.META':
+				if str(nca.header.contentType) == Type.Content.META:
 					xmlname=nca._path
 					xmlname=xmlname[:-3]+'xml'
 					xmlpath = os.path.join(ofolder, xmlname)
@@ -4373,7 +4374,7 @@ class Nsp(Pfs0):
 		outf.close()
 		for nca in self:
 			vfragment="false"
-			if type(nca) == Nca and (str(nca.header.contentType) != 'Content.META'):
+			if type(nca) == Nca and (str(nca.header.contentType) != Type.Content.META):
 				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
 					for f in nca:
 						for file in f:
@@ -4470,7 +4471,7 @@ class Nsp(Pfs0):
 						if not data:
 							break
 				outf.close()
-			elif type(nca) == Nca and str(nca.header.contentType) == 'Content.META':
+			elif type(nca) == Nca and str(nca.header.contentType) == Type.Content.META:
 				filename = str(nca._path)
 				filepath = os.path.join(outfolder, filename)
 				xml_file=filepath[:-3]+'xml'
@@ -4652,7 +4653,7 @@ class Nsp(Pfs0):
 	def addtodb(self,ofile,dbtype,roman=True):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -5193,7 +5194,7 @@ class Nsp(Pfs0):
 
 		for nca in self:
 			vfragment="false"
-			if type(nca) == Nca and (str(nca.header.contentType) != 'Content.META'):
+			if type(nca) == Nca and (str(nca.header.contentType) != Type.Content.META):
 				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
 					for f in nca:
 						for file in f:
@@ -5303,7 +5304,7 @@ class Nsp(Pfs0):
 						if not data:
 							break
 				outf.close()
-			elif type(nca) == Nca and str(nca.header.contentType) == 'Content.META':
+			elif type(nca) == Nca and str(nca.header.contentType) == Type.Content.META:
 				nca.rewind()
 				crypto1=nca.header.getCryptoType()
 				crypto2=nca.header.getCryptoType2()
@@ -5354,7 +5355,7 @@ class Nsp(Pfs0):
 				if metapatch == 'true':
 					target = Fs.Nca(filepath, 'r+b')
 					target.rewind()
-					if 	str(target.header.contentType) == 'Content.META':
+					if 	str(target.header.contentType) == Type.Content.META:
 						for pfs0 in target:
 							for cnmt in pfs0:
 								check=str(cnmt._path)
@@ -5587,7 +5588,7 @@ class Nsp(Pfs0):
 	def metapatcher(self,number):
 		for nca in self:
 			if type(nca) == Nca:
-				if str(nca.header.contentType) == 'Content.META':
+				if str(nca.header.contentType) == Type.Content.META:
 					filename=nca
 					try:
 						f = Fs.Nca(filename, 'r+b')
@@ -5866,7 +5867,7 @@ class Nsp(Pfs0):
 			vfragment=False
 			for nca in self:
 				if type(nca) == Nca:
-					if 	str(nca.header.contentType) == 'Content.DATA':
+					if nca.header.contentType == Type.Content.DATA:
 						try:
 							for f in nca:
 									for file in f:
@@ -5889,7 +5890,7 @@ class Nsp(Pfs0):
 		self.rewind()
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -6067,7 +6068,7 @@ class Nsp(Pfs0):
 		vfragment=False
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.DATA':
+				if nca.header.contentType == Type.Content.DATA:
 					for f in nca:
 							for file in f:
 								filename = str(file._path)
@@ -6084,7 +6085,7 @@ class Nsp(Pfs0):
 			completefilelist.append(str(file._path))
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					crypto1=nca.header.getCryptoType()
 					crypto2=nca.header.getCryptoType2()
 					if crypto1 == 2:
@@ -6298,7 +6299,7 @@ class Nsp(Pfs0):
 			completefilelist.append(str(file._path))
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					crypto1=nca.header.getCryptoType()
 					crypto2=nca.header.getCryptoType2()
 					if crypto1 == 2:
@@ -6310,6 +6311,7 @@ class Nsp(Pfs0):
 						keygen=nca.header.getCryptoType2()
 					ncalist=list()
 					for f in nca:
+						
 						for cnmt in f:
 							nca.rewind()
 							f.rewind()
@@ -6444,7 +6446,7 @@ class Nsp(Pfs0):
 		completefilelist=list()
 		for file in self:
 			if type(file) == Nca:
-				if 	str(file.header.contentType) != 'Content.META' and str(file.header.contentType) != 'Content.CONTROL':
+				if 	str(file.header.contentType) != Type.Content.META and str(file.header.contentType) != 'Content.CONTROL':
 					continue
 				else:
 					completefilelist.append(str(file._path))
@@ -6455,7 +6457,7 @@ class Nsp(Pfs0):
 		print (completefilelist)
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					crypto1=nca.header.getCryptoType()
 					crypto2=nca.header.getCryptoType2()
 					if crypto1 == 2:
@@ -6615,7 +6617,7 @@ class Nsp(Pfs0):
 							fp.flush()
 						if not data:
 							break
-					if str(file.header.contentType) == 'Content.META':
+					if str(file.header.contentType) == Type.Content.META:
 						target=str(file._path)
 						xmlname=target[:-3]+'xml'
 						t.write(tabs+'- Appending: ' + xmlname)
@@ -6834,7 +6836,7 @@ class Nsp(Pfs0):
 							if keypatch < file.header.getCryptoType2():
 								encKeyBlock,crypto1,crypto2=self.get_new_cryptoblock(file, keypatch,encKeyBlock,t)
 						newheader=self.get_newheader(file,encKeyBlock,crypto1,crypto2,hcrypto,gc_flag)
-					if 	str(file.header.contentType) != 'Content.META':
+					if 	str(file.header.contentType) != Type.Content.META:
 						i=0
 						sha=sha256()
 						fp = open(outf, 'ab')
@@ -6915,7 +6917,7 @@ class Nsp(Pfs0):
 						#t.write(tabs+'new hash: '+sha)
 						#t.write(tabs+'new name: '+newname)
 						fp.close()
-					elif str(file.header.contentType) == 'Content.META':
+					elif str(file.header.contentType) == Type.Content.META:
 						metaname = str(file._path)
 						dir=os.path.dirname(os.path.abspath(outf))
 						metafile=os.path.join(dir, metaname)
@@ -6992,7 +6994,7 @@ class Nsp(Pfs0):
 						if metapatch == 'true' or keypatch != 'false':
 							target = Fs.Nca(metafile, 'r+b')
 							target.rewind()
-							if 	str(target.header.contentType) == 'Content.META':
+							if 	str(target.header.contentType) == Type.Content.META:
 								for pfs0 in target:
 									for cnmt in pfs0:
 										check=str(cnmt._path)
@@ -7180,7 +7182,7 @@ class Nsp(Pfs0):
 							if keypatch < ncztype.header.getCryptoType2():
 								encKeyBlock,crypto1,crypto2=self.get_new_cryptoblock(ncztype, keypatch,encKeyBlock,t)
 						newheader=self.get_newheader(ncztype,encKeyBlock,crypto1,crypto2,hcrypto,gc_flag)
-					if 	str(ncztype.header.contentType) != 'Content.META':
+					if 	str(ncztype.header.contentType) != Type.Content.META:
 						i=0
 						sha=sha256()
 						t.write('- Appending decompressed {}'.format(str(ncztype._path)))
@@ -7254,7 +7256,7 @@ class Nsp(Pfs0):
 			completefilelist.append(str(file._path))
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					crypto1=nca.header.getCryptoType()
 					crypto2=nca.header.getCryptoType2()
 					if crypto1 == 2:
@@ -8516,7 +8518,7 @@ class Nsp(Pfs0):
 				# message=(tabs+cert_message);print(message);feed+=message+'\n'
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
@@ -8768,7 +8770,7 @@ class Nsp(Pfs0):
 		ncalist=list()
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					if nca._path == ncameta:
 						for f in nca:
 							for cnmt in f:
@@ -8799,7 +8801,7 @@ class Nsp(Pfs0):
 										unknown = cnmt.read(0x1)
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					if nca._path == ncameta:
 						crypto1=nca.header.getCryptoType()
 						crypto2=nca.header.getCryptoType2()
@@ -9129,7 +9131,7 @@ class Nsp(Pfs0):
 		counter=0
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for pfs0 in nca:
 						for cnmt in pfs0:
 							cnmt.rewind()
@@ -9404,7 +9406,7 @@ class Nsp(Pfs0):
 		cnmtnames=list()
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					cnmtnames.append(str(nca._path))
 		for file in cnmtnames:
 			DBdict=self.getDBdict(file,trans)
@@ -9419,7 +9421,7 @@ class Nsp(Pfs0):
 		cnmtnames=list()
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					cnmtnames.append(str(nca._path))
 		content_number=len(cnmtnames)
 		if content_number>1:
@@ -9661,7 +9663,7 @@ class Nsp(Pfs0):
 	def get_data_from_cnmt(self,cnmtname):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					if str(nca._path)==cnmtname:
 						crypto1=nca.header.getCryptoType()
 						crypto2=nca.header.getCryptoType2()
@@ -9774,7 +9776,7 @@ class Nsp(Pfs0):
 		dict={}
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					if target==str(nca._path):
 						offset=nca.get_nacp_offset()
 						for f in nca:
@@ -9857,7 +9859,7 @@ class Nsp(Pfs0):
 				target=str(entry['NcaId'])+'.nca'
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					if target==str(nca._path):
 						title,editor,ediver,SupLg,regionstr,isdemo=nca.get_langueblock('DLC',roman=True)
 						if ctype=='GAME':
@@ -9895,7 +9897,7 @@ class Nsp(Pfs0):
 	def icon_info(self,files_list,buffer = 65536):
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.CONTROL':
+				if nca.header.contentType == Type.Content.CONTROL:
 					tk=nca.header.titleKeyDec
 					for i in range(len(files_list)):
 						if str(nca._path) == files_list[i][0]:
@@ -10431,7 +10433,7 @@ class Nsp(Pfs0):
 		fwver=0;unique=None
 		for nca in self:
 			if type(nca) == Nca:
-				if 	str(nca.header.contentType) == 'Content.META':
+				if nca.header.contentType == Type.Content.META:
 					for f in nca:
 						for cnmt in f:
 							nca.rewind()
