@@ -154,7 +154,7 @@ class Pfs0(BaseFs):
 			Print.info('Table offset = '+ str(hx((offset+0x20).to_bytes(2, byteorder='big'))))
 			Print.info('number of content = '+ str(content_entries))
 			Print.info('number of meta entries = '+ str(meta_entries))
-			Print.info('Application id\Patch id = ' + str(hx(original_ID.to_bytes(8, byteorder='big'))))
+			Print.info(r'Application id\Patch id = ' + str(hx(original_ID.to_bytes(8, byteorder='big'))))
 			Print.info('RequiredSystemVersion = ' + str(min_sversion))
 			cnmt.rewind()
 			cnmt.seek(0x20+offset)
