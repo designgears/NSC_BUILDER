@@ -3803,7 +3803,6 @@ if __name__ == '__main__':
 						for line in f:
 							fp=line.strip()
 							filelist.append(fp)
-
 					'''
 					for file in filelist:
 						print(file)
