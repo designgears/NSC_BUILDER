@@ -5826,15 +5826,15 @@ if __name__ == '__main__':
 		# ...................................................
 		# Change Required System Version in an nca file
 		# ...................................................
-		# if args.patchversion:
-		# 	for input in args.patchversion:
-		# 		try:
-		# 			number = int(input)
-		# 			break
-		# 		except BaseException as e:
-		# 			Print.error('Exception: ' + str(e))
-		# 	else:
-		number = 336592896
+		if args.patchversion:
+			for input in args.patchversion:
+				try:
+					number = int(input)
+					break
+				except BaseException as e:
+					Print.error('Exception: ' + str(e))
+			else:
+				number = 336592896
 		if args.set_cnmt_RSV:
 			for filename in args.set_cnmt_RSV:
 				if filename.endswith('.nca'):
