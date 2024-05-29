@@ -4134,7 +4134,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+				if (delta == False) and (str(nca.header.contentType) == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4289,7 +4289,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+				if (delta == False) and (str(nca.header.contentType) == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4313,7 +4313,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca:
-				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+				if (delta == False) and (str(nca.header.contentType) == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -4375,7 +4375,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca and (str(nca.header.contentType) != Type.Content.META):
-				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+				if (delta == False) and (str(nca.header.contentType) == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -5195,7 +5195,7 @@ class Nsp(Pfs0):
 		for nca in self:
 			vfragment="false"
 			if type(nca) == Nca and (str(nca.header.contentType) != Type.Content.META):
-				if (delta == False) and (str(nca.header.contentType) == 'Content.DATA'):
+				if (delta == False) and (str(nca.header.contentType) == Type.Content.DATA):
 					for f in nca:
 						for file in f:
 							filename = str(file._path)
@@ -5637,7 +5637,7 @@ class Nsp(Pfs0):
 		for file in self:
 			vfragment="false"
 			if type(file) == Nca:
-				if (delta == False) and (str(file.header.contentType) == 'Content.DATA'):
+				if (delta == False) and (file.header.contentType == Type.Content.DATA):
 					for f in file:
 						for fn in f:
 							filename = str(fn._path)
@@ -6446,7 +6446,7 @@ class Nsp(Pfs0):
 		completefilelist=list()
 		for file in self:
 			if type(file) == Nca:
-				if 	str(file.header.contentType) != Type.Content.META and str(file.header.contentType) != 'Content.CONTROL':
+				if 	file.header.contentType != Type.Content.META and file.header.contentType != Type.Content.CONTROL:
 					continue
 				else:
 					completefilelist.append(str(file._path))
@@ -6617,7 +6617,7 @@ class Nsp(Pfs0):
 							fp.flush()
 						if not data:
 							break
-					if str(file.header.contentType) == Type.Content.META:
+					if file.header.contentType == Type.Content.META:
 						target=str(file._path)
 						xmlname=target[:-3]+'xml'
 						t.write(tabs+'- Appending: ' + xmlname)
@@ -6836,7 +6836,7 @@ class Nsp(Pfs0):
 							if keypatch < file.header.getCryptoType2():
 								encKeyBlock,crypto1,crypto2=self.get_new_cryptoblock(file, keypatch,encKeyBlock,t)
 						newheader=self.get_newheader(file,encKeyBlock,crypto1,crypto2,hcrypto,gc_flag)
-					if 	str(file.header.contentType) != Type.Content.META:
+					if 	file.header.contentType != Type.Content.META:
 						i=0
 						sha=sha256()
 						fp = open(outf, 'ab')
@@ -6917,7 +6917,7 @@ class Nsp(Pfs0):
 						#t.write(tabs+'new hash: '+sha)
 						#t.write(tabs+'new name: '+newname)
 						fp.close()
-					elif str(file.header.contentType) == Type.Content.META:
+					elif file.header.contentType == Type.Content.META:
 						metaname = str(file._path)
 						dir=os.path.dirname(os.path.abspath(outf))
 						metafile=os.path.join(dir, metaname)
@@ -8332,10 +8332,10 @@ class Nsp(Pfs0):
 				else:
 					nca_id=file.header.titleId
 					if nca_id.endswith('000') or nca_id.endswith('800'):
-						if 	str(file.header.contentType) == 'Content.PROGRAM':
+						if 	file.header.contentType == Type.Content.PROGRAM:
 							docheck=True
 					else:
-						if 	str(file.header.contentType) == 'Content.DATA':
+						if 	file.header.contentType == Type.Content.DATA:
 							docheck=True
 					if docheck == True:
 						crypto1=file.header.getCryptoType()
@@ -8357,10 +8357,10 @@ class Nsp(Pfs0):
 				else:
 					nca_id=ncztype.header.titleId
 					if nca_id.endswith('000') or nca_id.endswith('800'):
-						if 	str(ncztype.header.contentType) == 'Content.PROGRAM':
+						if 	str(ncztype.header.contentType) == Type.Content.PROGRAM:
 							docheck=True
 					else:
-						if 	str(ncztype.header.contentType) == 'Content.DATA':
+						if 	str(ncztype.header.contentType) == Type.Content.DATA:
 							docheck=True
 					if docheck == True:
 						crypto1=ncztype.header.getCryptoType()
@@ -8427,10 +8427,10 @@ class Nsp(Pfs0):
 						if str(f._path) == file:
 							message=(str(f.header.titleId)+' - '+str(f.header.contentType));print(message);feed+=message+'\n'
 
-							if str(f.header.contentType) != 'Content.PROGRAM':
+							if str(f.header.contentType) != Type.Content.PROGRAM:
 								correct = self.verify_enforcer(file)
 								if correct == True:
-									if str(f.header.contentType) == 'Content.PUBLIC_DATA' and f.header.getRightsId() == 0:
+									if str(f.header.contentType) == Type.Content.PUBLIC_DATA and f.header.getRightsId() == 0:
 										correct = f.pr_noenc_check_dlc()
 										if correct == False:
 											baddec=True
@@ -8476,7 +8476,7 @@ class Nsp(Pfs0):
 					if checktik==False and str(self._path).endswith('.nsz'):
 						checktik='nsz'
 					else:
-						message=('Content.TICKET');print(message);feed+=message+'\n'
+						message=(Type.Content.TICKET);print(message);feed+=message+'\n'
 						cert=file[:-3]+'cert'
 						if not cert in listed_certs:
 							cert_message=f"Warning {cert}{tabs} -> is MISSING"
@@ -8514,7 +8514,7 @@ class Nsp(Pfs0):
 				elif file.endswith('tik') and not str(self._path).endswith('.nsz'):
 					message=(tabs+file+tabs+'  -> titlekey is INCORRECT <<<-');print(message);feed+=message+'\n'
 			# if cert_message!=False:		
-				# message=('Content.CERT');print(message);feed+=message+'\n'
+				# message=(Type.Content.CERT);print(message);feed+=message+'\n'
 				# message=(tabs+cert_message);print(message);feed+=message+'\n'
 		for nca in self:
 			if type(nca) == Nca:
@@ -9100,7 +9100,7 @@ class Nsp(Pfs0):
 								else:
 									return True
 
-						if fs.fsType == Type.Fs.ROMFS and fs.cryptoType == Type.Crypto.BKTR and str(f.header.contentType) == 'Content.PROGRAM':
+						if fs.fsType == Type.Fs.ROMFS and fs.cryptoType == Type.Crypto.BKTR and str(f.header.contentType) == Type.Content.PROGRAM:
 							f.seek(0)
 							ncaHeader = NcaHeader()
 							ncaHeader.open(MemoryFile(f.read(0x400), Type.Crypto.XTS, uhx(Keys.get('header_key'))))
