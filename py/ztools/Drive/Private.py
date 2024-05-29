@@ -446,9 +446,9 @@ def create_token(name,headless=True,SCOPES='default'):
 		os.remove(tk)
 	auth(token=name,SCOPES_type=SCOPES,headless=headless)
 	if os.path.exists(tk):
-		print("\nSUCCESS!!!\n")
+		print(r"\nSUCCESS!!!\n")
 	else:
-		print("\FAILURE!!!\n")	
+		print(r"\nFAILURE!!!\n")	
 		
 def token_picker():	
 	files=folder_to_list(credentials_dir,"all")	
@@ -461,7 +461,7 @@ def token_picker():
 			tokens.append(file)
 			names.append(str(os.path.basename(os.path.abspath(file))))
 	if len(names)>1:
-		title = 'Pick an account (press SPACE\RIGHT to mark\\unmark, ENTER to continue): '
+		title = r'Pick an account (press SPACE\\RIGHT to mark\\unmark, ENTER to continue): '
 		options = names	
 		selected = pick(options, title, min_selection_count=1)
 		tok=names[selected[1]]
@@ -585,7 +585,7 @@ def search_folder(path,TD=None,ext=None,filter=None,order=None,mime='files',Pick
 	file_list.sort(key=lambda x: x[0])
 	if Pick==True:
 		if pickmode!='single':
-			title = 'Select results (press SPACE\RIGHT to mark\\unmark, ENTER to continue): '
+			title = r'Select results (press SPACE\\RIGHT to mark\\unmark, ENTER to continue): '
 		elif mime=="files":
 			title = 'Select result:'
 		else:
@@ -749,7 +749,7 @@ def TD_picker(path):
 	remote=location(route=path)
 	names,ids=get_TeamDrives(remote.token_name)
 	if names:
-		title = 'Select Teamdrive (press SPACE\RIGHT to mark\\unmark, ENTER to continue): \n"None" will return the My-Drive section of the account'
+		title = r'Select Teamdrive (press SPACE\\RIGHT to mark\\unmark, ENTER to continue): \n"None" will return the My-Drive section of the account'
 		options = names	
 		selected = pick(options, title, min_selection_count=1)
 		TD=selected[0]

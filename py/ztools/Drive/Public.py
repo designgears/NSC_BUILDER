@@ -192,7 +192,7 @@ class location():
 			contleng=contleng[-1]
 			self.size=int(contleng)
 		except:
-			contrange=re.split('\W+',r)
+			contrange=re.split(r'\W+',r)
 			contrange=contrange[-2]
 			self.size=int(contrange)
 		
