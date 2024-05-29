@@ -1,29 +1,5 @@
 # -*- coding: utf-8 -*-
 
-'''
-   _____			 _				__
-  / ___/____ ___  __(_)____________  / /
-  \__ \/ __ `/ / / / / ___/ ___/ _ \/ /
- ___/ / /_/ / /_/ / / /  / /  /  __/ /
-/____/\__, /\__,_/_/_/  /_/   \___/_/
-		/_/
-
-By julesontheroad:
-https://github.com/julesontheroad/
-Squirrel is a fork of NUT made to support NSC Builder
-https://github.com/julesontheroad/NSC_BUILDER
-
-The original NUT is made and actively supported by blawar
-https://github.com/blawar/nut
-
-This fork doesn't follow NUT's main line and strips many features from nut
-(like CDNSP support) while adds several functions based in new code.
-This program specialices in content building and file management for several
-Nintendo Switch formats.
-
-Squirrel original's purpose is to support NSC_Builder though it serves as a
-standalone program with many functions, some of them not being used currently in NSC_Builder.
-'''
 import argparse
 import sys
 import os
@@ -428,7 +404,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception055: ' + str(e))
 			Status.close()
 		# ..................................................
 		# Get type from nca file
@@ -441,7 +417,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception056: ' + str(e))
 			Status.close()
 		# ..................................................
 		# Get titleid from nsp file
@@ -455,7 +431,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception057: ' + str(e))
 			Status.close()
 		# ..................................................
 		# Read version number from nsp or xci
@@ -469,7 +445,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception058: ' + str(e))
 				if filename.endswith('.xci'):
 					try:
 						f = Fs.factory(filename)
@@ -478,7 +454,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception059: ' + str(e))
 			Status.close()
 		# ..................................................
 		# Identify type of nsp
@@ -492,7 +468,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception060: ' + str(e))
 			Status.close()
 		# ..................................................
 		# Identify if nsp has titlerights
@@ -506,7 +482,7 @@ if __name__ == '__main__':
 					if f.trights_set() == 'FALSE':
 						Print.info('FALSE')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception061: ' + str(e))
 			Status.close()
 		# ..................................................
 		# Identify if nsp has ticket
@@ -520,7 +496,7 @@ if __name__ == '__main__':
 					if f.exist_ticket() == 'FALSE':
 						Print.info('FALSE')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception062: ' + str(e))
 			Status.close()
 		# ..................................................
 		# Identify if nsp has ticket
@@ -534,7 +510,7 @@ if __name__ == '__main__':
 					if f.exist_ticket() == 'FALSE':
 						Print.info('FALSE')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception063: ' + str(e))
 			Status.close()
 # REMOVE TITLERIGHTS FUNCTIONS
 		# ..................................................
@@ -548,7 +524,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception064: ' + str(e))
 			Status.close()
 		# ..................................................
 		# Change Master keys
@@ -584,7 +560,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception065: ' + str(e))
 			for filename in args.RTRNCA_h_nsp:
 				try:
 					f = Fs.Nca(filename, 'r+b')
@@ -592,7 +568,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception066: ' + str(e))
 			Status.close()
 		# .........................................................................
 		# Remove titlerights from an NCA using information from an extracted TICKET
@@ -607,7 +583,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception067: ' + str(e))
 			for filename in args.RTRNCA_h_tick:
 				try:
 					f = Fs.Nca(filename, 'r+b')
@@ -615,7 +591,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception068: ' + str(e))
 			Status.close()
 # GAMECARD FLAG FUNCTIONS
 		# ...................................................
@@ -629,7 +605,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception069: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Set isgamecard flag from all nca in an NSP as CARD
@@ -642,7 +618,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception070: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Set isgamecard flag for one nca as ESHOP
@@ -656,7 +632,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception071: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Set isgamecard flag for one nca as CARD
@@ -670,7 +646,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception072: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Get isgamecard flag from a NCA file
@@ -683,7 +659,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception073: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Set value for network account
@@ -775,7 +751,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 			except BaseException as e:
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception074: ' + str(e))
 			Status.close()
 
 # COPY FUNCTIONS
@@ -788,7 +764,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception075: ' + str(e))
 			else:
 				for filename in args.NSP_copy_ticket:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -800,7 +776,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception076: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy all FILES from NSP\XCI file
@@ -811,7 +787,7 @@ if __name__ == '__main__':
 					try:
 						buffer = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception077: ' + str(e))
 			else:
 				buffer = 65536
 			ofolder=False
@@ -820,7 +796,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception078: ' + str(e))
 			if not os.path.exists(ofolder):
 				os.makedirs(ofolder)
 			if args.text_file:
@@ -855,7 +831,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception079: ' + str(e))
 			elif test.endswith('.xci') or test.endswith('.xcz'):
 				try:
 					f = Fs.factory(filename)
@@ -864,7 +840,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception080: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy all NCA from NSP file
@@ -875,7 +851,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception081: ' + str(e))
 			else:
 				for filename in args.NSP_copy_nca:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -886,7 +862,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception082: ' + str(e))
 			else:
 				buffer = 65536
 			if args.patchversion:
@@ -894,7 +870,7 @@ if __name__ == '__main__':
 					try:
 						metapatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception083: ' + str(e))
 			else:
 				metapatch = 'false'
 			if args.RSVcap:
@@ -902,7 +878,7 @@ if __name__ == '__main__':
 					try:
 						RSV_cap = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception084: ' + str(e))
 			else:
 				RSV_cap = 268435656
 			if args.keypatch:
@@ -910,7 +886,7 @@ if __name__ == '__main__':
 					try:
 						vkeypatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception085: ' + str(e))
 			else:
 				vkeypatch = 'false'
 			for filename in args.NSP_copy_nca:
@@ -920,7 +896,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception086: ' + str(e))
 			Status.close()
 		# ...................................................................
 		# Copy all hfs0 partitions (update, normal,secure,logo) from XCI file
@@ -931,7 +907,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception087: ' + str(e))
 			else:
 				for filename in args.XCI_copy_hfs0:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -942,7 +918,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception088: ' + str(e))
 			else:
 				buffer = 65536
 			for filePath in args.XCI_copy_hfs0:
@@ -960,7 +936,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception089: ' + str(e))
 			else:
 				for filename in args.XCI_c_hfs0_update:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -971,7 +947,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception090: ' + str(e))
 			else:
 				buffer = 65536
 			for filePath in args.XCI_c_hfs0_update:
@@ -989,7 +965,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception091: ' + str(e))
 			else:
 				for filename in args.XCI_c_hfs0_normal:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1000,7 +976,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception092: ' + str(e))
 			else:
 				buffer = 65536
 			for filePath in args.XCI_c_hfs0_normal:
@@ -1018,7 +994,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception093: ' + str(e))
 			else:
 				for filename in args.XCI_c_hfs0_secure:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1029,7 +1005,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception094: ' + str(e))
 			else:
 				buffer = 65536
 			for filePath in args.XCI_c_hfs0_secure:
@@ -1047,7 +1023,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception095: ' + str(e))
 			else:
 				for filename in args.XCI_copy_nca_secure:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1058,7 +1034,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception096: ' + str(e))
 			else:
 				buffer = 65536
 			if args.patchversion:
@@ -1066,7 +1042,7 @@ if __name__ == '__main__':
 					try:
 						metapatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception097: ' + str(e))
 			else:
 				metapatch = 'false'
 			if args.keypatch:
@@ -1074,7 +1050,7 @@ if __name__ == '__main__':
 					try:
 						vkeypatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception098: ' + str(e))
 			else:
 				vkeypatch = 'false'
 			if args.RSVcap:
@@ -1082,7 +1058,7 @@ if __name__ == '__main__':
 					try:
 						RSV_cap = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception099: ' + str(e))
 			else:
 				RSV_cap = 268435656
 			for filePath in args.XCI_copy_nca_secure:
@@ -1100,7 +1076,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0100: ' + str(e))
 			else:
 				for filename in args.C_clean:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1111,7 +1087,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0101: ' + str(e))
 			else:
 				buffer = 65536
 			if args.patchversion:
@@ -1119,7 +1095,7 @@ if __name__ == '__main__':
 					try:
 						metapatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0102: ' + str(e))
 			else:
 				metapatch = 'false'
 			if args.keypatch:
@@ -1127,7 +1103,7 @@ if __name__ == '__main__':
 					try:
 						vkeypatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0103: ' + str(e))
 			else:
 				vkeypatch = 'false'
 			if args.RSVcap:
@@ -1135,7 +1111,7 @@ if __name__ == '__main__':
 					try:
 						RSV_cap = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0104: ' + str(e))
 			else:
 				RSV_cap = 268435656
 			for filePath in args.XCI_copy_nca_normal:
@@ -1153,7 +1129,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0105: ' + str(e))
 			else:
 				for filename in args.C_clean:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1164,7 +1140,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0106: ' + str(e))
 			else:
 				buffer = 65536
 			if args.patchversion:
@@ -1172,7 +1148,7 @@ if __name__ == '__main__':
 					try:
 						metapatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0107: ' + str(e))
 			else:
 				metapatch = 'false'
 			if args.keypatch:
@@ -1180,7 +1156,7 @@ if __name__ == '__main__':
 					try:
 						vkeypatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0108: ' + str(e))
 			else:
 				vkeypatch = 'false'
 			if args.RSVcap:
@@ -1188,7 +1164,7 @@ if __name__ == '__main__':
 					try:
 						RSV_cap = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0109: ' + str(e))
 			else:
 				RSV_cap = 268435656
 			for filePath in args.XCI_copy_nca_update:
@@ -1207,7 +1183,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0110: ' + str(e))
 			else:
 				for filename in args.XCI_copy_rhfs0:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1218,7 +1194,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0111: ' + str(e))
 			else:
 				buffer = 65536
 			for filePath in args.XCI_copy_rhfs0:
@@ -1238,7 +1214,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0112: ' + str(e))
 			else:
 				for filename in args.NSP_copy_other:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1249,7 +1225,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0113: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.NSP_copy_other:
@@ -1259,7 +1235,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0114: ' + str(e))
 			Status.close()
 
 		# ...................................................
@@ -1271,7 +1247,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0115: ' + str(e))
 			else:
 				for filename in args.NSP_copy_xml:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1282,7 +1258,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0116: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.NSP_copy_xml:
@@ -1292,7 +1268,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0117: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy CERT from NSP file
@@ -1303,7 +1279,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0118: ' + str(e))
 			else:
 				for filename in args.NSP_copy_cert:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1314,7 +1290,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0119: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.NSP_copy_cert:
@@ -1324,7 +1300,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0120: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy JPG from NSP file
@@ -1335,7 +1311,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0121: ' + str(e))
 			else:
 				for filename in args.NSP_copy_jpg:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1346,7 +1322,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0122: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.NSP_copy_jpg:
@@ -1356,7 +1332,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0123: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy meta cnmt files from NSP file
@@ -1367,7 +1343,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0124: ' + str(e))
 			else:
 				for filename in args.NSP_copy_cnmt:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1378,7 +1354,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0125: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.NSP_copy_cnmt:
@@ -1389,7 +1365,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0126: ' + str(e))
 				if filename.endswith('.xci') or  filename.endswith('.xcz'):
 					try:
 						f = Fs.factory(filename)
@@ -1398,7 +1374,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))						
+						Print.error('Exception0127: ' + str(e))						
 				if filename.endswith('.cnmt.nca'):
 					try:
 						f = Fs.Nca(filename)
@@ -1419,7 +1395,7 @@ if __name__ == '__main__':
 						with open (ofile,'wb') as o:
 							o.write(data)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0128: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy pfs0 from NSP file
@@ -1430,7 +1406,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0129: ' + str(e))
 			else:
 				for filename in args.copy_pfs0_meta:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1441,7 +1417,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0130: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.copy_pfs0_meta:
@@ -1451,7 +1427,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0131: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy control nacp files from NSP file
@@ -1462,7 +1438,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0132: ' + str(e))
 			else:
 				for filename in args.copy_nacp:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1473,7 +1449,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0133: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.copy_nacp:
@@ -1484,7 +1460,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0134: ' + str(e))
 				'''
 				if filename.endswith(".nca"):
 					try:
@@ -1493,7 +1469,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0135: ' + str(e))
 				'''
 			Status.close()
 # DEDICATED COPY FUNCTIONS. NCA TYPES.
@@ -1506,7 +1482,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0136: ' + str(e))
 			else:
 				for filename in args.NSP_copy_nca_meta:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1517,7 +1493,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0137: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.NSP_copy_nca_meta:
@@ -1527,7 +1503,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0138: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy all CONTROL NCA from NSP file
@@ -1538,7 +1514,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0139: ' + str(e))
 			else:
 				for filename in args.NSP_copy_nca_control:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1549,7 +1525,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0140: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.NSP_copy_nca_control:
@@ -1559,7 +1535,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0141: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy all MANUAL NCA from NSP file
@@ -1570,7 +1546,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0142: ' + str(e))
 			else:
 				for filename in args.NSP_copy_nca_manual:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1581,7 +1557,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0143: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.NSP_copy_nca_manual:
@@ -1591,7 +1567,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0144: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy all PROGRAM NCA from NSP file
@@ -1602,7 +1578,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0145: ' + str(e))
 			else:
 				for filename in args.NSP_copy_nca_program:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1613,7 +1589,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0146: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.NSP_copy_nca_program:
@@ -1623,7 +1599,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0147: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy all DATA NCA from NSP file
@@ -1634,7 +1610,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0148: ' + str(e))
 			else:
 				for filename in args.NSP_copy_nca_data:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1645,7 +1621,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0149: ' + str(e))
 			else:
 				buffer = 65536
 
@@ -1656,7 +1632,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0150: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy all PUBLIC DATA NCA from NSP file
@@ -1667,7 +1643,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0151: ' + str(e))
 			else:
 				for filename in args.NSP_copy_nca_pdata:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1678,7 +1654,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0152: ' + str(e))
 			else:
 				buffer = 65536
 
@@ -1689,7 +1665,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0153: ' + str(e))
 			Status.close()
 
 # DEDICATED COPY FUNCTIONS. TITLERIGHTS.
@@ -1702,7 +1678,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0154: ' + str(e))
 			else:
 				for filename in args.NSP_copy_tr_nca:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1713,7 +1689,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0155: ' + str(e))
 			else:
 				buffer = 65536
 
@@ -1724,7 +1700,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0156: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy all NCA WITHOUT TITLERIGHTS from target NSP
@@ -1735,7 +1711,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0157: ' + str(e))
 			else:
 				for filename in args.NSP_copy_ntr_nca:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1746,7 +1722,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0158: ' + str(e))
 			else:
 				buffer = 65536
 
@@ -1757,7 +1733,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0159: ' + str(e))
 			Status.close()
 		# ..................................
 		# Copy ALL NCA AND CLEAN TITLERIGHTS
@@ -1768,7 +1744,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0160: ' + str(e))
 			else:
 				if args.text_file:
 					tfile=args.text_file
@@ -1787,7 +1763,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0161: ' + str(e))
 			else:
 				buffer = 65536
 			if args.patchversion:
@@ -1795,7 +1771,7 @@ if __name__ == '__main__':
 					try:
 						metapatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0162: ' + str(e))
 			else:
 				metapatch = 'true'
 			if args.keypatch:
@@ -1803,7 +1779,7 @@ if __name__ == '__main__':
 					try:
 						vkeypatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0163: ' + str(e))
 			else:
 				vkeypatch = 'false'
 			if args.RSVcap:
@@ -1811,7 +1787,7 @@ if __name__ == '__main__':
 					try:
 						RSV_cap = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0164: ' + str(e))
 			else:
 				RSV_cap = 268435656
 			if args.C_clean:
@@ -1838,7 +1814,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0165: ' + str(e))
 				if filename.endswith('.xci'):
 					try:
 						f = Fs.factory(filename)
@@ -1855,7 +1831,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0166: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Copy ALL NCA AND CLEAN TITLERIGHTS WITHOUT DELTAS
@@ -1866,7 +1842,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0167: ' + str(e))
 			else:
 				if args.text_file:
 					tfile=args.text_file
@@ -1884,7 +1860,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0168: ' + str(e))
 			else:
 				buffer = 65536
 			if args.patchversion:
@@ -1892,7 +1868,7 @@ if __name__ == '__main__':
 					try:
 						metapatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0169: ' + str(e))
 			else:
 				metapatch = 'false'
 			if args.keypatch:
@@ -1900,7 +1876,7 @@ if __name__ == '__main__':
 					try:
 						vkeypatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0170: ' + str(e))
 			else:
 				vkeypatch = 'false'
 			if args.RSVcap:
@@ -1908,7 +1884,7 @@ if __name__ == '__main__':
 					try:
 						RSV_cap = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0171: ' + str(e))
 			else:
 				RSV_cap = 268435656
 
@@ -1936,7 +1912,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0172: ' + str(e))
 				if filename.endswith('.xci'):
 					try:
 						f = Fs.factory(filename)
@@ -1953,7 +1929,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0173: ' + str(e))
 			Status.close()
 
 		# ........................................................
@@ -1965,7 +1941,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0174: ' + str(e))
 			else:
 				for filename in args.NSP_c_KeyBlock:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -1977,7 +1953,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0175: ' + str(e))
 			Status.close()
 		# ..................................................
 		# Identify if nsp has titlerights
@@ -1991,7 +1967,7 @@ if __name__ == '__main__':
 #					if f.trights_set() == 'FALSE':
 #						Print.info('FALSE')
 #				except BaseException as e:
-#					Print.error('Exception: ' + str(e))
+#					Print.error('Exception0176: ' + str(e))
 
 		# ..................................................
 		# Identify if nsp has ticket
@@ -2005,7 +1981,7 @@ if __name__ == '__main__':
 #					if f.exist_ticket() == 'FALSE':
 #						Print.info('FALSE')
 #				except BaseException as e:
-#					Print.error('Exception: ' + str(e))
+#					Print.error('Exception0177: ' + str(e))
 
 
 
@@ -2019,7 +1995,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0178: ' + str(e))
 			else:
 				if args.text_file:
 					tfile=args.text_file
@@ -2037,7 +2013,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0179: ' + str(e))
 			else:
 				buffer = 65536
 			if args.pathend:
@@ -2045,7 +2021,7 @@ if __name__ == '__main__':
 					try:
 						pathend = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0180: ' + str(e))
 			else:
 				pathend = ''
 			if args.splitter:
@@ -2064,7 +2040,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0181: ' + str(e))
 				if filename.endswith('.xci'):
 					try:
 						f = Fs.factory(filename)
@@ -2073,7 +2049,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0182: ' + str(e))
 			Status.close()
 		# ............................................................
 		# Prepare base content to get it updated
@@ -2084,7 +2060,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0183: ' + str(e))
 			else:
 				for filename in args.updbase:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -2094,7 +2070,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0184: ' + str(e))
 			else:
 				buffer = 65536
 			if args.cskip:
@@ -2102,7 +2078,7 @@ if __name__ == '__main__':
 					try:
 						cskip = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0185: ' + str(e))
 			else:
 				pathend = 'false'
 			if args.patchversion:
@@ -2110,7 +2086,7 @@ if __name__ == '__main__':
 					try:
 						metapatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0186: ' + str(e))
 			else:
 				metapatch = 'false'
 			if args.RSVcap:
@@ -2118,7 +2094,7 @@ if __name__ == '__main__':
 					try:
 						RSV_cap = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0187: ' + str(e))
 			else:
 				RSV_cap = 268435656
 			if args.keypatch:
@@ -2126,7 +2102,7 @@ if __name__ == '__main__':
 					try:
 						vkeypatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0188: ' + str(e))
 			else:
 				vkeypatch = 'false'
 
@@ -2138,7 +2114,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0189: ' + str(e))
 				if filename.endswith('.xci'):
 					try:
 						f = Fs.factory(filename)
@@ -2147,7 +2123,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0190: ' + str(e))
 			Status.close()
 # COMBINATIONS
 		# ............................................................
@@ -2162,7 +2138,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0191: ' + str(e))
 			else:
 				buffer = 65536
 
@@ -2171,7 +2147,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0192: ' + str(e))
 			else:
 				folder = args.gen_placeholder
 				dir=os.path.abspath(folder)
@@ -2278,7 +2254,7 @@ if __name__ == '__main__':
 						except BaseException as e:
 							counter=int(counter)
 							counter-=1
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0193: ' + str(e))
 							continue
 					if filepath.endswith('.xci'):
 						export='xci'
@@ -2314,7 +2290,7 @@ if __name__ == '__main__':
 						except BaseException as e:
 							counter=int(counter)
 							counter-=1
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0194: ' + str(e))
 							continue
 					if export=='nsp':
 						oflist=list()
@@ -2374,7 +2350,7 @@ if __name__ == '__main__':
 								except BaseException as e:
 									counter=int(counter)
 									counter-=1
-									Print.error('Exception: ' + str(e))
+									Print.error('Exception0195: ' + str(e))
 					if export=='xci':
 						oflist=list()
 						osizelist=list()
@@ -2403,7 +2379,7 @@ if __name__ == '__main__':
 								f.flush()
 								f.close()
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception0196: ' + str(e))
 						basename=str(os.path.basename(os.path.abspath(filepath)))
 						endname=basename[:-4]+'[PLH].xci'
 						endfile = os.path.join(ofolder, endname)
@@ -2486,9 +2462,9 @@ if __name__ == '__main__':
 								except BaseException as e:
 									counter=int(counter)
 									counter-=1
-									Print.error('Exception: ' + str(e))
+									Print.error('Exception0197: ' + str(e))
 			except BaseException as e:
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception0198: ' + str(e))
 			Status.close()
 		# ............................................................
 		# Get files to make a [lc].nsp from NSP
@@ -2499,7 +2475,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0199: ' + str(e))
 			else:
 				for filename in args.license_combo:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -2509,7 +2485,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0200: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.license_combo:
@@ -2521,7 +2497,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0201: ' + str(e))
 			Status.close()
 		# ............................................................
 		# Get files to make a placeholder+license nsp from a NSP
@@ -2532,7 +2508,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0202: ' + str(e))
 			else:
 				for filename in args.mlicense_combo:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -2542,7 +2518,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0203: ' + str(e))
 			else:
 				buffer = 65536
 			for filename in args.mlicense_combo:
@@ -2555,7 +2531,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0204: ' + str(e))
 			Status.close()
 		# ............................................................
 		# Get files to make zip to restore nsp to original state
@@ -2566,7 +2542,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0205: ' + str(e))
 			else:
 				for filename in args.zip_combo:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -2576,7 +2552,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0206: ' + str(e))
 			else:
 				buffer = 65536
 
@@ -2589,7 +2565,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0207: ' + str(e))
 			Status.close()
 # REPACK
 		# ...................................................
@@ -2601,7 +2577,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0208: ' + str(e))
 			else:
 				buffer = 65536
 			if args.fat:
@@ -2612,7 +2588,7 @@ if __name__ == '__main__':
 						else:
 							fat="exfat"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0209: ' + str(e))
 			else:
 				fat="exfat"
 			if args.fexport:
@@ -2623,7 +2599,7 @@ if __name__ == '__main__':
 						else:
 							fx="folder"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0210: ' + str(e))
 			else:
 				fx="files"
 			if args.ifolder:
@@ -2639,7 +2615,7 @@ if __name__ == '__main__':
 								nca = Fs.Nca(filepath, 'r+b')
 								ncalist=ncalist+nca.ncalist_bycnmt()
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception0211: ' + str(e))
 					for f in fnames:
 						filepath = os.path.join(ruta, f)
 						f_list.append(filepath)
@@ -2700,7 +2676,7 @@ if __name__ == '__main__':
 						else:
 							delta=False
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))	
+						Print.error('Exception0212: ' + str(e))	
 			else:
 				delta=False
 			if args.fexport:
@@ -2713,7 +2689,7 @@ if __name__ == '__main__':
 						else:
 							xci_exp="xcz"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0213: ' + str(e))
 			else:
 				xci_exp="xcz"
 			if args.ofolder:		
@@ -2721,7 +2697,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))	
+						Print.error('Exception0214: ' + str(e))	
 			else:
 				for filepath in args.compress:
 					dir=os.path.dirname(os.path.abspath(filepath))
@@ -2808,7 +2784,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))	
+						Print.error('Exception0215: ' + str(e))	
 			else:
 				for filepath in args.decompress:
 					dir=os.path.dirname(os.path.abspath(filepath))
@@ -2845,7 +2821,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0216: ' + str(e))
 			else:
 				buffer = 65536
 			hfs0 = Fs.Hfs0(None, None)
@@ -2870,7 +2846,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0217: ' + str(e))
 			else:
 				buffer = 65536
 			if args.ifolder:
@@ -2947,7 +2923,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0218: ' + str(e))
 			else:
 				buffer = 65536
 			if args.fat:
@@ -2958,7 +2934,7 @@ if __name__ == '__main__':
 						else:
 							fat="exfat"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0219: ' + str(e))
 			else:
 				fat="exfat"
 			if args.ifolder:
@@ -3049,7 +3025,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0220: ' + str(e))
 			else:
 				buffer = 65536
 			if args.text_file:
@@ -3065,7 +3041,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0221: ' + str(e))
 			else:
 				dir=os.path.dirname(os.path.abspath(filepath))
 				ofolder =os.path.join(dir, 'output')		
@@ -3077,7 +3053,7 @@ if __name__ == '__main__':
 						else:
 							fat="exfat"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0222: ' + str(e))
 			else:
 				fat="exfat"
 			if filepath.endswith('.xci'):
@@ -3092,7 +3068,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0223: ' + str(e))
 			elif filepath.endswith('.xcz'):
 				f = Fs.Xci(filepath)
 				filename=os.path.basename(os.path.abspath(filepath))
@@ -3110,7 +3086,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0224: ' + str(e))
 			else:
 				buffer = 65536
 			if args.text_file:
@@ -3124,7 +3100,7 @@ if __name__ == '__main__':
 						try:
 							ofolder = input
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))				
+							Print.error('Exception0225: ' + str(e))				
 				else:				
 					ofolder =os.path.join(dir, 'output')
 			else:
@@ -3135,7 +3111,7 @@ if __name__ == '__main__':
 						try:
 							ofolder = input
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))				
+							Print.error('Exception0226: ' + str(e))				
 				else:				
 					ofolder =os.path.join(dir, 'output')
 			if not os.path.exists(ofolder):
@@ -3148,7 +3124,7 @@ if __name__ == '__main__':
 						else:
 							fat="exfat"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0227: ' + str(e))
 			else:
 				fat="exfat"
 			if not args.text_file:	
@@ -3165,7 +3141,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0228: ' + str(e))
 			else:
 				filepath=filename
 				if filepath.endswith('.xci'):
@@ -3180,7 +3156,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))				
+						Print.error('Exception0229: ' + str(e))				
 			Status.close()
 		# ...................................................
 		# Untrimming for xci files
@@ -3193,7 +3169,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0230: ' + str(e))
 			else:
 				buffer = 65536
 			if args.ofolder:
@@ -3201,7 +3177,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0231: ' + str(e))
 			if args.text_file:
 				tfile=args.text_file
 				with open(tfile,"r+", encoding='utf8') as filelist:
@@ -3226,7 +3202,7 @@ if __name__ == '__main__':
 						else:
 							fat="exfat"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0232: ' + str(e))
 			else:
 				fat="exfat"
 			if filename==None:	
@@ -3245,7 +3221,7 @@ if __name__ == '__main__':
 				f.flush()
 				f.close()
 			except BaseException as e:
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception0233: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Take off deltas
@@ -3256,7 +3232,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0234: ' + str(e))
 			else:
 				buffer = 65536
 			if args.ofolder:
@@ -3264,7 +3240,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0235: ' + str(e))
 			else:
 				for filepath in args.erase_deltas:
 					dir=os.path.dirname(os.path.abspath(filepath))
@@ -3279,7 +3255,7 @@ if __name__ == '__main__':
 						else:
 							xml_gen=False
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0236: ' + str(e))
 			if args.erase_deltas:
 				if args.text_file:
 					tfile=args.text_file
@@ -3301,7 +3277,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0237: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Rebuild
@@ -3314,7 +3290,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0238: ' + str(e))
 			else:
 				buffer = 65536
 			if args.type:
@@ -3347,7 +3323,7 @@ if __name__ == '__main__':
 						else:
 							delta=False
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0239: ' + str(e))
 			else:
 				delta=True
 			if args.xml_gen:
@@ -3360,7 +3336,7 @@ if __name__ == '__main__':
 						else:
 							xml_gen=False
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0240: ' + str(e))
 			else:
 				xml_gen=False
 			if args.ofolder:
@@ -3368,7 +3344,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0241: ' + str(e))
 			else:
 				for filepath in args.rebuild_nsp:
 					dir=os.path.dirname(os.path.abspath(filepath))
@@ -3395,7 +3371,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0242: ' + str(e))
 						Damage=True
 						skipper=True
 						print('Content seems to be damaged')
@@ -3427,7 +3403,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))				
+							Print.error('Exception0243: ' + str(e))				
 					elif filepath.endswith(".nsz"):
 						if export == 'nsp':
 							try:
@@ -3437,7 +3413,7 @@ if __name__ == '__main__':
 								endname =os.path.join(ofolder,endname)
 								decompressor.decompress_nsz(filepath,endname,buffer,delta,xml_gen)	
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))	
+								Print.error('Exception0244: ' + str(e))	
 			else:
 				import batchprocess
 				batchprocess.rebuild_nsp(filepath,ofolder,buffer,delta,xml_gen,export)	
@@ -3452,7 +3428,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0245: ' + str(e))
 			else:
 				buffer = 65536
 			if args.nodelta:
@@ -3465,7 +3441,7 @@ if __name__ == '__main__':
 						else:
 							delta=False
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0246: ' + str(e))
 			else:
 				delta=True
 			if args.ofolder:
@@ -3473,7 +3449,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0247: ' + str(e))
 			else:
 				for filepath in args.direct_creation:
 					dir=os.path.dirname(os.path.abspath(filepath))
@@ -3486,7 +3462,7 @@ if __name__ == '__main__':
 						else:
 							fat="exfat"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0248: ' + str(e))
 			else:
 				fat="exfat"
 			if args.fexport:
@@ -3497,7 +3473,7 @@ if __name__ == '__main__':
 						else:
 							fx="folder"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0249: ' + str(e))
 			else:
 				fx="files"
 			if args.patchversion:
@@ -3505,7 +3481,7 @@ if __name__ == '__main__':
 					try:
 						metapatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0250: ' + str(e))
 			else:
 				metapatch = 'false'
 			if args.RSVcap:
@@ -3513,7 +3489,7 @@ if __name__ == '__main__':
 					try:
 						RSV_cap = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0251: ' + str(e))
 			else:
 				RSV_cap = 268435656
 			if args.keypatch:
@@ -3521,7 +3497,7 @@ if __name__ == '__main__':
 					try:
 						vkeypatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0252: ' + str(e))
 			else:
 				vkeypatch = 'false'
 
@@ -3584,7 +3560,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0253: ' + str(e))
 					elif export=='xci':
 						try:
 							print("Processing: " + filepath)
@@ -3598,7 +3574,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0254: ' + str(e))
 					elif export=='both':
 						try:
 							print("Processing: " + filepath)
@@ -3612,7 +3588,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0255: ' + str(e))
 						try:
 							print("Processing: " + filepath)
 							f = Fs.factory(filepath)
@@ -3625,7 +3601,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0256: ' + str(e))
 
 				if filepath.endswith(".xci") or filepath.endswith('.xcz'):
 					if export=='nsp':
@@ -3641,7 +3617,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0257: ' + str(e))
 					elif export=='xci':
 						try:
 							print("Processing: " + filepath)
@@ -3655,7 +3631,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0258: ' + str(e))
 					elif export=='both':
 						try:
 							print("Processing: " + filepath)
@@ -3669,7 +3645,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0259: ' + str(e))
 						try:
 							print("Processing: " + filepath)
 							f = Fs.factory(filepath)
@@ -3682,7 +3658,7 @@ if __name__ == '__main__':
 							f.flush()
 							f.close()
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0260: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Direct MULTI NSP OR XCI
@@ -3696,7 +3672,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception1: ' + str(e))
 			else:
 				buffer = 65536
 			if args.romanize:
@@ -3715,7 +3691,7 @@ if __name__ == '__main__':
 						if not os.path.exists(ofolder):
 							os.makedirs(ofolder)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception33: ' + str(e))
 			else:
 				for filepath in args.direct_multi:
 					dir=os.path.dirname(os.path.abspath(filepath))
@@ -3730,7 +3706,7 @@ if __name__ == '__main__':
 						else:
 							fat="exfat"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception2: ' + str(e))
 			else:
 				fat="exfat"
 			if args.fexport:
@@ -3741,7 +3717,7 @@ if __name__ == '__main__':
 						else:
 							fx="folder"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception3: ' + str(e))
 			else:
 				fx="files"
 			if args.nodelta:
@@ -3754,7 +3730,7 @@ if __name__ == '__main__':
 						else:
 							delta=False
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception4: ' + str(e))
 			else:
 				delta=True
 
@@ -3763,7 +3739,7 @@ if __name__ == '__main__':
 					try:
 						metapatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception5: ' + str(e))
 			else:
 				metapatch = 'false'
 			if args.RSVcap:
@@ -3771,7 +3747,7 @@ if __name__ == '__main__':
 					try:
 						RSV_cap = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception6: ' + str(e))
 			else:
 				RSV_cap = 268435656
 			if args.keypatch:
@@ -3779,7 +3755,7 @@ if __name__ == '__main__':
 					try:
 						vkeypatch = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception7: ' + str(e))
 			else:
 				vkeypatch = 'false'
 			export=list()
@@ -3803,16 +3779,14 @@ if __name__ == '__main__':
 						for line in f:
 							fp=line.strip()
 							filelist.append(fp)
-					'''
-					for file in filelist:
-						print(file)
-						pass
-					'''
+
+					# for file in filelist:
+					# 	print(file)
+
 					prlist=list()
 					print ('Calculating final content:')
 					for filepath in filelist:
 						if filepath.endswith('.nsp') or filepath.endswith('.nsz'):
-							#print(filepath)
 							try:
 								c=list()
 								f = Fs.Nsp(filepath)
@@ -3827,7 +3801,6 @@ if __name__ == '__main__':
 										contentlist=f.get_content(ofolder,vkeypatch,delta)
 								else:
 									contentlist=f.get_content(False,False,delta)
-								# print(contentlist)
 								f.flush()
 								f.close()
 								if len(prlist)==0:
@@ -3861,7 +3834,7 @@ if __name__ == '__main__':
 										if notinlist == True:
 											prlist.append(contentlist[j])
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception8: ' + str(e))
 
 						if filepath.endswith('.xci') or filepath.endswith('.xcz'):
 							#print(filepath)
@@ -3905,7 +3878,7 @@ if __name__ == '__main__':
 										if notinlist == True:
 											prlist.append(contentlist[j])
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception9: ' + str(e))
 					'''
 					for i in range(len(prlist)):
 						print (prlist[i][0])
@@ -3969,6 +3942,7 @@ if __name__ == '__main__':
 									elif basefile.endswith('.nsp') or basefile.endswith('.nsz') :
 										f = Fs.Nsp(basefile)
 									ctitl=f.get_title(baseid,roman)
+									print(ctitl)
 									f.flush()
 									f.close()
 									if ctitl=='DLC' or ctitl=='-':
@@ -4164,7 +4138,7 @@ if __name__ == '__main__':
 				endname = re.sub(r'[òôóöø]', 'o', endname);endname = re.sub(r'[ÒÔÓÖØ]', 'O', endname)
 				endname = re.sub(r'[ùûúü]', 'u', endname);endname = re.sub(r'[ÙÛÚÜ]', 'U', endname)
 				endname = re.sub(r'[’]', "'", endname);endname = re.sub(r'[“”]', '"', endname)
-				endname = re.sub(' {3,}', ' ',endname);re.sub(' {2,}', ' ',endname);
+				endname = re.sub(r' {3,}', ' ',endname);re.sub(r' {2,}', ' ',endname);
 				try:
 					endname = endname.replace("( ", "(");endname = endname.replace(" )", ")")
 					endname = endname.replace("[ ", "[");endname = endname.replace(" ]", "]")
@@ -4246,7 +4220,7 @@ if __name__ == '__main__':
 								f.flush()
 								f.close()
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception0261: ' + str(e))
 					t.close()
 				if 'xci' in export:
 					endname_x=endname+'.xci'
@@ -4281,7 +4255,7 @@ if __name__ == '__main__':
 								f.flush()
 								f.close()
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception0262: ' + str(e))
 						if filepath.endswith('.xci') or filepath.endswith('.xcz'):
 							try:
 								f = Fs.Xci(filepath)
@@ -4294,7 +4268,7 @@ if __name__ == '__main__':
 								f.flush()
 								f.close()
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception0263: ' + str(e))
 					# print(oflist)
 					# print(osizelist)
 					# print(sec_hashlist)
@@ -4370,7 +4344,7 @@ if __name__ == '__main__':
 								f.flush()
 								f.close()
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception0264: ' + str(e))
 						if filepath.endswith('.xci') or filepath.endswith('.xcz'):
 							try:
 								GC=False
@@ -4384,7 +4358,7 @@ if __name__ == '__main__':
 								f.flush()
 								f.close()
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception0265: ' + str(e))
 					t.close()
 				if 'cnsp' in export:
 					oflist=list()
@@ -4453,7 +4427,7 @@ if __name__ == '__main__':
 								f.flush()
 								f.close()
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception0266: ' + str(e))
 						if filepath.endswith('.xci') or filepath.endswith('.xcz'):
 							try:
 								f = Fs.Xci(filepath)
@@ -4463,7 +4437,7 @@ if __name__ == '__main__':
 								f.flush()
 								f.close()
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception0267: ' + str(e))
 					t.close()
 			Status.close()
 		# ...................................................
@@ -4477,7 +4451,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0268: ' + str(e))
 			else:
 				buffer = 65536
 
@@ -4486,7 +4460,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0269: ' + str(e))
 			else:
 				for filepath in args.direct_splitter:
 					dir=os.path.dirname(os.path.abspath(filepath))
@@ -4499,7 +4473,7 @@ if __name__ == '__main__':
 						else:
 							fat="exfat"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0270: ' + str(e))
 			else:
 				fat="exfat"
 			if args.fexport:
@@ -4510,7 +4484,7 @@ if __name__ == '__main__':
 						else:
 							fx="folder"
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0271: ' + str(e))
 			else:
 				fx="files"
 
@@ -4567,7 +4541,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0272: ' + str(e))
 				if filepath.endswith(".xci") or filepath.endswith('.xcz'):
 					try:
 						f = Fs.Xci(filepath)
@@ -4575,7 +4549,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0273: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Archive to nsp
@@ -4610,7 +4584,7 @@ if __name__ == '__main__':
 								shutil.move(filepath,endfolder)
 					win32api.SetFileAttributes(endfolder,win32con.FILE_ATTRIBUTE_ARCHIVE)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0274: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Join split files
@@ -4623,7 +4597,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0275: ' + str(e))
 			else:
 				filepath = args.joinfile
 				dir=os.path.dirname(os.path.abspath(filepath))
@@ -4635,7 +4609,7 @@ if __name__ == '__main__':
 					try:
 						buffer = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0276: ' + str(e))
 			else:
 				buffer = 65536
 			if args.text_file:
@@ -4646,7 +4620,7 @@ if __name__ == '__main__':
 			else:
 				for filepath in args.joinfile:
 					filepath=filepath
-			print(filepath)
+			#print(filepath)
 			file_list=list()
 			try:
 				bname=os.path.basename(os.path.abspath(filepath))
@@ -4686,7 +4660,7 @@ if __name__ == '__main__':
 				file_list.sort()
 				#print(file_list)
 			except BaseException as e:
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception0277: ' + str(e))
 			totSize = sum(os.path.getsize(file) for file in file_list)
 			if sys.platform == 'win32':
 				 v_drive, v_path = os.path.splitdrive(outfile)
@@ -4736,7 +4710,7 @@ if __name__ == '__main__':
 								fp = os.path.join(ruta, f)
 								zippy.write(fp,f)
 			except BaseException as e:
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception0278: ' + str(e))
 			Status.close()
 # INFORMATION
 		# ...................................................
@@ -4751,7 +4725,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0279: ' + str(e))
 				if filename.endswith('.xci'):
 					try:
 						f = Fs.factory(filename)
@@ -4760,7 +4734,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0280: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Show advance filelist
@@ -4771,7 +4745,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0281: ' + str(e))
 			else:
 				for filename in args.ADVfilelist:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -4819,7 +4793,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0282: ' + str(e))
 			if filename.endswith('.xci') or filename.endswith('.xcz'):
 				try:
 					f = Fs.factory(filename)
@@ -4845,7 +4819,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0283: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Show advance filelist
@@ -4856,7 +4830,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0284: ' + str(e))
 			else:
 				for filename in args.ADVcontentlist:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -4904,7 +4878,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0285: ' + str(e))
 			if filename.endswith('.xci') or filename.endswith('.xcz'):
 				try:
 					f = Fs.factory(filename)
@@ -4930,7 +4904,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0286: ' + str(e))
 			Status.close()
 		# ...................................................
 		# FW REQ INFO
@@ -4955,7 +4929,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0287: ' + str(e))
 			else:
 				for filename in args.fw_req:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -5003,7 +4977,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0288: ' + str(e))
 			if filename.endswith('.xci') or filename.endswith('.xcz'):
 				try:
 					f = Fs.factory(filename)
@@ -5029,7 +5003,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0289: ' + str(e))
 			Status.close()
 		# ...................................................
 		# XCI HEADER
@@ -5044,7 +5018,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0290: ' + str(e))
 			Status.close()
 		# ...................................................
 		# ADD CONTENT TO DATABASE
@@ -5107,13 +5081,13 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0291: ' + str(e))
 						with open(errfile, 'a') as errfile:
 							now=datetime.now()
 							date=now.strftime("%x")+". "+now.strftime("%X")
 							errfile.write(date+' Error in "ADD TO DATABASE" function:'+'\n')
 							errfile.write("Route "+str(filename)+'\n')
-							errfile.write('- Exception: ' + str(e)+ '\n')
+							errfile.write('- Exception0292: ' + str(e)+ '\n')
 				if (filename.lower()).endswith('.xci') or (filename.lower()).endswith('.xcz'):
 					try:
 						infile=r''
@@ -5124,13 +5098,13 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0293: ' + str(e))
 						with open(errfile, 'a') as errfile:
 							now=datetime.now()
 							date=now.strftime("%x")+". "+now.strftime("%X")
 							errfile.write(date+' Error in "ADD TO DATABASE" function:'+'\n')
 							errfile.write("Route "+str(filename)+'\n')
-							errfile.write('- Exception: ' + str(e)+ '\n')
+							errfile.write('- Exception0294: ' + str(e)+ '\n')
 
 		#parser.add_argument('-nscdb_new', '--addtodb_new', nargs='+', help='Adds content to database')
 		if args.addtodb_new:
@@ -5154,13 +5128,13 @@ if __name__ == '__main__':
 						f = Fs.Nsp(filename, 'rb')
 						f.Incorporate_to_permaDB(DBfile,trans)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0295: ' + str(e))
 				if (filename.lower()).endswith('.xci') or (filename.lower()).endswith('.xcz'):
 					try:
 						f = Fs.Xci(filename)
 						f.Incorporate_to_permaDB(DBfile,trans)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0296: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Show info
@@ -5206,7 +5180,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0297: ' + str(e))
 			else:
 				for filename in args.Read_nacp:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -5254,7 +5228,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0298: ' + str(e))
 			if filename.endswith('.xci') or filename.endswith('.xcz'):
 				try:
 					f = Fs.factory(filename)
@@ -5280,7 +5254,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0299: ' + str(e))
 			if filename.endswith('.nca'):
 				try:
 					f = Fs.Nca(filename, 'rb')
@@ -5311,7 +5285,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0300: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Read ncap inside nsp or xci
@@ -5328,7 +5302,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0301: ' + str(e))
 			if filename.endswith('.xci'):
 				try:
 					files_list=sq_tools.ret_xci_offsets(filename)
@@ -5337,7 +5311,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0302: ' + str(e))
 			Status.close()
 
 		# ......................................................................
@@ -5350,7 +5324,7 @@ if __name__ == '__main__':
 					try:
 						buffer = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0303: ' + str(e))
 			else:
 				buffer = 65536
 			ofolder=False
@@ -5359,7 +5333,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0304: ' + str(e))
 			if not os.path.exists(ofolder):
 				os.makedirs(ofolder)
 			if args.text_file:
@@ -5436,7 +5410,7 @@ if __name__ == '__main__':
 									fp.close()
 									break
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0305: ' + str(e))
 			elif test.endswith('.xci') or test.endswith('.xcz'):
 				try:
 					files_list=sq_tools.ret_xci_offsets(filename,32)
@@ -5488,7 +5462,7 @@ if __name__ == '__main__':
 									fp.close()
 									break
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0306: ' + str(e))
 			Status.close()
 		# ..........................................................................
 		# NCA_FILE_EXTACTION. EXTRACT FILES PACKED IN NCA FROM NSP\XCI\NCA
@@ -5500,7 +5474,7 @@ if __name__ == '__main__':
 					try:
 						buffer = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0307: ' + str(e))
 			else:
 				buffer = 65536
 			ofolder=False
@@ -5509,7 +5483,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0308: ' + str(e))
 			if not os.path.exists(ofolder):
 				os.makedirs(ofolder)
 			if args.text_file:
@@ -5543,7 +5517,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0309: ' + str(e))
 			if filename.endswith('.xci'):
 				try:
 					files_list=sq_tools.ret_xci_offsets(filename)
@@ -5552,7 +5526,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0310: ' + str(e))
 			Status.close()
 		# ...........................................................................
 		# NCA_2_PLAINTEXT. EXTRACT OR CONVERT NCA FILES TO PLAINTEXT FROM NSP\XCI\NCA
@@ -5564,7 +5538,7 @@ if __name__ == '__main__':
 					try:
 						buffer = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0311: ' + str(e))
 			else:
 				buffer = 65536
 			ofolder=False
@@ -5573,7 +5547,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0312: ' + str(e))
 			if not os.path.exists(ofolder):
 				os.makedirs(ofolder)
 			if args.text_file:
@@ -5607,7 +5581,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0313: ' + str(e))
 			if filename.endswith('.xci'):
 				try:
 					files_list=sq_tools.ret_xci_offsets(filename)
@@ -5617,7 +5591,7 @@ if __name__ == '__main__':
 					f.flush()
 					f.close()
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0314: ' + str(e))
 			Status.close()
 
 		# ...........................................................................
@@ -5630,7 +5604,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0315: ' + str(e))
 			else:
 				for filename in args.Read_npdm:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -5679,7 +5653,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0316: ' + str(e))
 			if filename.endswith(".xci"):
 				try:
 					files_list=sq_tools.ret_xci_offsets(filename)
@@ -5705,7 +5679,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0317: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Read cnmt inside nsp or xci
@@ -5717,7 +5691,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0318: ' + str(e))
 			else:
 				for filename in args.Read_cnmt:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -5765,7 +5739,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0319: ' + str(e))
 			if filename.endswith('.xci') or filename.endswith('.xcz'):
 				try:
 					f = Fs.factory(filename)
@@ -5791,7 +5765,7 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0320: ' + str(e))
 			if filename.endswith('.nca'):
 				try:
 					f = Fs.Nca(filename, 'rb')
@@ -5822,20 +5796,20 @@ if __name__ == '__main__':
 							else:
 								print('WRONG CHOICE\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0321: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Change Required System Version in an nca file
 		# ...................................................
-		if args.patchversion:
-			for input in args.patchversion:
-				try:
-					number = int(input)
-					break
-				except BaseException as e:
-					Print.error('Exception: ' + str(e))
-			else:
-				number = 336592896
+		# if args.patchversion:
+		# 	for input in args.patchversion:
+		# 		try:
+		# 			number = int(input)
+		# 			break
+		# 		except BaseException as e:
+		# 			Print.error('Exception0322: ' + str(e))
+		# 	else:
+		number = 336592896
 		if args.set_cnmt_RSV:
 			for filename in args.set_cnmt_RSV:
 				if filename.endswith('.nca'):
@@ -5880,7 +5854,7 @@ if __name__ == '__main__':
 						newpath =os.path.join(dir, newname)
 						os.rename(filename, newpath)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0323: ' + str(e))
 				if filename.endswith('.nsp'):
 					try:
 						f = Fs.Nsp(filename, 'r+b')
@@ -5888,7 +5862,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0324: ' + str(e))
 		Status.close()
 
 		#parser.add_argument('--set_cnmt_titleid', nargs='+', help='Changes cnmt.nca titleid')
@@ -5957,7 +5931,7 @@ if __name__ == '__main__':
 					newpath =os.path.join(dir, newname)					
 					os.rename(filename, newpath)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0325: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Change version number from nca
@@ -5969,7 +5943,7 @@ if __name__ == '__main__':
 					try:
 						number = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0326: ' + str(e))
 			else:
 				number = 65536
 			for filename in args.set_cnmt_version:
@@ -6015,7 +5989,7 @@ if __name__ == '__main__':
 						newpath =os.path.join(dir, newname)
 						os.rename(filename, newpath)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0327: ' + str(e))
 			Status.close()
 
 		# ..................
@@ -6031,7 +6005,7 @@ if __name__ == '__main__':
 						f.flush()
 						f.close()
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0328: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Update hashes in cnmt file
@@ -6083,7 +6057,7 @@ if __name__ == '__main__':
 						newpath =os.path.join(dir, newname)
 						os.rename(filename, newpath)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0329: ' + str(e))
 			Status.close()
 
 
@@ -6098,7 +6072,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0330: ' + str(e))
 			else:
 				for filename in args.xml_gen:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -6111,7 +6085,7 @@ if __name__ == '__main__':
 						f = Fs.Nca(filename, 'r+b')
 						f.xml_gen(ofolder,nsha)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0331: ' + str(e))
 			Status.close()
 
 
@@ -6124,12 +6098,12 @@ if __name__ == '__main__':
 				try:
 					line_number = int(args.line_number)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0332: ' + str(e))
 			if args.new_line:
 				try:
 					new_line = str(args.new_line)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0333: ' + str(e))
 			if args.change_line:
 				try:
 					config_file=os.path.abspath(str(args.change_line))
@@ -6137,7 +6111,7 @@ if __name__ == '__main__':
 					lines[line_number] = str(new_line)
 					open(str(config_file),'w').write('\n'.join(lines))
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0334: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Read line in text file
@@ -6148,12 +6122,12 @@ if __name__ == '__main__':
 				try:
 					write_line = str(args.new_line)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0335: ' + str(e))
 			if args.line_number:
 				try:
 					line_number = int(args.line_number)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0336: ' + str(e))
 			if args.read_line:
 				try:
 					indent = 4
@@ -6163,7 +6137,7 @@ if __name__ == '__main__':
 					line2read= str(lines[line_number])
 					Print.info(write_line + line2read)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0337: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Strip line in text file
@@ -6191,7 +6165,7 @@ if __name__ == '__main__':
 			try:
 				listmanager.striplines(textfile,number,counter)
 			except BaseException as e:
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception0338: ' + str(e))
 
 		#parser.add_argument('-showcline', '--show_current_line', nargs='+', help='Shows current line')
 		if args.show_current_line:
@@ -6204,7 +6178,7 @@ if __name__ == '__main__':
 			try:
 				listmanager.printcurrent(textfile,number)
 			except BaseException as e:
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception0339: ' + str(e))
 
 		#parser.add_argument('-countlines', '--count_n_lines', nargs='+', help='Count the number of lines')
 		if args.count_n_lines:
@@ -6214,7 +6188,7 @@ if __name__ == '__main__':
 				c=listmanager.counter(textfile)
 				print('STILL '+str(c)+' FILES TO PROCESS')
 			except BaseException as e:
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception0340: ' + str(e))
 
 		#parser.add_argument('-dff', '--delete_item', nargs='+', help='Deletes a os item listed in text file, a file or a folder')
 		if args.delete_item:
@@ -6227,7 +6201,7 @@ if __name__ == '__main__':
 				try:
 					os.remove(ruta)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0341: ' + str(e))
 					pass
 			else:
 				ruta = os.path.abspath(args.delete_item[0])
@@ -6235,13 +6209,13 @@ if __name__ == '__main__':
 					try:
 						shutil.rmtree(ruta, ignore_errors=True)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0342: ' + str(e))
 						pass
 				elif os.path.isfile(ruta):
 					try:
 						os.remove(ruta)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception0343: ' + str(e))
 						pass
 				else:
 					print('Input is not a system file or folder')
@@ -6371,13 +6345,13 @@ if __name__ == '__main__':
 							except:
 								continue
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception0344: ' + str(e))
 
 		if args.nint_keys:
 			try:
 				sq_tools.verify_nkeys(args.nint_keys)
 			except BaseException as e:
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception0345: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Clean tags in filenames
@@ -6553,7 +6527,7 @@ if __name__ == '__main__':
 			except BaseException as e:
 				counter=int(counter)
 				counter-=1
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception0346: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Rename file with proper name
@@ -6747,7 +6721,7 @@ if __name__ == '__main__':
 						except BaseException as e:
 							counter=int(counter)
 							counter-=1
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0347: ' + str(e))
 							continue
 						#print(prlist)
 					if filepath.endswith('.xci') or filepath.endswith('.xcz'):
@@ -6787,7 +6761,7 @@ if __name__ == '__main__':
 						except BaseException as e:
 							counter=int(counter)
 							counter-=1
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0348: ' + str(e))
 							continue
 					if filepath.endswith('.xci') or filepath.endswith('.nsp') or filepath.endswith('.nsx') or filepath.endswith('.nsz') or filepath.endswith('.xcz'):
 						basecount=0; basename='';basever='';baseid='';basefile=''
@@ -7049,7 +7023,7 @@ if __name__ == '__main__':
 					endname = re.sub(r'[òôóöø]', 'o', endname);endname = re.sub(r'[ÒÔÓÖØ]', 'O', endname)
 					endname = re.sub(r'[ùûúü]', 'u', endname);endname = re.sub(r'[ÙÛÚÜ]', 'U', endname)
 					endname = re.sub(r'[’]', "'", endname);endname = re.sub(r'[“”]', '"', endname)
-					endname = re.sub(' {3,}', ' ',endname);re.sub(' {2,}', ' ',endname);
+					endname = re.sub(r' {3,}', ' ',endname);re.sub(r' {2,}', ' ',endname);
 					try:
 						endname = endname.replace("( ", "(");endname = endname.replace(" )", ")")
 						endname = endname.replace("[ ", "[");endname = endname.replace(" ]", "]")
@@ -7123,7 +7097,7 @@ if __name__ == '__main__':
 			except BaseException as e:
 				counter=int(counter)
 				counter-=1
-				Print.error('Exception: ' + str(e))
+				Print.error('Exception0349: ' + str(e))
 			Status.close()
 		# **********************
 		# Rename using txt file
@@ -7181,7 +7155,7 @@ if __name__ == '__main__':
 									if notinlist == True:
 										prlist.append(contentlist[j])
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0350: ' + str(e))
 					if filepath.endswith('.xci'):
 						try:
 							c=list()
@@ -7212,7 +7186,7 @@ if __name__ == '__main__':
 									if notinlist == True:
 										prlist.append(contentlist[j])
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception0351: ' + str(e))
 				basecount=0; basename='';basever='';baseid='';basefile=''
 				updcount=0; updname='';updver='';updid='';updfile=''
 				dlccount=0; dlcname='';dlcver='';dlcid='';dlcfile=''
@@ -7333,7 +7307,7 @@ if __name__ == '__main__':
 			endname = re.sub(r'[òôóöø]', 'o', endname);endname = re.sub(r'[ÒÔÓÖØ]', 'O', endname)
 			endname = re.sub(r'[ùûúü]', 'u', endname);endname = re.sub(r'[ÙÛÚÜ]', 'U', endname)
 			endname = re.sub(r'[’]', "'", endname);endname = re.sub(r'[“”]', '"', endname)
-			endname = re.sub(' {3,}', ' ',endname);re.sub(' {2,}', ' ',endname);
+			endname = re.sub(r' {3,}', ' ',endname);re.sub(r' {2,}', ' ',endname);
 			try:
 				endname = endname.replace("( ", "(");endname = endname.replace(" )", ")")
 				endname = endname.replace("[ ", "[");endname = endname.replace(" ]", "]")
@@ -7461,7 +7435,7 @@ if __name__ == '__main__':
 							endname = re.sub(r'[òôóöø]', 'o', endname);endname = re.sub(r'[ÒÔÓÖØ]', 'O', endname)
 							endname = re.sub(r'[ùûúü]', 'u', endname);endname = re.sub(r'[ÙÛÚÜ]', 'U', endname)
 							endname = re.sub(r'[’]', "'", endname);endname = re.sub(r'[“”]', '"', endname)
-							endname = re.sub(' {3,}', ' ',endname);re.sub(' {2,}', ' ',endname);
+							endname = re.sub(r' {3,}', ' ',endname);re.sub(r' {2,}', ' ',endname);
 						try:
 							endname = endname.replace("( ", "(");endname = endname.replace(" )", ")")
 							endname = endname.replace("[ ", "[");endname = endname.replace(" ]", "]")
@@ -7489,7 +7463,7 @@ if __name__ == '__main__':
 				except BaseException as e:
 					counter=int(counter)
 					counter-=1
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception00: ' + str(e))
 			Status.close()
 		# ...................................................
 		# Verify. File verification
@@ -7542,7 +7516,7 @@ if __name__ == '__main__':
 							print(('\nTitlekey {} is incorrect for '.format(userkey)).upper()+('"{}"').format(basename))
 							print("-- BETTER LUCK NEXT TIME --")	
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception01: ' + str(e))
 			else:
 				print('Missing arguments')
 	
@@ -7564,7 +7538,7 @@ if __name__ == '__main__':
 					try:
 						buffer = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception02: ' + str(e))
 			else:
 				buffer = 65536
 			if args.ofolder:
@@ -7573,7 +7547,7 @@ if __name__ == '__main__':
 						ofolder = var
 						tmpfolder =os.path.join(ofolder,'tmp')
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception03: ' + str(e))
 			else:
 				for filename in args.verify:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -7687,14 +7661,14 @@ if __name__ == '__main__':
 						with open(infotext, 'w') as info:
 							info.write(feed)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception04: ' + str(e))
 					if args.text_file:
 						with open(errfile, 'a') as errfile:
 							now=datetime.now()
 							date=now.strftime("%x")+". "+now.strftime("%X")
 							errfile.write(date+'\n')
 							errfile.write("Filename: "+str(filename)+'\n')
-							errfile.write('Exception: ' + str(e)+'\n')
+							errfile.write('Exception05: ' + str(e)+'\n')
 			if filename.endswith('.xci'):
 				try:
 					f = Fs.factory(filename)
@@ -7790,14 +7764,14 @@ if __name__ == '__main__':
 						with open(infotext, 'w') as info:
 							info.write(feed)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception06: ' + str(e))
 					if args.text_file:
 						with open(errfile, 'a') as errfile:
 							now=datetime.now()
 							date=now.strftime("%x")+". "+now.strftime("%X")
 							errfile.write(date+'\n')
 							errfile.write("Filename: "+str(filename)+'\n')
-							errfile.write('Exception: ' + str(e)+'\n')
+							errfile.write('Exception07: ' + str(e)+'\n')
 			if filename.endswith('.nsz'):
 				try:
 					f = Fs.Nsp(filename, 'rb')
@@ -7887,14 +7861,14 @@ if __name__ == '__main__':
 						with open(infotext, 'w') as info:
 							info.write(feed)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception08: ' + str(e))
 					if args.text_file:
 						with open(errfile, 'a') as errfile:
 							now=datetime.now()
 							date=now.strftime("%x")+". "+now.strftime("%X")
 							errfile.write(date+'\n')
 							errfile.write("Filename: "+str(filename)+'\n')
-							errfile.write('Exception: ' + str(e)+'\n')		
+							errfile.write('Exception09: ' + str(e)+'\n')		
 			if filename.endswith('.xcz'):
 				try:
 					f = Fs.Xci(filename)
@@ -7984,14 +7958,14 @@ if __name__ == '__main__':
 						with open(infotext, 'w') as info:
 							info.write(feed)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception010: ' + str(e))
 					if args.text_file:
 						with open(errfile, 'a') as errfile:
 							now=datetime.now()
 							date=now.strftime("%x")+". "+now.strftime("%X")
 							errfile.write(date+'\n')
 							errfile.write("Filename: "+str(filename)+'\n')
-							errfile.write('Exception: ' + str(e)+'\n')								
+							errfile.write('Exception011: ' + str(e)+'\n')								
 			if filename.endswith('.nca'):
 				try:
 					f = Fs.Nca(filename, 'rb')
@@ -8061,14 +8035,14 @@ if __name__ == '__main__':
 						with open(infotext, 'w') as info:
 							info.write(feed)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception012: ' + str(e))
 					if args.text_file:
 						with open(errfile, 'a') as errfile:
 							now=datetime.now()
 							date=now.strftime("%x")+". "+now.strftime("%X")
 							errfile.write(date+'\n')
 							errfile.write("Filename: "+str(filename)+'\n')
-							errfile.write('Exception: ' + str(e)+'\n')
+							errfile.write('Exception013: ' + str(e)+'\n')
 			Status.close()
 
 		#split_list_by_id
@@ -8112,7 +8086,7 @@ if __name__ == '__main__':
 					else:
 						addonlist.append([filepath,contentlist])
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception014: ' + str(e))
 			'''
 			print('Baselist')
 			for i in baselist:
@@ -8219,7 +8193,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception015: ' + str(e))
 			else:
 				for filepath in args.mv_old_updates:
 					ofolder=os.path.abspath(filepath)
@@ -8285,7 +8259,7 @@ if __name__ == '__main__':
 									if binbin.lower() not in filename.lower():
 										filelist.append(filename)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception016: ' + str(e))
 					pass
 				'''
 				for file in filelist:
@@ -8357,7 +8331,7 @@ if __name__ == '__main__':
 						try:
 							Datashelve[str(fileid)]=[filepath,fileid,fileversion,cctag]
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception017: ' + str(e))
 					else:
 						try:
 							if str(fileid) in Datashelve:
@@ -8399,7 +8373,7 @@ if __name__ == '__main__':
 							else:
 								Datashelve[str(fileid)]=[filepath,fileid,fileversion,cctag]
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception018: ' + str(e))
 				Datashelve.close()
 				try:os.remove('File01.dshlv')
 				except:pass
@@ -8412,7 +8386,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception019: ' + str(e))
 			else:
 				for filepath in args.mv_old_dlcs:
 					ofolder=os.path.abspath(filepath)
@@ -8477,7 +8451,7 @@ if __name__ == '__main__':
 									if binbin.lower() not in filename.lower():
 										filelist.append(filename)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception020: ' + str(e))
 					pass
 				'''
 				for file in filelist:
@@ -8558,7 +8532,7 @@ if __name__ == '__main__':
 						try:
 							Datashelve[str(fileid)]=[filepath,fileid,fileversion,cctag]
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception021: ' + str(e))
 					else:
 						try:
 							if str(fileid) in Datashelve:
@@ -8600,7 +8574,7 @@ if __name__ == '__main__':
 							else:
 								Datashelve[str(fileid)]=[filepath,fileid,fileversion,cctag]
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception022: ' + str(e))
 				Datashelve.close()
 				try:os.remove('File01.dshlv')
 				except:pass
@@ -8614,7 +8588,7 @@ if __name__ == '__main__':
 					# try:
 						# ofolder = input
 					# except BaseException as e:
-						# Print.error('Exception: ' + str(e))
+						# Print.error('Exception023: ' + str(e))
 			# else:
 				# for filepath in args.cr_incl_list:
 					# ofolder=os.path.abspath(filepath)
@@ -8629,7 +8603,7 @@ if __name__ == '__main__':
 					try:
 						exportlist = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception024: ' + str(e))
 			baselist=list()
 			addonlist=list()
 			updlist=list();updtomove=list()
@@ -8696,7 +8670,7 @@ if __name__ == '__main__':
 									if binbin.lower() not in filename.lower():
 										filelist2.append(filename)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception025: ' + str(e))
 					pass
 			'''
 			for file in filelist2:
@@ -8778,7 +8752,7 @@ if __name__ == '__main__':
 					try:
 						Datashelve[str(fileid)]=[filepath,fileid,fileversion,cctag]
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception026: ' + str(e))
 				else:
 					try:
 						if str(fileid) in Datashelve:
@@ -8796,7 +8770,7 @@ if __name__ == '__main__':
 						else:
 							Datashelve[str(fileid)]=[filepath,str(fileid),fileversion,cctag]
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception027: ' + str(e))
 			del filelist2
 
 			for filepath in filelist:
@@ -8882,7 +8856,7 @@ if __name__ == '__main__':
 						with open(exportlist,"a", encoding='utf8') as tfile:
 							tfile.write(filepath+'\n')
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception028: ' + str(e))
 			Datashelve.close()
 			try:os.remove('File01.dshlv')
 			except:pass
@@ -8900,7 +8874,7 @@ if __name__ == '__main__':
 					try:
 						exportlist = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception029: ' + str(e))
 			baselist=list()
 			addonlist=list()
 			updlist=list();updtomove=list()
@@ -8957,7 +8931,7 @@ if __name__ == '__main__':
 					try:
 						Datashelve[str(fileid)]=[filepath,fileid,fileversion,cctag,nG,nU,nD,baseid]
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception030: ' + str(e))
 				else:
 					try:
 						if str(fileid) in Datashelve:
@@ -8978,7 +8952,7 @@ if __name__ == '__main__':
 						else:
 							Datashelve[str(fileid)]=[filepath,fileid,fileversion,cctag,nG,nU,nD,baseid]
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception031: ' + str(e))
 			del filelist2
 
 			for filepath in filelist:
@@ -9014,7 +8988,7 @@ if __name__ == '__main__':
 					else:
 						pass
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception032: ' + str(e))
 			Datashelve.close()
 			try:os.remove('File01.dshlv')
 			except:pass
@@ -9031,7 +9005,7 @@ if __name__ == '__main__':
 					# try:
 						# ofolder = input
 					# except BaseException as e:
-						# Print.error('Exception: ' + str(e))
+						# Print.error('Exception033: ' + str(e))
 			# else:
 				# for filepath in args.cr_outdated_xci_list:
 					# ofolder=os.path.abspath(filepath)
@@ -9046,7 +9020,7 @@ if __name__ == '__main__':
 					try:
 						exportlist = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception034: ' + str(e))
 			baselist=list()
 			addonlist=list()
 			updlist=list();updtomove=list()
@@ -9113,7 +9087,7 @@ if __name__ == '__main__':
 									if binbin.lower() not in filename.lower():
 										filelist2.append(filename)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception035: ' + str(e))
 					pass
 			'''
 			for file in filelist2:
@@ -9196,7 +9170,7 @@ if __name__ == '__main__':
 					try:
 						Datashelve[str(fileid)]=[filepath,fileid,fileversion,cctag]
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception036: ' + str(e))
 				else:
 					try:
 						if str(fileid) in Datashelve:
@@ -9214,7 +9188,7 @@ if __name__ == '__main__':
 						else:
 							Datashelve[str(fileid)]=[filepath,str(fileid),fileversion,cctag]
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception037: ' + str(e))
 			del filelist2
 
 			for filepath in filelist:
@@ -9314,7 +9288,7 @@ if __name__ == '__main__':
 					else:
 						pass
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception038: ' + str(e))
 			Datashelve.close()
 			try:os.remove('File01.dshlv')
 			except:pass
@@ -9331,7 +9305,7 @@ if __name__ == '__main__':
 					# try:
 						# ofolder = input
 					# except BaseException as e:
-						# Print.error('Exception: ' + str(e))
+						# Print.error('Exception039: ' + str(e))
 			# else:
 				# for filepath in args.cr_expand_list:
 					# ofolder=os.path.abspath(filepath)
@@ -9346,7 +9320,7 @@ if __name__ == '__main__':
 					try:
 						exportlist = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception040: ' + str(e))
 			baselist=list()
 			addonlist=list()
 			updlist=list();updtomove=list()
@@ -9413,7 +9387,7 @@ if __name__ == '__main__':
 									if binbin.lower() not in filename.lower():
 										filelist2.append(filename)
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception041: ' + str(e))
 					pass
 			'''
 			for file in filelist2:
@@ -9497,7 +9471,7 @@ if __name__ == '__main__':
 					try:
 						Datashelve[str(fileid)]=[filepath,fileid,fileversion,cctag]
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception042: ' + str(e))
 				else:
 					try:
 						if str(fileid) in Datashelve:
@@ -9515,7 +9489,7 @@ if __name__ == '__main__':
 						else:
 							Datashelve[str(fileid)]=[filepath,str(fileid),fileversion,cctag]
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception043: ' + str(e))
 			del filelist2
 
 			for filepath in filelist:
@@ -9618,7 +9592,7 @@ if __name__ == '__main__':
 					else:
 						pass
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception044: ' + str(e))
 			Datashelve.close()
 			try:os.remove('File01.dshlv')
 			except:pass
@@ -9632,7 +9606,7 @@ if __name__ == '__main__':
 						try:
 							exportlist = input
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception045: ' + str(e))
 				baselist=list()
 				addonlist=list()
 				updlist=list();updtomove=list()
@@ -9706,7 +9680,7 @@ if __name__ == '__main__':
 										if binbin.lower() not in filename.lower():
 											filelist2.append(filename)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception046: ' + str(e))
 						pass
 				test2="";test=""
 				Datashelve = dbmodule.Dict('File01.dshlv');c=0
@@ -9757,7 +9731,7 @@ if __name__ == '__main__':
 										if test==baseid:
 											del Datashelve[k]
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception047: ' + str(e))
 							continue
 				del blacklist
 				for k in Datashelve.keys():
@@ -9779,7 +9753,7 @@ if __name__ == '__main__':
 						try:
 							exportlist = input
 						except BaseException as e:
-							Print.error('Exception: ' + str(e))
+							Print.error('Exception048: ' + str(e))
 				baselist=list()
 				addonlist=list()
 				updlist=list();updtomove=list()
@@ -9846,7 +9820,7 @@ if __name__ == '__main__':
 										if binbin.lower() not in filename.lower():
 											filelist2.append(filename)
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception049: ' + str(e))
 						pass
 				test2="";test=""
 				Datashelve = dbmodule.Dict('File01.dshlv');c=0
@@ -9889,7 +9863,7 @@ if __name__ == '__main__':
 										dlcpaths.append(filepath)
 									dlclist.remove(filepath)
 							except BaseException as e:
-								Print.error('Exception: ' + str(e))
+								Print.error('Exception050: ' + str(e))
 								pass
 							# print(str(count))
 							# print(str(numbDLC))
@@ -9912,7 +9886,7 @@ if __name__ == '__main__':
 					try:
 						buffer = var
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception051: ' + str(e))
 			else:
 				buffer = 65536
 			if args.ofolder:
@@ -9920,7 +9894,7 @@ if __name__ == '__main__':
 					try:
 						ofolder = input
 					except BaseException as e:
-						Print.error('Exception: ' + str(e))
+						Print.error('Exception052: ' + str(e))
 			else:
 				for filename in args.restore:
 					dir=os.path.dirname(os.path.abspath(filename))
@@ -9982,7 +9956,7 @@ if __name__ == '__main__':
 					if verdict == False:		
 						print("\nFILE WAS MODIFIED. FILE ISN'T RESTORABLE")					
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))
+					Print.error('Exception053: ' + str(e))
 			if filename.endswith('.xci'):		
 				try:
 					f = Fs.Xci(filename)
@@ -10015,7 +9989,7 @@ if __name__ == '__main__':
 					elif verdict == False:		
 						print("\nFILE WAS MODIFIED. FILE ISN'T RESTORABLE")					
 				except BaseException as e:
-					Print.error('Exception: ' + str(e))			
+					Print.error('Exception054: ' + str(e))			
 
 		Status.close()
 
