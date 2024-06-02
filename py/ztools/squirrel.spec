@@ -5,8 +5,6 @@ import pykakasi
 
 pykakasi_path = os.path.dirname(pykakasi.__file__)
 
-block_cipher = None
-
 a = Analysis(
     ['squirrel.py'],
     pathex=['.', '_bottle_websocket_', '_bottle_websocket_\\*.py', '_EEL_', '_EEL_\\*.py', 'lib', 'lib\\*.py', 'nutFs', 'nutFs\\*.py', 'Fs', 'Fs\\*.py', 'manager', 'manager\\*.py', 'mtp', 'mtp\\*.py', 'Drive', 'Drive\\*.py'],
@@ -19,39 +17,30 @@ a = Analysis(
     excludes=['dist','build'],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
-    cipher=block_cipher,
-    noarchive=False
+    noarchive=False,
+    optimize=1,
 )
-pyz = PYZ(
-    a.pure,
-    a.zipped_data,
-    cipher=block_cipher
-)
+pyz = PYZ(a.pure)
+
 exe = EXE(
     pyz,
-    a.scripts, 
+    a.scripts,
+    a.binaries,
+    a.datas,
     [],
-    exclude_binaries=True,
-    name='squirrel',
+    name='Squirrel',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
     console=False,
     disable_windowed_traceback=False,
+    argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
     icon='squirrel.ico',
     version='version.txt'
-)
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.zipfiles,
-    a.datas, 
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='squirrel'
 )
