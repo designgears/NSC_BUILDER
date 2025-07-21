@@ -9,6 +9,7 @@ import struct
 import random
 import re
 import math
+import traceback
 from binascii import unhexlify as uhx
 from pathlib import Path
 from hashlib import sha256
@@ -17,16 +18,44 @@ from struct import pack as pk
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
 import zstandard
-import io
 
-# Custom decompressor implementation
-def readInt64(f, byteorder='little', signed=False):
+# Constants
+BUFFER_SIZE = 65536
+NCA_HEADER_SIZE = 0x400
+XCI_HEADER_OFFSET = 0xF000
+HFS0_ENTRY_SIZE = 0x40
+PFS0_ENTRY_SIZE = 0x18
+
+# Utility functions
+def read_int64(f, byteorder='little', signed=False):
+    """Read 64-bit integer from file"""
     return int.from_bytes(f.read(8), byteorder=byteorder, signed=signed)
 
-def readInt128(f, byteorder='little', signed=False):
+def read_int128(f, byteorder='little', signed=False):
+    """Read 128-bit integer from file"""
     return int.from_bytes(f.read(16), byteorder=byteorder, signed=signed)
 
+def randhex(size):
+    """Generate random hex string"""
+    return ''.join(random.choice('0123456789ABCDEF') for _ in range(size * 2))
+
+def cleanup_temp_files(temp_files):
+    """Clean up temporary files and directories"""
+    if not temp_files:
+        return
+    for temp_file in temp_files:
+        try:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+            # Remove empty temp directory
+            temp_dir = os.path.dirname(temp_file)
+            if os.path.exists(temp_dir) and not os.listdir(temp_dir):
+                os.rmdir(temp_dir)
+        except Exception:
+            pass  # Silently handle cleanup errors
+
 class AESCTR:
+    """AES-CTR encryption/decryption handler"""
     def __init__(self, key, nonce, offset=0):
         self.key = key
         self.nonce = nonce
@@ -45,12 +74,13 @@ class AESCTR:
         self.aes = AES.new(self.key, AES.MODE_CTR, counter=self.ctr)
 
 class Section:
+    """NCZ section handler"""
     def __init__(self, f):
         self.f = f
-        self.offset = readInt64(f)
-        self.size = readInt64(f)
-        self.cryptoType = readInt64(f)
-        readInt64(f)  # padding
+        self.offset = read_int64(f)
+        self.size = read_int64(f)
+        self.cryptoType = read_int64(f)
+        read_int64(f)  # padding
         self.cryptoKey = f.read(16)
         self.cryptoCounter = f.read(16)
 
@@ -58,174 +88,222 @@ def decompress_ncz_custom(input_path, output_path):
     """Custom NCZ decompression implementation"""
     try:
         with open(input_path, 'rb') as f:
+            # Read header and section info
             header = f.read(0x4000)
-            magic = readInt64(f)
-            sectionCount = readInt64(f)
-            sections = []
-            for i in range(sectionCount):
-                sections.append(Section(f))
+            magic = read_int64(f)
+            section_count = read_int64(f)
+            sections = [Section(f) for _ in range(section_count)]
                 
+            # Decompress main data
             dctx = zstandard.ZstdDecompressor()
             reader = dctx.stream_reader(f)
                 
             with open(output_path, 'wb+') as o:
                 o.write(header)
                 
+                # Stream decompressed data
                 while True:
                     chunk = reader.read(16384)
-                    
                     if not chunk:
                         break
-                        
                     o.write(chunk)
                     
-                for s in sections:
-                    if s.cryptoType == 1:  # plain text
+                # Process encrypted sections
+                for section in sections:
+                    if section.cryptoType == 1:  # plain text
                         continue
                         
-                    if s.cryptoType != 3:
-                        raise IOError('unknown crypto type')
+                    if section.cryptoType != 3:
+                        raise IOError(f'Unknown crypto type: {section.cryptoType}')
                         
-                    print('%x - %d bytes, type %d' % (s.offset, s.size, s.cryptoType))
+                    print(f'{section.offset:x} - {section.size} bytes, type {section.cryptoType}')
                     
-                    i = s.offset
-                    
-                    crypto = AESCTR(s.cryptoKey, s.cryptoCounter)
-                    end = s.offset + s.size
-                    
-                    while i < end:
-                        o.seek(i)
-                        crypto.seek(i)
-                        chunkSz = 0x10000 if end - i > 0x10000 else end - i
-                        buf = o.read(chunkSz)
-                        
-                        if not len(buf):
-                            break
-                        
-                        o.seek(i)
-                        o.write(crypto.encrypt(buf))
-                        
-                        i += chunkSz
+                    crypto = AESCTR(section.cryptoKey, section.cryptoCounter)
+                    _decrypt_section(o, crypto, section.offset, section.size)
         return True
     except Exception as e:
         print(f"Error decompressing NCZ {input_path}: {e}")
         return False
 
-# Helper functions for NSZ/XCZ decompression
+def _decrypt_section(file_handle, crypto, offset, size):
+    """Decrypt a section of the file"""
+    current_pos = offset
+    end_pos = offset + size
+    
+    while current_pos < end_pos:
+        file_handle.seek(current_pos)
+        crypto.seek(current_pos)
+        chunk_size = min(0x10000, end_pos - current_pos)
+        buf = file_handle.read(chunk_size)
+        
+        if not buf:
+            break
+        
+        file_handle.seek(current_pos)
+        file_handle.write(crypto.encrypt(buf))
+        current_pos += chunk_size
+
+# File parsing utilities
 def ret_nsp_offsets(filepath, kbsize=8):
     """Parse NSP file offsets"""
+    return _parse_pfs0_offsets(filepath, kbsize, 0, PFS0_ENTRY_SIZE, 'NSP')
+
+def _parse_pfs0_offsets(filepath, kbsize, base_offset, entry_size, file_type):
+    """Generic PFS0 offset parser"""
     kbsize = int(kbsize)
     files_list = []
     try:
         with open(filepath, 'r+b') as f:
+            f.seek(base_offset)
             data = f.read(int(kbsize * 1024))
+        
+        if len(data) < 16 or data[0:4] != b'PFS0':
+            return files_list
+            
         try:
-            head = data[0:4]
             n_files = int.from_bytes(data[4:8], byteorder='little')
             st_size = int.from_bytes(data[8:12], byteorder='little')
-            junk = data[12:16]
-            offset = 0x10 + n_files * 0x18
-            stringTable = data[offset:offset + st_size]
-            stringEndOffset = st_size
-            headerSize = 0x10 + 0x18 * n_files + st_size
+            
+            string_table_offset = 0x10 + n_files * entry_size
+            string_table = data[string_table_offset:string_table_offset + st_size]
+            header_size = string_table_offset + st_size
+            string_end_offset = st_size
             
             for i in range(n_files):
-                i = n_files - i - 1
-                pos = 0x10 + i * 0x18
+                idx = n_files - i - 1
+                pos = 0x10 + idx * entry_size
+                
+                if pos + entry_size > len(data):
+                    break
+                    
                 offset = int.from_bytes(data[pos:pos + 8], byteorder='little')
                 size = int.from_bytes(data[pos + 8:pos + 16], byteorder='little')
-                nameOffset = int.from_bytes(data[pos + 16:pos + 20], byteorder='little')
-                name = stringTable[nameOffset:stringEndOffset].decode('utf-8').rstrip(' \t\r\n\0')
-                stringEndOffset = nameOffset
-                junk2 = data[pos + 20:pos + 24]
+                name_offset = int.from_bytes(data[pos + 16:pos + 20], byteorder='little')
                 
-                off1 = offset + headerSize
-                off2 = off1 + size
-                files_list.append([name, off1, off2, size])
+                if name_offset < string_end_offset:
+                    name = string_table[name_offset:string_end_offset].decode('utf-8').rstrip(' \t\r\n\0')
+                    string_end_offset = name_offset
+                    
+                    file_start = base_offset + header_size + offset
+                    file_end = file_start + size
+                    files_list.append([name, file_start, file_end, size])
+                    
             files_list.reverse()
         except Exception as e:
-            print(f'Exception parsing NSP: {e}')
+            print(f'Exception parsing {file_type}: {e}')
     except Exception as e:
-        print(f'Exception reading NSP: {e}')
+        print(f'Exception reading {file_type}: {e}')
     return files_list
 
 def ret_xci_offsets(filepath, kbsize=8):
     """Parse XCI file offsets"""
+    try:
+        with open(filepath, 'r+b') as f:
+            # Read XCI header to find secure partition offset
+            f.seek(0x100)
+            magic = f.read(4)
+            if magic != b'HEAD':
+                return []
+                
+            secure_offset = int.from_bytes(f.read(4), byteorder='little') * 0x200
+            
+            # Parse secure partition as HFS0
+            return _parse_hfs0_offsets(filepath, kbsize, secure_offset, 'XCI')
+    except Exception as e:
+        print(f'Exception reading XCI: {e}')
+        return []
+
+def _parse_hfs0_offsets(filepath, kbsize, base_offset, file_type):
+    """Parse HFS0 partition offsets"""
     kbsize = int(kbsize)
     files_list = []
     try:
         with open(filepath, 'r+b') as f:
-            rawhead = io.BytesIO(f.read(int(0x200)))
-            data = rawhead.read()
+            f.seek(base_offset)
+            data = f.read(int(kbsize * 1024))
+            
+        if len(data) < 16 or data[0:4] != b'HFS0':
+            return files_list
+            
         try:
-            rawhead.seek(0x100)
-            magic = rawhead.read(0x4)
-            if magic == b'HEAD':
-                secureOffset = int.from_bytes(rawhead.read(4), byteorder='little')
-                secureOffset = secureOffset * 0x200
-                with open(filepath, 'r+b') as f:
-                    f.seek(secureOffset)
-                    data = f.read(int(kbsize * 1024))
-                    rawhead = io.BytesIO(data)
-                rmagic = rawhead.read(0x4)
-                if rmagic == b'HFS0':
-                    head = data[0:4]
-                    n_files = int.from_bytes(data[4:8], byteorder='little')
-                    st_size = int.from_bytes(data[8:12], byteorder='little')
-                    junk = data[12:16]
-                    offset = 0x10 + n_files * 0x40
-                    stringTable = data[offset:offset + st_size]
-                    stringEndOffset = st_size
-                    headerSize = 0x10 + 0x40 * n_files + st_size
+            n_files = int.from_bytes(data[4:8], byteorder='little')
+            st_size = int.from_bytes(data[8:12], byteorder='little')
+            
+            string_table_offset = 0x10 + n_files * HFS0_ENTRY_SIZE
+            string_table = data[string_table_offset:string_table_offset + st_size]
+            header_size = string_table_offset + st_size
+            string_end_offset = st_size
+            
+            for i in range(n_files):
+                idx = n_files - i - 1
+                pos = 0x10 + idx * HFS0_ENTRY_SIZE
+                
+                if pos + HFS0_ENTRY_SIZE > len(data):
+                    break
                     
-                    for i in range(n_files):
-                        i = n_files - i - 1
-                        pos = 0x10 + i * 0x40
-                        offset = int.from_bytes(data[pos:pos + 8], byteorder='little')
-                        size = int.from_bytes(data[pos + 8:pos + 16], byteorder='little')
-                        nameOffset = int.from_bytes(data[pos + 16:pos + 20], byteorder='little')
-                        name = stringTable[nameOffset:stringEndOffset].decode('utf-8').rstrip(' \t\r\n\0')
-                        stringEndOffset = nameOffset
-                        
-                        off1 = offset + headerSize + secureOffset
-                        off2 = off1 + size
-                        files_list.append([name, off1, off2, size])
-                    files_list.reverse()
+                offset = int.from_bytes(data[pos:pos + 8], byteorder='little')
+                size = int.from_bytes(data[pos + 8:pos + 16], byteorder='little')
+                name_offset = int.from_bytes(data[pos + 16:pos + 20], byteorder='little')
+                
+                if name_offset < string_end_offset:
+                    name = string_table[name_offset:string_end_offset].decode('utf-8').rstrip(' \t\r\n\0')
+                    string_end_offset = name_offset
+                    
+                    file_start = base_offset + header_size + offset
+                    file_end = file_start + size
+                    files_list.append([name, file_start, file_end, size])
+                    
+            files_list.reverse()
         except Exception as e:
-            print(f'Exception parsing XCI: {e}')
+            print(f'Exception parsing {file_type}: {e}')
     except Exception as e:
-        print(f'Exception reading XCI: {e}')
+        print(f'Exception reading {file_type}: {e}')
     return files_list
 
-def gen_nsp_header(files, fileSizes):
+def gen_nsp_header(files, file_sizes):
     """Generate NSP header"""
-    filesNb = len(files)
-    stringTable = '\x00'.join(str(nca) for nca in files)
-    headerSize = 0x10 + (filesNb) * 0x18 + len(stringTable)
-    remainder = 0x10 - headerSize % 0x10
-    headerSize += remainder
-    fileOffsets = [sum(fileSizes[:n]) for n in range(filesNb)]
-    fileNamesLengths = [len(str(nca)) + 1 for nca in files]  # +1 for the \x00
-    stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
+    return _gen_pfs0_header(files, file_sizes, 0x10)
 
-    header = b''
-    header += b'PFS0'
-    header += pk('<I', filesNb)
-    header += pk('<I', len(stringTable) + remainder)
+def _gen_pfs0_header(files, file_sizes, alignment):
+    """Generate PFS0 header with specified alignment"""
+    files_nb = len(files)
+    string_table = '\x00'.join(str(nca) for nca in files)
+    header_size = 0x10 + files_nb * PFS0_ENTRY_SIZE + len(string_table)
+    remainder = alignment - (header_size % alignment) if header_size % alignment != 0 else 0
+    header_size += remainder
+    
+    file_offsets = [sum(file_sizes[:n]) for n in range(files_nb)]
+    file_names_lengths = [len(str(nca)) + 1 for nca in files]  # +1 for the \x00
+    string_table_offsets = [sum(file_names_lengths[:n]) for n in range(files_nb)]
+
+    header = b'PFS0'
+    header += pk('<I', files_nb)
+    header += pk('<I', len(string_table) + remainder)
     header += b'\x00\x00\x00\x00'
-    for n in range(filesNb):
-        header += pk('<Q', fileOffsets[n])
-        header += pk('<Q', fileSizes[n])
-        header += pk('<I', stringTableOffsets[n])
+    
+    for n in range(files_nb):
+        header += pk('<Q', file_offsets[n])
+        header += pk('<Q', file_sizes[n])
+        header += pk('<I', string_table_offsets[n])
         header += b'\x00\x00\x00\x00'
-    header += stringTable.encode()
+        
+    header += string_table.encode()
     header += remainder * b'\x00'
-
     return header
 
-def randhex(size):
-    """Generate random hex string"""
-    return ''.join(random.choice('0123456789ABCDEF') for _ in range(size * 2))
+def copy_file_content(src_path, dst_file, offset, size, buffer_size=BUFFER_SIZE):
+    """Copy file content from source to destination"""
+    with open(src_path, 'rb') as src:
+        src.seek(offset)
+        remaining = size
+        
+        while remaining > 0:
+            chunk_size = min(buffer_size, remaining)
+            chunk = src.read(chunk_size)
+            if not chunk:
+                break
+            dst_file.write(chunk)
+            remaining -= len(chunk)
 
 def get_xciheader(oflist, osizelist, sec_hashlist):
     """Generate XCI header (simplified version)"""
@@ -376,8 +454,18 @@ class MinimalNSP:
                         break
                     name += char
                 
+                # Try different encodings to handle various file name formats
+                try:
+                    decoded_name = name.decode('utf-8')
+                except UnicodeDecodeError:
+                    try:
+                        decoded_name = name.decode('latin-1')
+                    except UnicodeDecodeError:
+                        # Fallback: replace invalid characters
+                        decoded_name = name.decode('utf-8', errors='replace')
+                
                 self.files.append({
-                    'name': name.decode('utf-8'),
+                    'name': decoded_name,
                     'offset': 0x10 + file_count * 0x18 + string_table_size + offset,
                     'size': size
                 })
@@ -827,43 +915,9 @@ def decompress_xcz(input_path, output_path, buffer_size=65536):
         print(f"Error decompressing XCZ {input_path}: {e}")
         return False
 
-def copy_file_content(src_path, dst_file, offset, size, buffer_size=65536):
-    """Copy file content from source to destination"""
-    with open(src_path, 'rb') as src:
-        src.seek(offset)
-        remaining = size
-        
-        while remaining > 0:
-            chunk_size = min(buffer_size, remaining)
-            chunk = src.read(chunk_size)
-            if not chunk:
-                break
-            dst_file.write(chunk)
-            remaining -= len(chunk)
-
 def main():
-    parser = argparse.ArgumentParser(description='Standalone Squirrel - NSP/XCI repackaging and NSZ/XCZ decompression')
-    
-    # Core arguments
-    parser.add_argument('file', nargs='*', help='Input files')
-    parser.add_argument('-dc', '--direct_creation', nargs='+', help='Create directly a nsp or xci')
-    parser.add_argument('-dmul', '--direct_multi', nargs='+', help='Create directly a multi nsp or xci')
-    parser.add_argument('-dcpr', '--decompress', help='Decompress a nsz, xcz or ncz')
-    
-    # Options
-    parser.add_argument('-o', '--ofolder', nargs='+', help='Set output folder')
-    parser.add_argument('-tfile', '--text_file', help='Input text file with file list')
-    parser.add_argument('-b', '--buffer', type=int, default=65536, help='Set buffer size')
-    parser.add_argument('-t', '--type', default='xci', help='Set output type (xci only - NSP/NSZ inputs convert to XCI)')
-    parser.add_argument('-fat', '--fat', default='exfat', help='Set FAT format (fat32, exfat)')
-    parser.add_argument('-fx', '--fexport', default='files', help='Export format (files, folder)')
-    parser.add_argument('-ND', '--nodelta', action='store_true', default=True, help='Disable delta fragments')
-    parser.add_argument('-pv', '--patchversion', default='0', help='Patch version')
-    parser.add_argument('-kp', '--keypatch', default='False', help='Key patch')
-    parser.add_argument('-rsvc', '--RSVcap', type=int, default=268435656, help='RSV capacity')
-    parser.add_argument('-roma', '--romanize', action='store_true', default=True, help='Romanize names')
-    parser.add_argument('-rn', '--rename', help='Rename output file')
-    
+    """Main entry point for the application"""
+    parser = _create_argument_parser()
     args = parser.parse_args()
     
     try:
@@ -877,8 +931,38 @@ def main():
             parser.print_help()
             return 0
             
-    except Exception:
+    except Exception as e:
+        print(f"Error: {e}")
+        traceback.print_exc()
         return 1
+
+def _create_argument_parser():
+    """Create and configure argument parser"""
+    parser = argparse.ArgumentParser(
+        description='Standalone Squirrel - NSP/XCI repackaging and NSZ/XCZ decompression'
+    )
+    
+    # Core arguments
+    parser.add_argument('file', nargs='*', help='Input files')
+    parser.add_argument('-dc', '--direct_creation', nargs='+', help='Create directly a nsp or xci')
+    parser.add_argument('-dmul', '--direct_multi', nargs='+', help='Create directly a multi nsp or xci')
+    parser.add_argument('-dcpr', '--decompress', help='Decompress a nsz, xcz or ncz')
+    
+    # Options
+    parser.add_argument('-o', '--ofolder', nargs='+', help='Set output folder')
+    parser.add_argument('-tfile', '--text_file', help='Input text file with file list')
+    parser.add_argument('-b', '--buffer', type=int, default=BUFFER_SIZE, help='Set buffer size')
+    parser.add_argument('-t', '--type', default='xci', help='Set output type (xci only - NSP/NSZ inputs convert to XCI)')
+    parser.add_argument('-fat', '--fat', default='exfat', help='Set FAT format (fat32, exfat)')
+    parser.add_argument('-fx', '--fexport', default='files', help='Export format (files, folder)')
+    parser.add_argument('-ND', '--nodelta', action='store_true', default=True, help='Disable delta fragments')
+    parser.add_argument('-pv', '--patchversion', default='0', help='Patch version')
+    parser.add_argument('-kp', '--keypatch', default='False', help='Key patch')
+    parser.add_argument('-rsvc', '--RSVcap', type=int, default=268435656, help='RSV capacity')
+    parser.add_argument('-roma', '--romanize', action='store_true', default=True, help='Romanize names')
+    parser.add_argument('-rn', '--rename', help='Rename output file')
+    
+    return parser
 
 def get_output_folder(args):
     """Get output folder from args or create default"""
@@ -1013,21 +1097,23 @@ def handle_direct_creation(args):
 
 def handle_direct_multi(args):
     """Handle direct multi creation (-dmul)"""
-    if len(args.direct_multi) < 2:
+    if len(args.direct_multi) < 1:
         return 1
     
-    action, export_type = args.direct_multi[0], args.direct_multi[1]
+    # Get file list from text file or direct arguments
+    if args.text_file:
+        file_list = get_file_list(args.text_file)
+        if not file_list:
+            return 1
+    else:
+        # Use files passed directly as arguments
+        file_list = [f for f in args.direct_multi if os.path.exists(f)]
+        if not file_list:
+            print("No valid input files found")
+            return 1
     
-    if export_type.lower() != 'xci':
-        return 1
-    
-    if not args.text_file:
-        return 1
-    
-    # Get file list
-    file_list = get_file_list(args.text_file)
-    if not file_list:
-        return 1
+    # Default export type is XCI
+    export_type = 'xci'
     
     # Get output folder
     ofolder = get_output_folder(args)
@@ -1310,96 +1396,82 @@ def randhex(size):
 	random_digits = "".join([ hexdigits[random.randint(0,0xF)] for _ in range(size*2) ])
 	return random_digits
 
-def getGCsize(bytes):
-	Gbytes=bytes/(1024*1024*1024)
-	Gbytes=round(Gbytes,2)
-	if Gbytes>=32:
-		card=0xE3
-		firm_ver='1000a100'
-		return card,firm_ver
-	if Gbytes>=16:
-		card=0xE2
-		firm_ver='1000a100'
-		return card,firm_ver
-	if Gbytes>=8:
-		card=0xE1
-		firm_ver='1000a100'
-		return card,firm_ver
-	if Gbytes>=4:
-		card=0xE0
-		firm_ver='1000a100'
-		return card,firm_ver
-	if Gbytes>=2:
-		card=0xF0
-		firm_ver='1100a100'
-		return card,firm_ver
-	if Gbytes>=1:
-		card=0xF8
-		firm_ver='1100a100'
-		return card,firm_ver
-	if Gbytes<1:
-		card=0xFA
-		firm_ver='1100a100'
-		return card,firm_ver
+def getGCsize(bytes_size):
+    """Get game card size and firmware version based on file size"""
+    gb_size = bytes_size / (1024 * 1024 * 1024)
+    gb_size = round(gb_size, 2)
+    
+    # Define size thresholds and corresponding card types
+    size_mappings = [
+        (32, 0xE3, '1000a100'),
+        (16, 0xE2, '1000a100'),
+        (8, 0xE1, '1000a100'),
+        (4, 0xE0, '1000a100'),
+        (2, 0xF0, '1100a100'),
+        (1, 0xF8, '1100a100'),
+        (0, 0xFA, '1100a100')  # Default for < 1GB
+    ]
+    
+    for threshold, card, firm_ver in size_mappings:
+        if gb_size >= threshold:
+            return card, firm_ver
+    
+    # Fallback (should never reach here)
+    return 0xFA, '1100a100'
 
-def get_enc_gameinfo(bytes):
-	Gbytes=bytes/(1024*1024*1024)
-	Gbytes=round(Gbytes,2)
-	if Gbytes>=32 or Gbytes>=16 or Gbytes>=8 or Gbytes>=4:
-		firm_ver= 0x9298F35088F09F7D
-		access_freq= 0xa89a60d4
-		Read_Wait_Time= 0xcba6f96f
-		Read_Wait_Time2= 0xa45bb6ac
-		Write_Wait_Time= 0xabc751f9
-		Write_Wait_Time2= 0x5d398742
-		Firmware_Mode = 0x6b38c3f2
-		CUP_Version = 0x10da0b70
-		Empty1 = 0x0e5ece29
-		Upd_Hash= 0xa13cbe1da6d052cb
-		CUP_Id = 0xf2087ce9af590538
-		Empty2= 0x570d78b9cdd27fbeb4a0ac2adff9ba77754dd6675ac76223506b3bdabcb2e212fa465111ab7d51afc8b5b2b21c4b3f40654598620282add6
-	else:
-		firm_ver= 0x9109FF82971EE993
-		access_freq=0x5011ca06
-		Read_Wait_Time=0x3f3c4d87
-		Read_Wait_Time2=0xa13d28a9
-		Write_Wait_Time=0x928d74f1
-		Write_Wait_Time2=0x49919eb7
-		Firmware_Mode =0x82e1f0cf
-		CUP_Version = 0xe4a5a3bd
-		Empty1 = 0xf978295c
-		Upd_Hash= 0xd52639a4991bdb1f
-		CUP_Id = 0xed841779a3f85d23
-		Empty2= 0xaa4242135616f5187c03cf0d97e5d218fdb245381fd1cf8dfb796fbeda4bf7f7d6b128ce89bc9eaa8552d42f597c5db866c67bb0dd8eea11
-
-	firm_ver=firm_ver.to_bytes(8, byteorder='big')
-	access_freq=access_freq.to_bytes(4, byteorder='big')
-	Read_Wait_Time=Read_Wait_Time.to_bytes(4, byteorder='big')
-	Read_Wait_Time2=Read_Wait_Time2.to_bytes(4, byteorder='big')
-	Write_Wait_Time=Write_Wait_Time.to_bytes(4, byteorder='big')
-	Write_Wait_Time2=Write_Wait_Time2.to_bytes(4, byteorder='big')
-	Firmware_Mode=Firmware_Mode.to_bytes(4, byteorder='big')
-	CUP_Version=CUP_Version.to_bytes(4, byteorder='big')
-	Empty1=Empty1.to_bytes(4, byteorder='big')
-	Upd_Hash=Upd_Hash.to_bytes(8, byteorder='big')
-	CUP_Id=CUP_Id.to_bytes(8, byteorder='big')
-	Empty2=Empty2.to_bytes(56, byteorder='big')
-
-	Game_info =  b''
-	Game_info += firm_ver
-	Game_info += access_freq
-	Game_info += Read_Wait_Time
-	Game_info += Read_Wait_Time2
-	Game_info += Write_Wait_Time
-	Game_info += Write_Wait_Time2
-	Game_info += Firmware_Mode
-	Game_info += CUP_Version
-	Game_info += Empty1
-	Game_info += Upd_Hash
-	Game_info += CUP_Id
-	Game_info += Empty2
-
-	return Game_info
+def get_enc_gameinfo(bytes_size):
+    """Generate encrypted game info based on file size"""
+    gb_size = bytes_size / (1024 * 1024 * 1024)
+    gb_size = round(gb_size, 2)
+    
+    # Select game info parameters based on size
+    if gb_size >= 4:  # Large games (4GB+)
+        game_params = {
+            'firm_ver': 0x9298F35088F09F7D,
+            'access_freq': 0xa89a60d4,
+            'read_wait_time': 0xcba6f96f,
+            'read_wait_time2': 0xa45bb6ac,
+            'write_wait_time': 0xabc751f9,
+            'write_wait_time2': 0x5d398742,
+            'firmware_mode': 0x6b38c3f2,
+            'cup_version': 0x10da0b70,
+            'empty1': 0x0e5ece29,
+            'upd_hash': 0xa13cbe1da6d052cb,
+            'cup_id': 0xf2087ce9af590538,
+            'empty2': 0x570d78b9cdd27fbeb4a0ac2adff9ba77754dd6675ac76223506b3bdabcb2e212fa465111ab7d51afc8b5b2b21c4b3f40654598620282add6
+        }
+    else:  # Small games (< 4GB)
+        game_params = {
+            'firm_ver': 0x9109FF82971EE993,
+            'access_freq': 0x5011ca06,
+            'read_wait_time': 0x3f3c4d87,
+            'read_wait_time2': 0xa13d28a9,
+            'write_wait_time': 0x928d74f1,
+            'write_wait_time2': 0x49919eb7,
+            'firmware_mode': 0x82e1f0cf,
+            'cup_version': 0xe4a5a3bd,
+            'empty1': 0xf978295c,
+            'upd_hash': 0xd52639a4991bdb1f,
+            'cup_id': 0xed841779a3f85d23,
+            'empty2': 0xaa4242135616f5187c03cf0d97e5d218fdb245381fd1cf8dfb796fbeda4bf7f7d6b128ce89bc9eaa8552d42f597c5db866c67bb0dd8eea11
+        }
+    
+    # Convert to bytes and build game info
+    game_info = b''
+    game_info += game_params['firm_ver'].to_bytes(8, byteorder='big')
+    game_info += game_params['access_freq'].to_bytes(4, byteorder='big')
+    game_info += game_params['read_wait_time'].to_bytes(4, byteorder='big')
+    game_info += game_params['read_wait_time2'].to_bytes(4, byteorder='big')
+    game_info += game_params['write_wait_time'].to_bytes(4, byteorder='big')
+    game_info += game_params['write_wait_time2'].to_bytes(4, byteorder='big')
+    game_info += game_params['firmware_mode'].to_bytes(4, byteorder='big')
+    game_info += game_params['cup_version'].to_bytes(4, byteorder='big')
+    game_info += game_params['empty1'].to_bytes(4, byteorder='big')
+    game_info += game_params['upd_hash'].to_bytes(8, byteorder='big')
+    game_info += game_params['cup_id'].to_bytes(8, byteorder='big')
+    game_info += game_params['empty2'].to_bytes(56, byteorder='big')
+    
+    return game_info
 
 def get_xciheader(oflist,osizelist,sec_hashlist):
 	upd_list=list()
@@ -1680,156 +1752,86 @@ elif raw_keys_file3.is_file():
 if not raw_keys_file.is_file() and not raw_keys_file2.is_file() and not raw_keys_file3.is_file():
 	print('keys.txt missing')
 
-def gen_rhfs0_head(upd_list,norm_list,sec_list,sec_fileSizes,sec_shalist):
-
-    hreg=0x200
-    hashregion = hreg.to_bytes(0x04, byteorder='little')
+def gen_rhfs0_head(upd_list, norm_list, sec_list, sec_file_sizes, sec_shalist):
+    """Generate root HFS0 header structure"""
+    # Generate individual headers
+    upd_header, upd_size, upd_multiplier = _gen_hfs0_header(upd_list, [], [])
+    norm_header, norm_size, norm_multiplier = _gen_hfs0_header(norm_list, [], [])
+    sec_header, sec_size, sec_multiplier = _gen_hfs0_header(sec_list, sec_file_sizes, sec_shalist)
     
-    #UPD HEADER
-    filesNb = len(upd_list)
-    stringTable = '\x00'.join(str(nca) for nca in upd_list)
-    headerSize = 0x10 + (filesNb)*0x40 + len(stringTable)
-    upd_multiplier=math.ceil(headerSize/0x200)
-    remainder = 0x200*upd_multiplier - headerSize
-    headerSize += remainder
-    fileSizes=list()
-    fileOffsets=list()
-    shalist=list()
+    # Generate root header
+    root_hreg = [
+        (0x200 * upd_multiplier).to_bytes(4, byteorder='little'),
+        (0x200 * norm_multiplier).to_bytes(4, byteorder='little'),
+        (0x200 * sec_multiplier).to_bytes(4, byteorder='little')
+    ]
+    
+    root_list = ["update", "normal", "secure"]
+    root_file_sizes = [upd_size, norm_size, sec_size]
+    root_shalist = [
+        sha256(upd_header).hexdigest(),
+        sha256(norm_header).hexdigest(),
+        sha256(sec_header).hexdigest()
+    ]
+    
+    root_header, root_size, root_multiplier = _gen_hfs0_header(
+        root_list, root_file_sizes, root_shalist, root_hreg
+    )
+    
+    return root_header, upd_header, norm_header, sec_header, root_size, upd_multiplier, norm_multiplier, sec_multiplier
 
-    fileNamesLengths = [len(os.path.basename(file))+1 for file in upd_list] # +1 for the \x00
-    stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
-
-    upd_header =  b''
-    upd_header += b'HFS0'
-    upd_header += pk('<I', filesNb)
-    upd_header += pk('<I', len(stringTable)+remainder)
-    upd_header += b'\x00\x00\x00\x00'
-    for n in range(filesNb):
-        upd_header += pk('<Q', fileOffsets[n])
-        upd_header += pk('<Q', fileSizes[n])
-        upd_header += pk('<I', stringTableOffsets[n])
-        upd_header += hashregion
-        upd_header += b'\x00\x00\x00\x00\x00\x00\x00\x00'
-        upd_header += bytes.fromhex(shalist[n])
-    upd_header += stringTable.encode()
-    upd_header += remainder * b'\x00'
-
-    updSize = len(upd_header) + sum(fileSizes)
-
-    #NORMAL HEADER
-    filesNb = len(norm_list)
-    stringTable = '\x00'.join(str(nca) for nca in norm_list)
-    headerSize = 0x10 + (filesNb)*0x40 + len(stringTable)
-    norm_multiplier=math.ceil(headerSize/0x200)
-    remainder = 0x200*norm_multiplier - headerSize
-    headerSize += remainder
-    fileSizes=list()
-    fileOffsets=list()
-    shalist=list()
-
-    fileNamesLengths = [len(os.path.basename(file))+1 for file in norm_list] # +1 for the \x00
-    stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
-
-    norm_header =  b''
-    norm_header += b'HFS0'
-    norm_header += pk('<I', filesNb)
-    norm_header += pk('<I', len(stringTable)+remainder)
-    norm_header += b'\x00\x00\x00\x00'
-    for n in range(filesNb):
-        norm_header += pk('<Q', fileOffsets[n])
-        norm_header += pk('<Q', fileSizes[n])
-        norm_header += pk('<I', stringTableOffsets[n])
-        norm_header += hashregion
-        norm_header += b'\x00\x00\x00\x00\x00\x00\x00\x00'
-        norm_header += bytes.fromhex(shalist[n])
-    norm_header += stringTable.encode()
-    norm_header += remainder * b'\x00'
-
-    normSize = len(norm_header) + sum(fileSizes)
-
-    #SECURE HEADER
-    filesNb = len(sec_list)
-    stringTable = '\x00'.join(str(nca) for nca in sec_list)
-    headerSize = 0x10 + (filesNb)*0x40 + len(stringTable)
-    sec_multiplier=math.ceil(headerSize/0x200)
-    remainder = 0x200*sec_multiplier - headerSize
-    headerSize += remainder
-
-    fileSizes = sec_fileSizes
-    fileOffsets = [sum(fileSizes[:n]) for n in range(filesNb)]
-
-    shalist=sec_shalist
-
-    fileNamesLengths = [len(os.path.basename(file))+1 for file in sec_list]  # +1 for the \x00
-    stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
-
-    sec_header =  b''
-    sec_header += b'HFS0'
-    sec_header += pk('<I', filesNb)
-    sec_header += pk('<I', len(stringTable)+remainder)
-    sec_header += b'\x00\x00\x00\x00'
-    for n in range(filesNb):
-        sec_header += pk('<Q', fileOffsets[n])
-        sec_header += pk('<Q', fileSizes[n])
-        sec_header += pk('<I', stringTableOffsets[n])
-        sec_header += hashregion
-        sec_header += b'\x00\x00\x00\x00\x00\x00\x00\x00'
-        sec_header += bytes.fromhex(shalist[n])
-    sec_header += stringTable.encode()
-    sec_header += remainder * b'\x00'
-    secSize = len(sec_header) + sum(fileSizes)
-
-    #ROOT HEADER
-    root_hreg=list()
-    hr=0x200*upd_multiplier
-    root_hreg.append(hr.to_bytes(4, byteorder='little'))
-    hr=0x200*norm_multiplier
-    root_hreg.append(hr.to_bytes(4, byteorder='little'))
-    hr=0x200*sec_multiplier
-    root_hreg.append(hr.to_bytes(4, byteorder='little'))
-    root_list=list()
-    root_list.append("update")
-    root_list.append("normal")
-    root_list.append("secure")
-    fileSizes=list()
-    fileSizes.append(updSize)
-    fileSizes.append(normSize)
-    fileSizes.append(secSize)
-    filesNb = len(root_list)
-    stringTable = '\x00'.join(os.path.basename(file) for file in root_list)
-    headerSize = 0x10 + (filesNb)*0x40 + len(stringTable)
-    root_multiplier=math.ceil(headerSize/0x200)
-    remainder = 0x200*root_multiplier - headerSize
-    headerSize += remainder
-    fileOffsets = [sum(fileSizes[:n]) for n in range(filesNb)]
-    shalist=list()
-    sha=sha256(upd_header).hexdigest()
-    shalist.append(sha)
-    sha=sha256(norm_header).hexdigest()
-    shalist.append(sha)
-    sha=sha256(sec_header).hexdigest()
-    shalist.append(sha)
-
-    fileNamesLengths = [len(os.path.basename(file))+1 for file in root_list] # +1 for the \x00
-    stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
-
-    root_header =  b''
-    root_header += b'HFS0'
-    root_header += pk('<I', filesNb)
-    root_header += pk('<I', len(stringTable)+remainder)
-    root_header += b'\x00\x00\x00\x00'
-    for n in range(filesNb):
-        root_header += pk('<Q', fileOffsets[n])
-        root_header += pk('<Q', fileSizes[n])
-        root_header += pk('<I', stringTableOffsets[n])
-        root_header += root_hreg[n]
-        root_header += b'\x00\x00\x00\x00\x00\x00\x00\x00'
-        root_header += bytes.fromhex(shalist[n])
-    root_header += stringTable.encode()
-    root_header += remainder * b'\x00'
-    #print (hx(root_header))
-    rootSize = len(root_header) + sum(fileSizes)
-    return root_header,upd_header,norm_header,sec_header,rootSize,upd_multiplier,norm_multiplier,sec_multiplier
+def _gen_hfs0_header(file_list, file_sizes=None, sha_list=None, hash_regions=None):
+    """Generate HFS0 header for given file list"""
+    files_nb = len(file_list)
+    string_table = '\x00'.join(str(nca) for nca in file_list)
+    header_size = 0x10 + files_nb * HFS0_ENTRY_SIZE + len(string_table)
+    multiplier = math.ceil(header_size / 0x200)
+    remainder = 0x200 * multiplier - header_size
+    header_size += remainder
+    
+    # Use provided file sizes or empty list
+    if file_sizes is None:
+        file_sizes = [0] * files_nb
+    
+    # Calculate file offsets
+    file_offsets = [sum(file_sizes[:n]) for n in range(files_nb)]
+    
+    # Use provided SHA list or empty hashes
+    if sha_list is None:
+        sha_list = ['00' * 32] * files_nb
+    
+    # Calculate string table offsets
+    file_names_lengths = [len(os.path.basename(str(file))) + 1 for file in file_list]
+    string_table_offsets = [sum(file_names_lengths[:n]) for n in range(files_nb)]
+    
+    # Default hash region
+    default_hash_region = (0x200).to_bytes(4, byteorder='little')
+    
+    # Build header
+    header = b'HFS0'
+    header += pk('<I', files_nb)
+    header += pk('<I', len(string_table) + remainder)
+    header += b'\x00\x00\x00\x00'
+    
+    for n in range(files_nb):
+        header += pk('<Q', file_offsets[n])
+        header += pk('<Q', file_sizes[n])
+        header += pk('<I', string_table_offsets[n])
+        
+        # Use custom hash region if provided, otherwise default
+        if hash_regions and n < len(hash_regions):
+            header += hash_regions[n]
+        else:
+            header += default_hash_region
+            
+        header += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+        header += bytes.fromhex(sha_list[n])
+    
+    header += string_table.encode()
+    header += remainder * b'\x00'
+    
+    total_size = len(header) + sum(file_sizes)
+    return header, total_size, multiplier
 
 
 
