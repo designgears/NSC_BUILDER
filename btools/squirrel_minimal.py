@@ -14,12 +14,328 @@ from pathlib import Path
 from hashlib import sha256
 from struct import pack as pk
 
-# Import required ztools modules
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'py', 'ztools'))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'py', 'ztools', 'lib'))
-
 from Crypto.Cipher import AES
-import decompressor
+from Crypto.Util import Counter
+import zstandard
+import io
+
+# Custom decompressor implementation
+def readInt64(f, byteorder='little', signed=False):
+    return int.from_bytes(f.read(8), byteorder=byteorder, signed=signed)
+
+def readInt128(f, byteorder='little', signed=False):
+    return int.from_bytes(f.read(16), byteorder=byteorder, signed=signed)
+
+class AESCTR:
+    def __init__(self, key, nonce, offset=0):
+        self.key = key
+        self.nonce = nonce
+        self.seek(offset)
+
+    def encrypt(self, data, ctr=None):
+        if ctr is None:
+            ctr = self.ctr
+        return self.aes.encrypt(data)
+
+    def decrypt(self, data, ctr=None):
+        return self.encrypt(data, ctr)
+
+    def seek(self, offset):
+        self.ctr = Counter.new(64, prefix=self.nonce[0:8], initial_value=(offset >> 4))
+        self.aes = AES.new(self.key, AES.MODE_CTR, counter=self.ctr)
+
+class Section:
+    def __init__(self, f):
+        self.f = f
+        self.offset = readInt64(f)
+        self.size = readInt64(f)
+        self.cryptoType = readInt64(f)
+        readInt64(f)  # padding
+        self.cryptoKey = f.read(16)
+        self.cryptoCounter = f.read(16)
+
+def decompress_ncz_custom(input_path, output_path):
+    """Custom NCZ decompression implementation"""
+    try:
+        with open(input_path, 'rb') as f:
+            header = f.read(0x4000)
+            magic = readInt64(f)
+            sectionCount = readInt64(f)
+            sections = []
+            for i in range(sectionCount):
+                sections.append(Section(f))
+                
+            dctx = zstandard.ZstdDecompressor()
+            reader = dctx.stream_reader(f)
+                
+            with open(output_path, 'wb+') as o:
+                o.write(header)
+                
+                while True:
+                    chunk = reader.read(16384)
+                    
+                    if not chunk:
+                        break
+                        
+                    o.write(chunk)
+                    
+                for s in sections:
+                    if s.cryptoType == 1:  # plain text
+                        continue
+                        
+                    if s.cryptoType != 3:
+                        raise IOError('unknown crypto type')
+                        
+                    print('%x - %d bytes, type %d' % (s.offset, s.size, s.cryptoType))
+                    
+                    i = s.offset
+                    
+                    crypto = AESCTR(s.cryptoKey, s.cryptoCounter)
+                    end = s.offset + s.size
+                    
+                    while i < end:
+                        o.seek(i)
+                        crypto.seek(i)
+                        chunkSz = 0x10000 if end - i > 0x10000 else end - i
+                        buf = o.read(chunkSz)
+                        
+                        if not len(buf):
+                            break
+                        
+                        o.seek(i)
+                        o.write(crypto.encrypt(buf))
+                        
+                        i += chunkSz
+        return True
+    except Exception as e:
+        print(f"Error decompressing NCZ {input_path}: {e}")
+        return False
+
+# Helper functions for NSZ/XCZ decompression
+def ret_nsp_offsets(filepath, kbsize=8):
+    """Parse NSP file offsets"""
+    kbsize = int(kbsize)
+    files_list = []
+    try:
+        with open(filepath, 'r+b') as f:
+            data = f.read(int(kbsize * 1024))
+        try:
+            head = data[0:4]
+            n_files = int.from_bytes(data[4:8], byteorder='little')
+            st_size = int.from_bytes(data[8:12], byteorder='little')
+            junk = data[12:16]
+            offset = 0x10 + n_files * 0x18
+            stringTable = data[offset:offset + st_size]
+            stringEndOffset = st_size
+            headerSize = 0x10 + 0x18 * n_files + st_size
+            
+            for i in range(n_files):
+                i = n_files - i - 1
+                pos = 0x10 + i * 0x18
+                offset = int.from_bytes(data[pos:pos + 8], byteorder='little')
+                size = int.from_bytes(data[pos + 8:pos + 16], byteorder='little')
+                nameOffset = int.from_bytes(data[pos + 16:pos + 20], byteorder='little')
+                name = stringTable[nameOffset:stringEndOffset].decode('utf-8').rstrip(' \t\r\n\0')
+                stringEndOffset = nameOffset
+                junk2 = data[pos + 20:pos + 24]
+                
+                off1 = offset + headerSize
+                off2 = off1 + size
+                files_list.append([name, off1, off2, size])
+            files_list.reverse()
+        except Exception as e:
+            print(f'Exception parsing NSP: {e}')
+    except Exception as e:
+        print(f'Exception reading NSP: {e}')
+    return files_list
+
+def ret_xci_offsets(filepath, kbsize=8):
+    """Parse XCI file offsets"""
+    kbsize = int(kbsize)
+    files_list = []
+    try:
+        with open(filepath, 'r+b') as f:
+            rawhead = io.BytesIO(f.read(int(0x200)))
+            data = rawhead.read()
+        try:
+            rawhead.seek(0x100)
+            magic = rawhead.read(0x4)
+            if magic == b'HEAD':
+                secureOffset = int.from_bytes(rawhead.read(4), byteorder='little')
+                secureOffset = secureOffset * 0x200
+                with open(filepath, 'r+b') as f:
+                    f.seek(secureOffset)
+                    data = f.read(int(kbsize * 1024))
+                    rawhead = io.BytesIO(data)
+                rmagic = rawhead.read(0x4)
+                if rmagic == b'HFS0':
+                    head = data[0:4]
+                    n_files = int.from_bytes(data[4:8], byteorder='little')
+                    st_size = int.from_bytes(data[8:12], byteorder='little')
+                    junk = data[12:16]
+                    offset = 0x10 + n_files * 0x40
+                    stringTable = data[offset:offset + st_size]
+                    stringEndOffset = st_size
+                    headerSize = 0x10 + 0x40 * n_files + st_size
+                    
+                    for i in range(n_files):
+                        i = n_files - i - 1
+                        pos = 0x10 + i * 0x40
+                        offset = int.from_bytes(data[pos:pos + 8], byteorder='little')
+                        size = int.from_bytes(data[pos + 8:pos + 16], byteorder='little')
+                        nameOffset = int.from_bytes(data[pos + 16:pos + 20], byteorder='little')
+                        name = stringTable[nameOffset:stringEndOffset].decode('utf-8').rstrip(' \t\r\n\0')
+                        stringEndOffset = nameOffset
+                        
+                        off1 = offset + headerSize + secureOffset
+                        off2 = off1 + size
+                        files_list.append([name, off1, off2, size])
+                    files_list.reverse()
+        except Exception as e:
+            print(f'Exception parsing XCI: {e}')
+    except Exception as e:
+        print(f'Exception reading XCI: {e}')
+    return files_list
+
+def gen_nsp_header(files, fileSizes):
+    """Generate NSP header"""
+    filesNb = len(files)
+    stringTable = '\x00'.join(str(nca) for nca in files)
+    headerSize = 0x10 + (filesNb) * 0x18 + len(stringTable)
+    remainder = 0x10 - headerSize % 0x10
+    headerSize += remainder
+    fileOffsets = [sum(fileSizes[:n]) for n in range(filesNb)]
+    fileNamesLengths = [len(str(nca)) + 1 for nca in files]  # +1 for the \x00
+    stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
+
+    header = b''
+    header += b'PFS0'
+    header += pk('<I', filesNb)
+    header += pk('<I', len(stringTable) + remainder)
+    header += b'\x00\x00\x00\x00'
+    for n in range(filesNb):
+        header += pk('<Q', fileOffsets[n])
+        header += pk('<Q', fileSizes[n])
+        header += pk('<I', stringTableOffsets[n])
+        header += b'\x00\x00\x00\x00'
+    header += stringTable.encode()
+    header += remainder * b'\x00'
+
+    return header
+
+def randhex(size):
+    """Generate random hex string"""
+    return ''.join(random.choice('0123456789ABCDEF') for _ in range(size * 2))
+
+def get_xciheader(oflist, osizelist, sec_hashlist):
+    """Generate XCI header (simplified version)"""
+    # This is a simplified version - full implementation would be much more complex
+    upd_list = []
+    upd_fileSizes = []
+    norm_list = []
+    norm_fileSizes = []
+    sec_list = oflist
+    sec_fileSizes = osizelist
+    sec_shalist = sec_hashlist
+    
+    # Generate simplified HFS0 headers
+    def gen_hfs0_header(files, sizes):
+        if not files:
+            return b'\x00' * 0x30, 0
+        
+        filesNb = len(files)
+        stringTable = '\x00'.join(str(f) for f in files)
+        headerSize = 0x10 + filesNb * 0x40 + len(stringTable)
+        remainder = 0x200 - (headerSize % 0x200) if headerSize % 0x200 != 0 else 0
+        headerSize += remainder
+        
+        fileOffsets = [sum(sizes[:n]) for n in range(filesNb)]
+        fileNamesLengths = [len(str(f)) + 1 for f in files]
+        stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
+        
+        header = b'HFS0'
+        header += pk('<I', filesNb)
+        header += pk('<I', len(stringTable) + remainder)
+        header += b'\x00\x00\x00\x00'
+        
+        for n in range(filesNb):
+            header += pk('<Q', fileOffsets[n])
+            header += pk('<Q', sizes[n])
+            header += pk('<I', stringTableOffsets[n])
+            header += b'\x00' * 0x14  # Hash and padding
+        
+        header += stringTable.encode()
+        header += remainder * b'\x00'
+        
+        return header, headerSize
+    
+    # Generate partition headers
+    upd_header, upd_size = gen_hfs0_header(upd_list, upd_fileSizes)
+    norm_header, norm_size = gen_hfs0_header(norm_list, norm_fileSizes)
+    sec_header, sec_size = gen_hfs0_header(sec_list, sec_fileSizes)
+    
+    # Root HFS0 header
+    root_files = []
+    root_sizes = []
+    if upd_size > 0:
+        root_files.append('update')
+        root_sizes.append(upd_size)
+    if norm_size > 0:
+        root_files.append('normal')
+        root_sizes.append(norm_size)
+    if sec_size > 0:
+        root_files.append('secure')
+        root_sizes.append(sec_size)
+    
+    root_header, rootSize = gen_hfs0_header(root_files, root_sizes)
+    
+    # XCI main header components
+    signature = bytes.fromhex(randhex(0x100))
+    
+    # Calculate total size
+    tot_size = 0xF000 + rootSize + sum(root_sizes)
+    
+    # XCI header fields
+    sec_offset = (0xF000 + rootSize + upd_size + norm_size) // 0x200
+    back_offset = 0xFFFFFFFF
+    
+    # Generate XCI header
+    xci_header = signature  # 0x100 bytes
+    xci_header += b'HEAD'  # magic
+    xci_header += sec_offset.to_bytes(4, 'little')  # secure offset
+    xci_header += back_offset.to_bytes(4, 'little')  # backup offset
+    xci_header += b'\x00'  # kek index
+    xci_header += b'\x00'  # card size
+    xci_header += b'\x00'  # header version
+    xci_header += b'\x00'  # flags
+    xci_header += (0x8750F4C0A9C5A966).to_bytes(8, 'big')  # package id
+    xci_header += ((tot_size - 1) // 0x200).to_bytes(8, 'little')  # valid data end
+    xci_header += b'\x00' * 0x10  # info IV
+    xci_header += (0xF000).to_bytes(8, 'little')  # HFS0 offset
+    xci_header += rootSize.to_bytes(8, 'little')  # HFS0 header size
+    xci_header += b'\x00' * 0x20  # HFS0 header hash
+    xci_header += b'\x00' * 0x20  # HFS0 initial data hash
+    xci_header += b'\x00' * 4  # secure mode
+    xci_header += b'\x00' * 4  # title key flag
+    xci_header += b'\x00' * 4  # key flag
+    xci_header += b'\x00' * 4  # normal area end
+    
+    # Pad to 0x200
+    xci_header += b'\x00' * (0x200 - len(xci_header))
+    
+    # Game info and other components (simplified)
+    game_info = b'\x00' * 0x70
+    sig_padding = b'\x00' * (0x7000 - 0x200 - 0x70)
+    xci_certificate = b'\x00' * 0x200
+    
+    # Pad to 0xF000
+    padding_size = 0xF000 - len(xci_header) - len(game_info) - len(sig_padding) - len(xci_certificate)
+    if padding_size > 0:
+        sig_padding += b'\x00' * padding_size
+    
+    return (xci_header, game_info, sig_padding, xci_certificate, 
+            root_header, upd_header, norm_header, sec_header, 
+            rootSize, 1, 1, 1)
 
 # Minimal file format handlers
 class MinimalNSP:
@@ -337,24 +653,179 @@ class MinimalXCI:
                 file_handle.seek(current_pos)
 
 def decompress_nsz(input_path, output_path, buffer_size=65536):
-    """Decompress NSZ to NSP using ztools decompressor"""
+    """Decompress NSZ to NSP using custom decompressor"""
     try:
-        decompressor.decompress_nsz(input_path, output_path, buffer_size)
+        print(f"Decompressing NSZ: {input_path} -> {output_path}")
+        
+        # Parse NSP file structure
+        files_list = ret_nsp_offsets(input_path)
+        if not files_list:
+            print("Failed to parse NSP structure")
+            return False
+        
+        # Extract file information
+        nca_files = []
+        file_sizes = []
+        temp_files = []
+        
+        with open(input_path, 'rb') as f:
+            for file_info in files_list:
+                name, start_offset, end_offset, size = file_info
+                
+                if name.endswith('.ncz'):
+                    # Decompress NCZ to temporary NCA
+                    temp_ncz = tempfile.NamedTemporaryFile(delete=False, suffix='.ncz')
+                    temp_ncz.close()
+                    temp_files.append(temp_ncz.name)
+                    
+                    # Extract NCZ data
+                    f.seek(start_offset)
+                    ncz_data = f.read(size)
+                    
+                    with open(temp_ncz.name, 'wb') as temp_f:
+                        temp_f.write(ncz_data)
+                    
+                    # Decompress NCZ
+                    temp_nca = tempfile.NamedTemporaryFile(delete=False, suffix='.nca')
+                    temp_nca.close()
+                    temp_files.append(temp_nca.name)
+                    
+                    if decompress_ncz_custom(temp_ncz.name, temp_nca.name):
+                        # Get decompressed size
+                        decompressed_size = os.path.getsize(temp_nca.name)
+                        nca_files.append((name.replace('.ncz', '.nca'), temp_nca.name, decompressed_size, True))
+                        file_sizes.append(decompressed_size)
+                    else:
+                        print(f"Failed to decompress {name}")
+                        cleanup_temp_files(temp_files)
+                        return False
+                else:
+                    # Regular file (NCA, etc.)
+                    nca_files.append((name, None, size, False))
+                    file_sizes.append(size)
+        
+        # Generate NSP header
+        file_names = [info[0] for info in nca_files]
+        header = gen_nsp_header(file_names, file_sizes)
+        
+        # Write decompressed NSP
+        with open(output_path, 'wb') as out_f:
+            out_f.write(header)
+            
+            # Write file data
+            with open(input_path, 'rb') as in_f:
+                for i, (name, temp_path, size, is_decompressed) in enumerate(nca_files):
+                    if is_decompressed and temp_path:  # Decompressed NCZ
+                        with open(temp_path, 'rb') as temp_f:
+                            while True:
+                                chunk = temp_f.read(buffer_size)
+                                if not chunk:
+                                    break
+                                out_f.write(chunk)
+                    else:  # Regular file
+                        file_info = files_list[i]
+                        start_offset = file_info[1]
+                        copy_file_content(input_path, out_f, start_offset, size, buffer_size)
+        
+        # Cleanup temporary files
+        cleanup_temp_files(temp_files)
+        
+        print(f"NSZ decompression completed: {output_path}")
         return True
+        
     except Exception as e:
         print(f"Error decompressing NSZ {input_path}: {e}")
         return False
 
 def decompress_xcz(input_path, output_path, buffer_size=65536):
-    """Decompress XCZ to XCI using ztools decompressor"""
+    """Decompress XCZ to XCI using custom decompressor"""
     try:
-        decompressor.decompress_xcz(input_path, output_path, buffer_size)
+        print(f"Decompressing XCZ: {input_path} -> {output_path}")
+        
+        # Parse XCI file structure
+        files_list = ret_xci_offsets(input_path)
+        if not files_list:
+            print("Failed to parse XCI structure")
+            return False
+        
+        # Extract file information
+        nca_files = []
+        file_sizes = []
+        sec_hashlist = []
+        temp_files = []
+        
+        with open(input_path, 'rb') as f:
+            for file_info in files_list:
+                name, start_offset, end_offset, size = file_info
+                
+                if name.endswith('.ncz'):
+                    # Decompress NCZ to temporary NCA
+                    temp_ncz = tempfile.NamedTemporaryFile(delete=False, suffix='.ncz')
+                    temp_ncz.close()
+                    temp_files.append(temp_ncz.name)
+                    
+                    # Extract NCZ data
+                    f.seek(start_offset)
+                    ncz_data = f.read(size)
+                    
+                    with open(temp_ncz.name, 'wb') as temp_f:
+                        temp_f.write(ncz_data)
+                    
+                    # Decompress NCZ
+                    temp_nca = tempfile.NamedTemporaryFile(delete=False, suffix='.nca')
+                    temp_nca.close()
+                    temp_files.append(temp_nca.name)
+                    
+                    if decompress_ncz_custom(temp_ncz.name, temp_nca.name):
+                        # Get decompressed size
+                        decompressed_size = os.path.getsize(temp_nca.name)
+                        nca_files.append((name.replace('.ncz', '.nca'), temp_nca.name, decompressed_size, True))
+                        file_sizes.append(decompressed_size)
+                        sec_hashlist.append(b'\x00' * 0x20)  # Placeholder hash
+                    else:
+                        print(f"Failed to decompress {name}")
+                        cleanup_temp_files(temp_files)
+                        return False
+                else:
+                    # Regular file (NCA, etc.)
+                    nca_files.append((name, None, size, False))
+                    file_sizes.append(size)
+                    sec_hashlist.append(b'\x00' * 0x20)  # Placeholder hash
+        
+        # Generate XCI header
+        file_names = [info[0] for info in nca_files]
+        header_components = get_xciheader(file_names, file_sizes, sec_hashlist)
+        
+        # Write decompressed XCI
+        with open(output_path, 'wb') as out_f:
+            # Write XCI header components
+            for component in header_components[:8]:  # First 8 components are headers
+                out_f.write(component)
+            
+            # Write file data
+            with open(input_path, 'rb') as in_f:
+                for i, (name, temp_path, size, is_decompressed) in enumerate(nca_files):
+                    if is_decompressed and temp_path:  # Decompressed NCZ
+                        with open(temp_path, 'rb') as temp_f:
+                            while True:
+                                chunk = temp_f.read(buffer_size)
+                                if not chunk:
+                                    break
+                                out_f.write(chunk)
+                    else:  # Regular file
+                        file_info = files_list[i]
+                        start_offset = file_info[1]
+                        copy_file_content(input_path, out_f, start_offset, size, buffer_size)
+        
+        # Cleanup temporary files
+        cleanup_temp_files(temp_files)
+        
+        print(f"XCZ decompression completed: {output_path}")
         return True
+        
     except Exception as e:
         print(f"Error decompressing XCZ {input_path}: {e}")
         return False
-
-
 
 def copy_file_content(src_path, dst_file, offset, size, buffer_size=65536):
     """Copy file content from source to destination"""
@@ -456,9 +927,11 @@ def decompress_file(filepath, buffer_size=65536):
         temp_file = os.path.join(temp_dir, basename[:-3] + 'xci')  # .xcz -> .xci
         decompress_xcz(filepath, temp_file, buffer_size)
     elif filepath.endswith('.ncz'):
-        # NCZ decompression would need more complex implementation
         temp_file = os.path.join(temp_dir, basename[:-1] + 'a')  # .ncz -> .nca
-        return filepath
+        if decompress_ncz_custom(filepath, temp_file):
+            return temp_file
+        else:
+            return filepath
     
     return temp_file
 
@@ -527,7 +1000,8 @@ def handle_decompression(args):
         outfile = os.path.join(ofolder, basename[:-3] + 'xci')  # .xcz -> .xci
         success = decompress_xcz(filepath, outfile, args.buffer)
     elif filepath.endswith(".ncz"):
-        return 1
+        outfile = os.path.join(ofolder, basename[:-1] + 'a')  # .ncz -> .nca
+        success = decompress_ncz_custom(filepath, outfile)
     else:
         raise ValueError(f"Unsupported file type: {filepath}")
     
