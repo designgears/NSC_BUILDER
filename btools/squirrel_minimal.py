@@ -6,13 +6,20 @@ import sys
 import os
 import tempfile
 import struct
+import random
+import re
+import math
+from binascii import unhexlify as uhx
+from pathlib import Path
+from hashlib import sha256
+from struct import pack as pk
 
 # Import required ztools modules
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'py', 'ztools'))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'py', 'ztools', 'lib'))
 
+from Crypto.Cipher import AES
 import decompressor
-import sq_tools
 
 # Minimal file format handlers
 class MinimalNSP:
@@ -238,11 +245,7 @@ class MinimalNSP:
         
         try:
             # Parse CNMT header (following Nsp.py structure)
-            title_id = struct.unpack('<Q', cnmt_data[0x00:0x08])[0]
-            title_version = struct.unpack('<I', cnmt_data[0x08:0x0C])[0]
-            content_meta_type = cnmt_data[0x0C]
             content_count = struct.unpack('<H', cnmt_data[0x0E:0x10])[0]
-            meta_count = struct.unpack('<H', cnmt_data[0x10:0x12])[0]
             
             if content_count == 0 or content_count > 100:  # Sanity check
                 return content_sizes
@@ -258,7 +261,6 @@ class MinimalNSP:
                     break
                 
                 # Read content entry structure
-                content_hash = cnmt_data[entry_offset:entry_offset + 0x20]  # 32 bytes hash
                 nca_id = cnmt_data[entry_offset + 0x20:entry_offset + 0x30].hex()  # 16 bytes NCA ID
                 size_bytes = cnmt_data[entry_offset + 0x30:entry_offset + 0x36]  # 6 bytes size
                 content_type = cnmt_data[entry_offset + 0x36]  # 1 byte type
@@ -649,118 +651,168 @@ def create_multi_xci(file_list, outfile, args):
             all_files.append('000')
             all_sizes.append(0)
         
-        # Generate proper file hashes for secure partition (matching original NSC_Builder approach)
-        # Original NSC_Builder uses dummy hashes for performance - we'll do the same
+        # Generate proper file hashes for secure partition (CRITICAL for emulator compatibility)
+        # Calculate actual SHA256 hashes instead of dummy hashes to fix verification failures
         sec_hashlist = []
-        for filename in all_files:
-            # Use dummy hash like original NSC_Builder (Fs/Xci.py line 17)
-            sha = '0000000000000000000000000000000000000000000000000000000000000000'
+        print("Calculating SHA256 hashes for NCA files...")
+        for i, filename in enumerate(all_files):
+            # Skip dummy files
+            if filename in ['0', '00', '000']:
+                sha = '0000000000000000000000000000000000000000000000000000000000000000'
+                sec_hashlist.append(sha)
+                continue
+                
+            # Calculate actual SHA256 hash for real NCA files
+            sha = '0000000000000000000000000000000000000000000000000000000000000000'  # Default fallback
+            
+            # Find the source file for this NCA
+            for filepath in processed_files:
+                if filepath.endswith('.nsp'):
+                    try:
+                        nsp = MinimalNSP(filepath)
+                        for file_entry in nsp.files:
+                            if file_entry['name'] == filename and file_entry['name'].endswith('.nca'):
+                                # Extract first 0x200 bytes and calculate hash
+                                with open(filepath, 'rb') as nsp_file:
+                                    nsp_file.seek(file_entry['offset'])
+                                    header_block = nsp_file.read(0x200)
+                                    if len(header_block) == 0x200:
+                                        from hashlib import sha256
+                                        sha = sha256(header_block).hexdigest()
+                                break
+                    except Exception:
+                        pass
+                elif filepath.endswith('.nca') and os.path.basename(filepath) == filename:
+                    try:
+                        # Calculate hash from first 0x200 bytes of NCA header
+                        with open(filepath, 'rb') as nca_file:
+                            header_block = nca_file.read(0x200)
+                            if len(header_block) == 0x200:
+                                from hashlib import sha256
+                                sha = sha256(header_block).hexdigest()
+                    except Exception:
+                        pass
+            
             sec_hashlist.append(sha)
+            if sha != '0000000000000000000000000000000000000000000000000000000000000000':
+                print(f"  {filename}: {sha[:16]}...")
 
         # Use ztools sq_tools.get_xciheader function for XCI header generation
-        xci_header, game_info, sig_padding, xci_certificate, root_header, upd_header, norm_header, sec_header, rootSize, upd_multiplier, norm_multiplier, sec_multiplier = sq_tools.get_xciheader(all_files, all_sizes, sec_hashlist)
+        xci_header, game_info, sig_padding, xci_certificate, root_header, upd_header, norm_header, sec_header, rootSize, upd_multiplier, norm_multiplier, sec_multiplier = get_xciheader(all_files, all_sizes, sec_hashlist)
         
         # Calculate total size like original
         tot_size = 0xF000 + rootSize
-        with open(outfile, 'wb') as xci_file:
-            # Write complete XCI header structure (same as working XCI creation)
-            xci_file.write(xci_header)
-            xci_file.write(game_info)
-            xci_file.write(sig_padding)
-            xci_file.write(xci_certificate)
-            xci_file.write(root_header)  # Root HFS0 header
-            xci_file.write(upd_header)  # Update partition (empty)
-            xci_file.write(norm_header)  # Normal partition (empty)
-            xci_file.write(sec_header)  # Secure partition header
-            
-            # Phase 4: Content Appending (CRITICAL: Must match exact order from all_files list)
-            # Create mapping from filename to source file and offset for efficient lookup
-            file_mapping = {}
-            for filepath in processed_files:
-                if filepath.endswith('.nsp'):
-                    nsp = MinimalNSP(filepath)
-                    for file_entry in nsp.files:
-                        if file_entry['name'].endswith('.nca'):
-                            file_mapping[file_entry['name']] = {
-                                'source_file': filepath,
-                                'offset': file_entry['offset'],
-                                'size': file_entry['size'],
-                                'type': 'nsp'
-                            }
-                elif filepath.endswith('.nca'):
-                    filename = os.path.basename(filepath)
-                    file_mapping[filename] = {
-                        'source_file': filepath,
-                        'offset': 0,
-                        'size': os.path.getsize(filepath),
-                        'type': 'nca'
-                    }
-            
-            # Append files in the EXACT order specified in all_files (critical for XCI structure)
-            for i, filename in enumerate(all_files):
-                # Handle dummy files (skip actual content writing for dummy files)
-                if filename in ['0', '00', '000']:
-                    continue
+        try:
+            with open(outfile, 'wb') as xci_file:
+                # Write complete XCI header structure (same as working XCI creation)
+                print(f"Writing XCI header to {outfile}...")
+                xci_file.write(xci_header)
+                xci_file.write(game_info)
+                xci_file.write(sig_padding)
+                xci_file.write(xci_certificate)
+                xci_file.write(root_header)  # Root HFS0 header
+                xci_file.write(upd_header)  # Update partition (empty)
+                xci_file.write(norm_header)  # Normal partition (empty)
+                xci_file.write(sec_header)  # Secure partition header
+                print(f"XCI header written successfully, now writing content files...")
                 
-                if filename not in file_mapping:
-                    continue
-                    
-                file_info = file_mapping[filename]
+                # Phase 4: Content Appending (CRITICAL: Must match exact order from all_files list)
+                # Create mapping from filename to source file and offset for efficient lookup
+                file_mapping = {}
+                for filepath in processed_files:
+                    if filepath.endswith('.nsp'):
+                        nsp = MinimalNSP(filepath)
+                        for file_entry in nsp.files:
+                            if file_entry['name'].endswith('.nca'):
+                                file_mapping[file_entry['name']] = {
+                                    'source_file': filepath,
+                                    'offset': file_entry['offset'],
+                                    'size': file_entry['size'],
+                                    'type': 'nsp'
+                                }
+                    elif filepath.endswith('.nca'):
+                        filename = os.path.basename(filepath)
+                        file_mapping[filename] = {
+                            'source_file': filepath,
+                            'offset': 0,
+                            'size': os.path.getsize(filepath),
+                            'type': 'nca'
+                        }
                 
-                if file_info['type'] == 'nsp':
-                    # Extract NCA from NSP to temp file for gamecard flag validation
-                    temp_nca = os.path.join(tempfile.gettempdir(), filename)
-                    with open(file_info['source_file'], 'rb') as nsp_file:
-                        nsp_file.seek(file_info['offset'])
-                        nca_data = nsp_file.read(file_info['size'])
-                        with open(temp_nca, 'wb') as nca_file:
-                            nca_file.write(nca_data)
+                # Append files in the EXACT order specified in all_files (critical for XCI structure)
+                for i, filename in enumerate(all_files):
+                    # Handle dummy files (skip actual content writing for dummy files)
+                    if filename in ['0', '00', '000']:
+                        continue
                     
-                    # Set gamecard flag for XCI compatibility (critical for emulators)
-                    try:
-                        set_nca_gamecard_flag(temp_nca)
-                    except Exception:
-                        pass
-                    
-                    # Copy the modified NCA to output
-                    with open(temp_nca, 'rb') as nca_file:
-                        while True:
-                            buf = nca_file.read(args.buffer)
-                            if not buf:
-                                break
-                            xci_file.write(buf)
-                    
-                    # Clean up temp file immediately
-                    try:
-                        os.remove(temp_nca)
-                    except Exception:
-                        pass
+                    if filename not in file_mapping:
+                        continue
                         
-                elif file_info['type'] == 'nca':
-                    # Direct NCA file - set gamecard flag for XCI compatibility
-                    temp_nca = os.path.join(tempfile.gettempdir(), filename)
-                    import shutil
-                    shutil.copy2(file_info['source_file'], temp_nca)
+                    file_info = file_mapping[filename]
                     
-                    # Set gamecard flag (critical for emulators)
-                    try:
-                        set_nca_gamecard_flag(temp_nca)
-                    except Exception:
-                        pass
-                    
-                    # Copy the modified NCA to output
-                    with open(temp_nca, 'rb') as nca_file:
-                        while True:
-                            chunk = nca_file.read(args.buffer)
-                            if not chunk:
-                                break
-                            xci_file.write(chunk)
-                    
-                    # Clean up temp file immediately
-                    try:
-                        os.remove(temp_nca)
-                    except Exception:
-                        pass
+                    if file_info['type'] == 'nsp':
+                        # Extract NCA from NSP to temp file for gamecard flag validation
+                        temp_nca = os.path.join(tempfile.gettempdir(), filename)
+                        with open(file_info['source_file'], 'rb') as nsp_file:
+                            nsp_file.seek(file_info['offset'])
+                            nca_data = nsp_file.read(file_info['size'])
+                            with open(temp_nca, 'wb') as nca_file:
+                                nca_file.write(nca_data)
+                        
+                        # Set gamecard flag for XCI compatibility (critical for emulators)
+                        try:
+                            set_nca_gamecard_flag(temp_nca)
+                        except Exception:
+                            pass
+                        
+                        # Copy the modified NCA to output
+                        with open(temp_nca, 'rb') as nca_file:
+                            while True:
+                                buf = nca_file.read(args.buffer)
+                                if not buf:
+                                    break
+                                xci_file.write(buf)
+                        
+                        # Clean up temp file immediately
+                        try:
+                            os.remove(temp_nca)
+                        except Exception:
+                            pass
+                            
+                    elif file_info['type'] == 'nca':
+                        # Direct NCA file - set gamecard flag for XCI compatibility
+                        temp_nca = os.path.join(tempfile.gettempdir(), filename)
+                        import shutil
+                        shutil.copy2(file_info['source_file'], temp_nca)
+                        
+                        # Set gamecard flag (critical for emulators)
+                        try:
+                            set_nca_gamecard_flag(temp_nca)
+                        except Exception:
+                            pass
+                        
+                        # Copy the modified NCA to output
+                        with open(temp_nca, 'rb') as nca_file:
+                            while True:
+                                chunk = nca_file.read(args.buffer)
+                                if not chunk:
+                                    break
+                                xci_file.write(chunk)
+                        
+                        # Clean up temp file immediately
+                        try:
+                            os.remove(temp_nca)
+                        except Exception:
+                            pass
+                
+            print(f"XCI file creation completed successfully: {outfile}")
+                
+        except IOError as e:
+            print(f"IO Error writing XCI file: {str(e)}")
+            raise
+        except OSError as e:
+            print(f"OS Error writing XCI file: {str(e)}")
+            raise
         
         # Cleanup temp files
         if temp_files:
@@ -768,11 +820,544 @@ def create_multi_xci(file_list, outfile, args):
         
         return True
         
-    except Exception:
+    except Exception as e:
+        # Print detailed error information for debugging
+        print(f"Error creating XCI file: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        
         # Ensure temp files are cleaned up even on error
         if 'temp_files' in locals() and temp_files:
             cleanup_temp_files(temp_files)
         return False
+
+def randhex(size):
+	hexdigits = "0123456789ABCDEF"
+	random_digits = "".join([ hexdigits[random.randint(0,0xF)] for _ in range(size*2) ])
+	return random_digits
+
+def getGCsize(bytes):
+	Gbytes=bytes/(1024*1024*1024)
+	Gbytes=round(Gbytes,2)
+	if Gbytes>=32:
+		card=0xE3
+		firm_ver='1000a100'
+		return card,firm_ver
+	if Gbytes>=16:
+		card=0xE2
+		firm_ver='1000a100'
+		return card,firm_ver
+	if Gbytes>=8:
+		card=0xE1
+		firm_ver='1000a100'
+		return card,firm_ver
+	if Gbytes>=4:
+		card=0xE0
+		firm_ver='1000a100'
+		return card,firm_ver
+	if Gbytes>=2:
+		card=0xF0
+		firm_ver='1100a100'
+		return card,firm_ver
+	if Gbytes>=1:
+		card=0xF8
+		firm_ver='1100a100'
+		return card,firm_ver
+	if Gbytes<1:
+		card=0xFA
+		firm_ver='1100a100'
+		return card,firm_ver
+
+def get_enc_gameinfo(bytes):
+	Gbytes=bytes/(1024*1024*1024)
+	Gbytes=round(Gbytes,2)
+	if Gbytes>=32 or Gbytes>=16 or Gbytes>=8 or Gbytes>=4:
+		firm_ver= 0x9298F35088F09F7D
+		access_freq= 0xa89a60d4
+		Read_Wait_Time= 0xcba6f96f
+		Read_Wait_Time2= 0xa45bb6ac
+		Write_Wait_Time= 0xabc751f9
+		Write_Wait_Time2= 0x5d398742
+		Firmware_Mode = 0x6b38c3f2
+		CUP_Version = 0x10da0b70
+		Empty1 = 0x0e5ece29
+		Upd_Hash= 0xa13cbe1da6d052cb
+		CUP_Id = 0xf2087ce9af590538
+		Empty2= 0x570d78b9cdd27fbeb4a0ac2adff9ba77754dd6675ac76223506b3bdabcb2e212fa465111ab7d51afc8b5b2b21c4b3f40654598620282add6
+	else:
+		firm_ver= 0x9109FF82971EE993
+		access_freq=0x5011ca06
+		Read_Wait_Time=0x3f3c4d87
+		Read_Wait_Time2=0xa13d28a9
+		Write_Wait_Time=0x928d74f1
+		Write_Wait_Time2=0x49919eb7
+		Firmware_Mode =0x82e1f0cf
+		CUP_Version = 0xe4a5a3bd
+		Empty1 = 0xf978295c
+		Upd_Hash= 0xd52639a4991bdb1f
+		CUP_Id = 0xed841779a3f85d23
+		Empty2= 0xaa4242135616f5187c03cf0d97e5d218fdb245381fd1cf8dfb796fbeda4bf7f7d6b128ce89bc9eaa8552d42f597c5db866c67bb0dd8eea11
+
+	firm_ver=firm_ver.to_bytes(8, byteorder='big')
+	access_freq=access_freq.to_bytes(4, byteorder='big')
+	Read_Wait_Time=Read_Wait_Time.to_bytes(4, byteorder='big')
+	Read_Wait_Time2=Read_Wait_Time2.to_bytes(4, byteorder='big')
+	Write_Wait_Time=Write_Wait_Time.to_bytes(4, byteorder='big')
+	Write_Wait_Time2=Write_Wait_Time2.to_bytes(4, byteorder='big')
+	Firmware_Mode=Firmware_Mode.to_bytes(4, byteorder='big')
+	CUP_Version=CUP_Version.to_bytes(4, byteorder='big')
+	Empty1=Empty1.to_bytes(4, byteorder='big')
+	Upd_Hash=Upd_Hash.to_bytes(8, byteorder='big')
+	CUP_Id=CUP_Id.to_bytes(8, byteorder='big')
+	Empty2=Empty2.to_bytes(56, byteorder='big')
+
+	Game_info =  b''
+	Game_info += firm_ver
+	Game_info += access_freq
+	Game_info += Read_Wait_Time
+	Game_info += Read_Wait_Time2
+	Game_info += Write_Wait_Time
+	Game_info += Write_Wait_Time2
+	Game_info += Firmware_Mode
+	Game_info += CUP_Version
+	Game_info += Empty1
+	Game_info += Upd_Hash
+	Game_info += CUP_Id
+	Game_info += Empty2
+
+	return Game_info
+
+def get_xciheader(oflist,osizelist,sec_hashlist):
+	upd_list=list()
+	norm_list=list()
+	sec_list=oflist
+	sec_fileSizes = osizelist
+	sec_shalist = sec_hashlist
+
+	root_header,upd_header,norm_header,sec_header,rootSize,upd_multiplier,norm_multiplier,sec_multiplier=gen_rhfs0_head(upd_list,norm_list,sec_list,sec_fileSizes,sec_shalist)
+	tot_size=0xF000+rootSize
+
+	signature=randhex(0x100)
+	signature= bytes.fromhex(signature)
+
+	sec_offset=root_header[0x90:0x90+0x8]
+	sec_offset=int.from_bytes(sec_offset, byteorder='little')
+	sec_offset=int((sec_offset+0xF000+0x200)/0x200)
+	sec_offset=sec_offset.to_bytes(4, byteorder='little')
+	back_offset=(0xFFFFFFFF).to_bytes(4, byteorder='little')
+	kek=(0x00).to_bytes(1, byteorder='big')
+	cardsize,access_freq=getGCsize(tot_size)
+	cardsize=cardsize.to_bytes(1, byteorder='big')
+	GC_ver=(0x00).to_bytes(1, byteorder='big')
+	GC_flag=(0x00).to_bytes(1, byteorder='big')
+	pack_id=(0x8750F4C0A9C5A966).to_bytes(8, byteorder='big')
+	valid_data=int(((tot_size-0x1)/0x200))
+	valid_data=valid_data.to_bytes(8, byteorder='little')
+
+	try:
+		get('xci_header_key')
+		key= get('xci_header_key')
+		key= bytes.fromhex(key)
+		IV=randhex(0x10)
+		IV= bytes.fromhex(IV)
+		xkey=True
+
+	except:
+		IV=(0x5B408B145E277E81E5BF677C94888D7B).to_bytes(16, byteorder='big')
+		xkey=False
+
+
+	HFS0_offset=(0xF000).to_bytes(8, byteorder='little')
+	len_rHFS0=(len(root_header)).to_bytes(8, byteorder='little')
+	sha_rheader=sha256(root_header[0x00:0x200]).hexdigest()
+	sha_rheader=bytes.fromhex(sha_rheader)
+	sha_ini_data=bytes.fromhex('1AB7C7B263E74E44CD3C68E40F7EF4A4D6571551D043FCA8ECF5C489F2C66E7E')
+	SM_flag=(0x01).to_bytes(4, byteorder='little')
+	TK_flag=(0x02).to_bytes(4, byteorder='little')
+	K_flag=(0x0).to_bytes(4, byteorder='little')
+	end_norm = sec_offset
+
+	header =  b''
+	header += signature
+	header += b'HEAD'
+	header += sec_offset
+	header += back_offset
+	header += kek
+	header += cardsize
+	header += GC_ver
+	header += GC_flag
+	header += pack_id
+	header += valid_data
+	header += IV
+	header += HFS0_offset
+	header += len_rHFS0
+	header += sha_rheader
+	header += sha_ini_data
+	header += SM_flag
+	header += TK_flag
+	header += K_flag
+	header += end_norm
+
+	if xkey==True:
+		firm_ver='0100000000000000'
+		access_freq=access_freq
+		Read_Wait_Time='88130000'
+		Read_Wait_Time2='00000000'
+		Write_Wait_Time='00000000'
+		Write_Wait_Time2='00000000'
+		Firmware_Mode='00110C00'
+		CUP_Version='5a000200'
+		Empty1='00000000'
+		Upd_Hash='9bfb03ddbb7c5fca'
+		CUP_Id='1608000000000001'
+		Empty2='00'*0x38
+		#print(hx(Empty2))
+
+		firm_ver=bytes.fromhex(firm_ver)
+		access_freq=bytes.fromhex(access_freq)
+		Read_Wait_Time=bytes.fromhex(Read_Wait_Time)
+		Read_Wait_Time2=bytes.fromhex(Read_Wait_Time2)
+		Write_Wait_Time=bytes.fromhex(Write_Wait_Time)
+		Write_Wait_Time2=bytes.fromhex(Write_Wait_Time2)
+		Firmware_Mode=bytes.fromhex(Firmware_Mode)
+		CUP_Version=bytes.fromhex(CUP_Version)
+		Empty1=bytes.fromhex(Empty1)
+		Upd_Hash=bytes.fromhex(Upd_Hash)
+		CUP_Id=bytes.fromhex(CUP_Id)
+		Empty2=bytes.fromhex(Empty2)
+
+		Game_info =  b''
+		Game_info += firm_ver
+		Game_info += access_freq
+		Game_info += Read_Wait_Time
+		Game_info += Read_Wait_Time2
+		Game_info += Write_Wait_Time
+		Game_info += Write_Wait_Time2
+		Game_info += Firmware_Mode
+		Game_info += CUP_Version
+		Game_info += Empty1
+		Game_info += Upd_Hash
+		Game_info += CUP_Id
+		Game_info += Empty2
+
+		gamecardInfoIV=IV[::-1]
+		crypto = AES.new(key, AES.MODE_CBC, gamecardInfoIV)
+		enc_info=crypto.encrypt(Game_info)
+	if xkey==False:
+		enc_info=get_enc_gameinfo(tot_size)
+
+	sig_padding='00'*0x6E00
+	sig_padding=bytes.fromhex(sig_padding)
+
+	fake_CERT='FF'*0x8000
+	fake_CERT=bytes.fromhex(fake_CERT)
+
+	return header,enc_info,sig_padding,fake_CERT,root_header,upd_header,norm_header,sec_header,rootSize,upd_multiplier,norm_multiplier,sec_multiplier
+
+
+keys = {}
+titleKeks = []
+keyAreaKeys = []
+
+def set_dev_environment():
+	global key_system
+	key_system="development"
+def set_prod_environment():	
+	global key_system
+	key_system="production"
+
+try:
+	a=key_system
+except:
+	set_prod_environment()	
+
+def getMasterKeyIndex(i):
+	if i > 0:
+		return i-1
+	else:
+		return 0
+
+def keyAreaKey(cryptoType, i):
+	return keyAreaKeys[cryptoType][i]
+
+def get(key):
+	return keys[key]
+	
+def getTitleKek(i):
+	return titleKeks[i]
+	
+def decryptTitleKey(key, i):
+	kek = getTitleKek(i)
+	
+	crypto = AES.new(uhx(kek), AES.MODE_ECB)
+	return crypto.decrypt(key)
+	
+def encryptTitleKey(key, i):
+	kek = getTitleKek(i)
+	
+	crypto = AES.new(uhx(kek), AES.MODE_ECB)
+	return crypto.encrypt(key)
+	
+def changeTitleKeyMasterKey(key, currentMasterKeyIndex, newMasterKeyIndex):
+	return encryptTitleKey(decryptTitleKey(key, currentMasterKeyIndex), newMasterKeyIndex)
+
+def generateKek(src, masterKey, kek_seed, key_seed):
+	kek = []
+	src_kek = []
+
+	crypto = AES.new(masterKey, AES.MODE_ECB)
+	kek = crypto.decrypt(kek_seed)
+
+	crypto = AES.new(kek, AES.MODE_ECB)
+	src_kek = crypto.decrypt(src)
+
+	if key_seed != None:
+		crypto = AES.new(src_kek, AES.MODE_ECB)
+		return crypto.decrypt(key_seed)
+	else:
+		return src_kek
+		
+def unwrapAesWrappedTitlekey(wrappedKey, keyGeneration):
+	aes_kek_generation_source = uhx(keys['aes_kek_generation_source'])
+	aes_key_generation_source = uhx(keys['aes_key_generation_source'])
+	
+	if keyGeneration<10:
+		mk = 'master_key_0'
+	else:
+		mk = 'master_key_'	
+
+	kek = generateKek(uhx(keys['key_area_key_application_source']), uhx(keys[mk + str(keyGeneration)]), aes_kek_generation_source, aes_key_generation_source)
+
+	crypto = AES.new(kek, AES.MODE_ECB)
+	return crypto.decrypt(wrappedKey)		
+	
+def getKey(key):
+	if key not in keys:
+		raise IOError('%s missing from keys.txt' % key)
+	return uhx(keys[key])
+
+def masterKey(masterKeyIndex):
+	return getKey('master_key_0' + str(masterKeyIndex))
+
+def load(fileName):
+	global keyAreaKeys
+	global titleKeks
+
+	with open(fileName, encoding="utf8") as f:
+		for line in f.readlines():
+			r = re.match(r'\s*([a-z0-9_]+)\s*=\s*([A-F0-9]+)\s*', line, re.I)
+			if r:
+				keyname=r.group(1)
+				if keyname.startswith('master_key_'):
+					if keyname[-2]!='0':
+						num=keyname[-2:]
+					else:	
+						num=keyname[-1]
+					try:	
+						num=int(int(num,16))
+					except:
+						num=int(num,10)
+					if len(str(num))<2:
+						num='0'+str(num)
+					keyname='master_key_'+str(num)	
+				keys[keyname] = r.group(2)				
+		if 'master_key_16' in keys.keys() and not 'master_key_10' in keys.keys() and not 'master_key_11' in keys.keys() and not 'master_key_12' in keys.keys() and not 'master_key_13' in keys.keys() and not 'master_key_14' in keys.keys() and not 'master_key_15' in keys.keys():
+			keys['master_key_10'] = keys['master_key_16']
+			del keys['master_key_16']
+	
+	aes_kek_generation_source = uhx(keys['aes_kek_generation_source'])
+	aes_key_generation_source = uhx(keys['aes_key_generation_source'])
+
+	keyAreaKeys = []
+	for i in range(20):
+		keyAreaKeys.append([None, None, None])
+
+	for i in range(20):
+		if i<10:
+			masterKeyName = 'master_key_0' + str(i)
+		else:
+			masterKeyName = 'master_key_' + str(i)			
+		if masterKeyName in keys.keys():
+			masterKey = uhx(keys[masterKeyName])
+			crypto = AES.new(masterKey, AES.MODE_ECB)
+			titleKeks.append(crypto.decrypt(uhx(keys['titlekek_source'])).hex())
+			keyAreaKeys[i][0] = generateKek(uhx(keys['key_area_key_application_source']), masterKey, aes_kek_generation_source, aes_key_generation_source)
+			keyAreaKeys[i][1] = generateKek(uhx(keys['key_area_key_ocean_source']), masterKey, aes_kek_generation_source, aes_key_generation_source)
+			keyAreaKeys[i][2] = generateKek(uhx(keys['key_area_key_system_source']), masterKey, aes_kek_generation_source, aes_key_generation_source)
+		else:
+			pass
+
+if key_system =="production":
+	raw_keys_file = Path('keys.txt')
+	raw_keys_file2 = Path('ztools\\keys.txt')
+	raw_keys_file3 = Path('ztools/keys.txt')
+else:
+	raw_keys_file = Path('dev_keys.txt')
+	raw_keys_file2 = Path('ztools\\dev_keys.txt')
+	raw_keys_file3 = Path('ztools/keys.txt')	
+	
+if raw_keys_file.is_file():
+	load(raw_keys_file)
+elif raw_keys_file2.is_file():
+	load(raw_keys_file2)
+elif raw_keys_file3.is_file():
+	load(raw_keys_file3)	
+	
+if not raw_keys_file.is_file() and not raw_keys_file2.is_file() and not raw_keys_file3.is_file():
+	print('keys.txt missing')
+
+def gen_rhfs0_head(upd_list,norm_list,sec_list,sec_fileSizes,sec_shalist):
+
+    hreg=0x200
+    hashregion = hreg.to_bytes(0x04, byteorder='little')
+    
+    #UPD HEADER
+    filesNb = len(upd_list)
+    stringTable = '\x00'.join(str(nca) for nca in upd_list)
+    headerSize = 0x10 + (filesNb)*0x40 + len(stringTable)
+    upd_multiplier=math.ceil(headerSize/0x200)
+    remainder = 0x200*upd_multiplier - headerSize
+    headerSize += remainder
+    fileSizes=list()
+    fileOffsets=list()
+    shalist=list()
+
+    fileNamesLengths = [len(os.path.basename(file))+1 for file in upd_list] # +1 for the \x00
+    stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
+
+    upd_header =  b''
+    upd_header += b'HFS0'
+    upd_header += pk('<I', filesNb)
+    upd_header += pk('<I', len(stringTable)+remainder)
+    upd_header += b'\x00\x00\x00\x00'
+    for n in range(filesNb):
+        upd_header += pk('<Q', fileOffsets[n])
+        upd_header += pk('<Q', fileSizes[n])
+        upd_header += pk('<I', stringTableOffsets[n])
+        upd_header += hashregion
+        upd_header += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+        upd_header += bytes.fromhex(shalist[n])
+    upd_header += stringTable.encode()
+    upd_header += remainder * b'\x00'
+
+    updSize = len(upd_header) + sum(fileSizes)
+
+    #NORMAL HEADER
+    filesNb = len(norm_list)
+    stringTable = '\x00'.join(str(nca) for nca in norm_list)
+    headerSize = 0x10 + (filesNb)*0x40 + len(stringTable)
+    norm_multiplier=math.ceil(headerSize/0x200)
+    remainder = 0x200*norm_multiplier - headerSize
+    headerSize += remainder
+    fileSizes=list()
+    fileOffsets=list()
+    shalist=list()
+
+    fileNamesLengths = [len(os.path.basename(file))+1 for file in norm_list] # +1 for the \x00
+    stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
+
+    norm_header =  b''
+    norm_header += b'HFS0'
+    norm_header += pk('<I', filesNb)
+    norm_header += pk('<I', len(stringTable)+remainder)
+    norm_header += b'\x00\x00\x00\x00'
+    for n in range(filesNb):
+        norm_header += pk('<Q', fileOffsets[n])
+        norm_header += pk('<Q', fileSizes[n])
+        norm_header += pk('<I', stringTableOffsets[n])
+        norm_header += hashregion
+        norm_header += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+        norm_header += bytes.fromhex(shalist[n])
+    norm_header += stringTable.encode()
+    norm_header += remainder * b'\x00'
+
+    normSize = len(norm_header) + sum(fileSizes)
+
+    #SECURE HEADER
+    filesNb = len(sec_list)
+    stringTable = '\x00'.join(str(nca) for nca in sec_list)
+    headerSize = 0x10 + (filesNb)*0x40 + len(stringTable)
+    sec_multiplier=math.ceil(headerSize/0x200)
+    remainder = 0x200*sec_multiplier - headerSize
+    headerSize += remainder
+
+    fileSizes = sec_fileSizes
+    fileOffsets = [sum(fileSizes[:n]) for n in range(filesNb)]
+
+    shalist=sec_shalist
+
+    fileNamesLengths = [len(os.path.basename(file))+1 for file in sec_list]  # +1 for the \x00
+    stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
+
+    sec_header =  b''
+    sec_header += b'HFS0'
+    sec_header += pk('<I', filesNb)
+    sec_header += pk('<I', len(stringTable)+remainder)
+    sec_header += b'\x00\x00\x00\x00'
+    for n in range(filesNb):
+        sec_header += pk('<Q', fileOffsets[n])
+        sec_header += pk('<Q', fileSizes[n])
+        sec_header += pk('<I', stringTableOffsets[n])
+        sec_header += hashregion
+        sec_header += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+        sec_header += bytes.fromhex(shalist[n])
+    sec_header += stringTable.encode()
+    sec_header += remainder * b'\x00'
+    secSize = len(sec_header) + sum(fileSizes)
+
+    #ROOT HEADER
+    root_hreg=list()
+    hr=0x200*upd_multiplier
+    root_hreg.append(hr.to_bytes(4, byteorder='little'))
+    hr=0x200*norm_multiplier
+    root_hreg.append(hr.to_bytes(4, byteorder='little'))
+    hr=0x200*sec_multiplier
+    root_hreg.append(hr.to_bytes(4, byteorder='little'))
+    root_list=list()
+    root_list.append("update")
+    root_list.append("normal")
+    root_list.append("secure")
+    fileSizes=list()
+    fileSizes.append(updSize)
+    fileSizes.append(normSize)
+    fileSizes.append(secSize)
+    filesNb = len(root_list)
+    stringTable = '\x00'.join(os.path.basename(file) for file in root_list)
+    headerSize = 0x10 + (filesNb)*0x40 + len(stringTable)
+    root_multiplier=math.ceil(headerSize/0x200)
+    remainder = 0x200*root_multiplier - headerSize
+    headerSize += remainder
+    fileOffsets = [sum(fileSizes[:n]) for n in range(filesNb)]
+    shalist=list()
+    sha=sha256(upd_header).hexdigest()
+    shalist.append(sha)
+    sha=sha256(norm_header).hexdigest()
+    shalist.append(sha)
+    sha=sha256(sec_header).hexdigest()
+    shalist.append(sha)
+
+    fileNamesLengths = [len(os.path.basename(file))+1 for file in root_list] # +1 for the \x00
+    stringTableOffsets = [sum(fileNamesLengths[:n]) for n in range(filesNb)]
+
+    root_header =  b''
+    root_header += b'HFS0'
+    root_header += pk('<I', filesNb)
+    root_header += pk('<I', len(stringTable)+remainder)
+    root_header += b'\x00\x00\x00\x00'
+    for n in range(filesNb):
+        root_header += pk('<Q', fileOffsets[n])
+        root_header += pk('<Q', fileSizes[n])
+        root_header += pk('<I', stringTableOffsets[n])
+        root_header += root_hreg[n]
+        root_header += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+        root_header += bytes.fromhex(shalist[n])
+    root_header += stringTable.encode()
+    root_header += remainder * b'\x00'
+    #print (hx(root_header))
+    rootSize = len(root_header) + sum(fileSizes)
+    return root_header,upd_header,norm_header,sec_header,rootSize,upd_multiplier,norm_multiplier,sec_multiplier
+
+
 
 if __name__ == '__main__':
     sys.exit(main())
