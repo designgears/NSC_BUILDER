@@ -1429,22 +1429,22 @@ class SquirrelMinimal:
                                     # Determine content type based on title ID
                                     if titleid.endswith("000"):
                                         # Base game
-                                        if basecount == 0 or baseid == "":
-                                            basecount += 1
+                                        basecount += 1
+                                        if baseid == "":
                                             baseid = titleid
                                             basever = f"[v{version}]"
                                             basefile = filepath
                                     elif titleid.endswith("800"):
                                         # Update
-                                        if updcount == 0 or updid == "":
-                                            updcount += 1
+                                        updcount += 1
+                                        if updid == "":
                                             updid = titleid
                                             updver = f"[v{version}]"
                                             updfile = filepath
                                     else:
                                         # DLC
-                                        if dlccount == 0 or dlcid == "":
-                                            dlccount += 1
+                                        dlccount += 1
+                                        if dlcid == "":
                                             dlcid = titleid
                                             dlcver = f"[v{version}]"
                                             dlcfile = filepath
@@ -1479,7 +1479,7 @@ class SquirrelMinimal:
                 return None
             
             # Build final filename
-            endname = f"{ctitl} {target_id} {target_ver} {ccount}".strip()
+            endname = f"{ctitl} {target_id}{target_ver} {ccount}".strip()
             
             # Clean up filename
             endname = self._clean_filename(endname)
