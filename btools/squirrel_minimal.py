@@ -110,7 +110,11 @@ class FileParser:
 
             files_list.reverse()
         except Exception as e:
-            print(f"Exception parsing NSP: {e}")
+            try:
+                print(f"Exception parsing NSP: {e}")
+            except UnicodeEncodeError:
+                safe_error = str(e).encode('ascii', errors='replace').decode('ascii')
+                print(f"Exception parsing NSP: {safe_error}")
 
         return files_list
 
@@ -177,7 +181,11 @@ class FileParser:
 
             files_list.reverse()
         except Exception as e:
-            print(f"Exception parsing HFS0: {e}")
+            try:
+                print(f"Exception parsing HFS0: {e}")
+            except UnicodeEncodeError:
+                safe_error = str(e).encode('ascii', errors='replace').decode('ascii')
+                print(f"Exception parsing HFS0: {safe_error}")
 
         return files_list
 
@@ -211,7 +219,11 @@ class HeaderGenerator:
             header += pk("<I", string_table_offsets[n])
             header += b"\x00\x00\x00\x00"
 
-        header += string_table.encode()
+        try:
+            header += string_table.encode('utf-8')
+        except UnicodeEncodeError:
+            # Handle encoding errors by replacing problematic characters
+            header += string_table.encode('utf-8', errors='replace')
         header += remainder * b"\x00"
         return header
 
@@ -260,7 +272,11 @@ class HeaderGenerator:
             header += b"\x00\x00\x00\x00\x00\x00\x00\x00"
             header += bytes.fromhex(sha_list[n])
 
-        header += string_table.encode()
+        try:
+            header += string_table.encode('utf-8')
+        except UnicodeEncodeError:
+            # Handle encoding errors by replacing problematic characters
+            header += string_table.encode('utf-8', errors='replace')
         header += remainder * b"\x00"
 
         total_size = len(header) + sum(file_sizes)
@@ -509,6 +525,18 @@ class NSPHandler:
         except Exception:
             return content_sizes
 
+    def read_file(self, filename):
+        """Read a specific file from the NSP archive"""
+        try:
+            for file_entry in self.files:
+                if file_entry["name"] == filename:
+                    with open(self.filepath, "rb") as f:
+                        f.seek(file_entry["offset"])
+                        return f.read(file_entry["size"])
+            return None
+        except Exception:
+            return None
+
 
 class XCIHandler:
     """Handles XCI file operations"""
@@ -681,7 +709,11 @@ class CompressionHandler:
                             )
                             file_sizes.append(decompressed_size)
                         else:
-                            print(f"Failed to decompress {name}")
+                            try:
+                                print(f"Failed to decompress {name}")
+                            except UnicodeEncodeError:
+                                safe_name = name.encode('ascii', errors='replace').decode('ascii')
+                                print(f"Failed to decompress {safe_name}")
                             FileUtils.cleanup_temp_files(temp_files)
                             return False
                     else:
@@ -713,10 +745,19 @@ class CompressionHandler:
                             )
 
             FileUtils.cleanup_temp_files(temp_files)
-            print(f"NSZ decompression completed: {output_path}")
+            try:
+                print(f"NSZ decompression completed: {output_path}")
+            except UnicodeEncodeError:
+                safe_path = output_path.encode('ascii', errors='replace').decode('ascii')
+                print(f"NSZ decompression completed: {safe_path}")
             return True
         except Exception as e:
-            print(f"Error decompressing NSZ {input_path}: {e}")
+            try:
+                print(f"Error decompressing NSZ {input_path}: {e}")
+            except UnicodeEncodeError:
+                safe_path = input_path.encode('ascii', errors='replace').decode('ascii')
+                safe_error = str(e).encode('ascii', errors='replace').decode('ascii')
+                print(f"Error decompressing NSZ {safe_path}: {safe_error}")
             return False
 
 
@@ -1041,7 +1082,11 @@ class SquirrelMinimal:
                 self.parser.print_help()
                 return 0
         except Exception as e:
-            print(f"Error: {e}")
+            try:
+                print(f"Error: {e}")
+            except UnicodeEncodeError:
+                safe_error = str(e).encode('ascii', errors='replace').decode('ascii')
+                print(f"Error: {safe_error}")
             traceback.print_exc()
             return 1
 
@@ -1068,13 +1113,17 @@ class SquirrelMinimal:
         """Get list of existing files from text file"""
         file_list = []
         try:
-            with open(text_file, "r") as f:
+            with open(text_file, "r", encoding="utf-8") as f:
                 for line in f:
                     line = line.strip()
                     if line and not line.startswith("#") and os.path.exists(line):
                         file_list.append(line)
-        except Exception:
-            pass
+        except Exception as e:
+            try:
+                print(f"Error reading manifest file: {e}")
+            except UnicodeEncodeError:
+                safe_error = str(e).encode('ascii', errors='replace').decode('ascii')
+                print(f"Error reading manifest file: {safe_error}")
         return file_list
 
     def _handle_decompression(self, args):
@@ -1131,7 +1180,21 @@ class SquirrelMinimal:
                 if processed_file != filepath:
                     temp_files.append(processed_file)
 
-            # Phase 2: Content Analysis
+            # Phase 2: Generate proper filename from metadata
+            filename = self._generate_multi_filename(processed_files)
+            if filename:
+                # Update output file with proper name
+                output_dir = os.path.dirname(outfile)
+                outfile = os.path.join(output_dir, filename + ".xci")
+                try:
+                    print(f"Filename: {filename}.xci")
+                except UnicodeEncodeError:
+                    # Handle Unicode characters in console output
+                    safe_filename = filename.encode('ascii', errors='replace').decode('ascii')
+                    print(f"Filename: {safe_filename}.xci")
+                    print("Warning: Some Unicode characters were replaced in console output")
+
+            # Phase 3: Content Analysis
             all_files = []
             all_sizes = []
 
@@ -1202,7 +1265,11 @@ class SquirrelMinimal:
 
                 sec_hashlist.append(sha)
                 if sha != "0" * 64:
-                    print(f"  {filename}: {sha[:16]}...")
+                    try:
+                        print(f"  {filename}: {sha[:16]}...")
+                    except UnicodeEncodeError:
+                        safe_filename = filename.encode('ascii', errors='replace').decode('ascii')
+                        print(f"  {safe_filename}: {sha[:16]}...")
 
             # Generate XCI header
             header_components = XCIGenerator.generate_xci_header(
@@ -1211,13 +1278,17 @@ class SquirrelMinimal:
 
             # Write XCI file
             with open(outfile, "wb") as xci_file:
-                print(f"Writing XCI header to {outfile}...")
+                try:
+                    print(f"Writing XCI header to {outfile}...")
+                except UnicodeEncodeError:
+                    safe_outfile = outfile.encode('ascii', errors='replace').decode('ascii')
+                    print(f"Writing XCI header to {safe_outfile}...")
 
                 # Write header components
                 for component in header_components[:8]:
                     xci_file.write(component)
 
-                print(f"XCI header written successfully, now writing content files...")
+                print("XCI header written successfully, now writing content files...")
 
                 # Create file mapping
                 file_mapping = {}
@@ -1293,7 +1364,11 @@ class SquirrelMinimal:
                         except Exception:
                             pass
 
-            print(f"XCI file creation completed successfully: {outfile}")
+            try:
+                print(f"XCI file creation completed successfully: {outfile}")
+            except UnicodeEncodeError:
+                safe_outfile = outfile.encode('ascii', errors='replace').decode('ascii')
+                print(f"XCI file creation completed successfully: {safe_outfile}")
 
             if temp_files:
                 FileUtils.cleanup_temp_files(temp_files)
@@ -1301,12 +1376,264 @@ class SquirrelMinimal:
             return True
 
         except Exception as e:
-            print(f"Error creating XCI file: {str(e)}")
+            try:
+                print(f"Error creating XCI file: {str(e)}")
+            except UnicodeEncodeError:
+                safe_error = str(e).encode('ascii', errors='replace').decode('ascii')
+                print(f"Error creating XCI file: {safe_error}")
             traceback.print_exc()
 
             if "temp_files" in locals() and temp_files:
                 FileUtils.cleanup_temp_files(temp_files)
             return False
+
+    def _generate_multi_filename(self, file_list):
+        """Generate filename based on game metadata like squirrel.py"""
+        try:
+            # Analyze content to build filename
+            basecount = 0
+            updcount = 0
+            dlccount = 0
+            baseid = ""
+            updid = ""
+            dlcid = ""
+            basever = ""
+            updver = ""
+            dlcver = ""
+            basefile = ""
+            updfile = ""
+            dlcfile = ""
+            ctitl = "UNKNOWN"
+            
+            # Process each file to extract metadata
+            for filepath in file_list:
+                if filepath.endswith(".nsp"):
+                    try:
+                        nsp = NSPHandler(filepath)
+                        # Find CNMT file to get metadata
+                        for file_entry in nsp.files:
+                            if file_entry["name"].endswith(".cnmt.nca"):
+                                # Extract basic info from filename patterns
+                                basename = os.path.basename(filepath)
+                                
+                                # Try to extract title ID from filename
+                                import re
+                                tid_match = re.search(r'\[([0-9A-Fa-f]{16})\]', basename)
+                                if tid_match:
+                                    titleid = tid_match.group(1).upper()
+                                    
+                                    # Try to extract version
+                                    ver_match = re.search(r'\[v(\d+)\]', basename)
+                                    version = ver_match.group(1) if ver_match else "0"
+                                    
+                                    # Determine content type based on title ID
+                                    if titleid.endswith("000"):
+                                        # Base game
+                                        if basecount == 0 or baseid == "":
+                                            basecount += 1
+                                            baseid = titleid
+                                            basever = f"[v{version}]"
+                                            basefile = filepath
+                                    elif titleid.endswith("800"):
+                                        # Update
+                                        if updcount == 0 or updid == "":
+                                            updcount += 1
+                                            updid = titleid
+                                            updver = f"[v{version}]"
+                                            updfile = filepath
+                                    else:
+                                        # DLC
+                                        if dlccount == 0 or dlcid == "":
+                                            dlccount += 1
+                                            dlcid = titleid
+                                            dlcver = f"[v{version}]"
+                                            dlcfile = filepath
+                                break
+                    except Exception:
+                        pass
+            
+            # Generate content count tag
+            bctag = f"{basecount}G" if basecount != 0 else ""
+            updtag = f"+{updcount}U" if updcount != 0 and bctag != "" else f"{updcount}U" if updcount != 0 else ""
+            dctag = f"+{dlccount}D" if dlccount != 0 and (bctag != "" or updtag != "") else f"{dlccount}D" if dlccount != 0 else ""
+            ccount = f"({bctag}{updtag}{dctag})" if bctag or updtag or dctag else ""
+            
+            # Simplify count for single content
+            if ccount in ["(1G)", "(1U)", "(1D)"]:
+                ccount = ""
+            
+            # Extract game title from CONTROL NCA instead of filename
+            if basefile:
+                ctitl = self._extract_title_from_nca(basefile) or self._extract_title_from_filename(basefile)
+                target_id = f"[{baseid}]"
+                target_ver = updver if updver else basever
+            elif updfile:
+                ctitl = self._extract_title_from_nca(updfile) or self._extract_title_from_filename(updfile)
+                target_id = f"[{updid}]"
+                target_ver = updver
+            elif dlcfile:
+                ctitl = self._extract_title_from_nca(dlcfile) or self._extract_title_from_filename(dlcfile)
+                target_id = f"[{dlcid}]"
+                target_ver = dlcver
+            else:
+                return None
+            
+            # Build final filename
+            endname = f"{ctitl} {target_id} {target_ver} {ccount}".strip()
+            
+            # Clean up filename
+            endname = self._clean_filename(endname)
+            
+            return endname
+            
+        except Exception as e:
+            try:
+                print(f"Error generating filename: {e}")
+            except UnicodeEncodeError:
+                safe_error = str(e).encode('ascii', errors='replace').decode('ascii')
+                print(f"Error generating filename: {safe_error}")
+            return None
+    
+    def _extract_title_from_nca(self, filepath):
+        """Extract game title from CONTROL NCA file like squirrel.py"""
+        try:
+            nsp = NSPHandler(filepath)
+            
+            # Find CONTROL NCA file
+            control_nca_data = None
+            for file_entry in nsp.files:
+                if file_entry["name"].endswith(".nca"):
+                    # Read NCA header to check if it's CONTROL type
+                    nca_data = nsp.read_file(file_entry["name"])
+                    if len(nca_data) >= 0x220:
+                        # Check content type at offset 0x20C (CONTROL = 1)
+                        content_type = int.from_bytes(nca_data[0x20C:0x20D], 'little')
+                        if content_type == 1:  # CONTROL NCA
+                            control_nca_data = nca_data
+                            break
+            
+            if not control_nca_data:
+                return None
+            
+            # Extract title from CONTROL NCA language blocks
+            title = self._extract_title_from_control_nca(control_nca_data)
+            return title if title and title != "UNKNOWN" else None
+            
+        except Exception as e:
+            try:
+                print(f"Error extracting title from NCA: {e}")
+            except UnicodeEncodeError:
+                safe_error = str(e).encode('ascii', errors='replace').decode('ascii')
+                print(f"Error extracting title from NCA: {safe_error}")
+            return None
+    
+    def _extract_title_from_control_nca(self, nca_data):
+        """Extract title from CONTROL NCA language blocks"""
+        try:
+            # Language offsets in CONTROL NCA (similar to squirrel.py)
+            language_offsets = [
+                0x14200,  # US English
+                0x14400,  # UK English  
+                0x14000,  # Japanese
+                0x14600,  # French
+                0x14800,  # German
+                0x14A00,  # Italian
+                0x14C00,  # Spanish
+                0x14E00,  # Chinese (Simplified)
+                0x15000,  # Korean
+                0x15200,  # Dutch
+                0x15400,  # Portuguese
+                0x15600,  # Russian
+                0x15800,  # Chinese (Traditional)
+            ]
+            
+            for offset in language_offsets:
+                try:
+                    if offset + 0x200 <= len(nca_data):
+                        # Read title (first 0x200 bytes of language block)
+                        title_bytes = nca_data[offset:offset + 0x200]
+                        
+                        # Find null terminator
+                        null_pos = title_bytes.find(b'\x00')
+                        if null_pos > 0:
+                            title_bytes = title_bytes[:null_pos]
+                        
+                        # Decode title
+                        title = title_bytes.decode('utf-8', errors='ignore').strip()
+                        
+                        if title and len(title) > 1 and title != "UNKNOWN":
+                            # Clean up the title
+                            title = title.replace('\x00', '').strip()
+                            if title:
+                                return title
+                except Exception:
+                    continue
+            
+            return "UNKNOWN"
+            
+        except Exception:
+            return "UNKNOWN"
+    
+    def _extract_title_from_filename(self, filepath):
+        """Extract game title from filename"""
+        try:
+            basename = os.path.basename(filepath)
+            # Remove file extension
+            title = os.path.splitext(basename)[0]
+            
+            # Remove common patterns like [titleid], [version], etc.
+            import re
+            title = re.sub(r'\[[^\]]*\]', '', title)  # Remove [brackets]
+            title = re.sub(r'\([^\)]*\)', '', title)  # Remove (parentheses)
+            title = re.sub(r'\s+', ' ', title)  # Normalize spaces
+            title = title.strip()
+            
+            # Remove common suffixes
+            suffixes = ['.nsp', '.xci', '.nsz', '.xcz']
+            for suffix in suffixes:
+                if title.lower().endswith(suffix):
+                    title = title[:-len(suffix)]
+            
+            return title if title else "UNKNOWN"
+        except Exception:
+            return "UNKNOWN"
+    
+    def _clean_filename(self, filename):
+        """Clean filename like squirrel.py does"""
+        import re
+        
+        # Remove invalid characters
+        filename = re.sub(r'[/\\:*?]+', '', filename)
+        filename = re.sub(r'[™©®`~^´ªº¢#£€¥$ƒ±¬½¼♡«»±•²‰œæÆ³☆<<>>|]', '', filename)
+        
+        # Replace Roman numerals
+        replacements = {
+            'Ⅰ': 'I', 'Ⅱ': 'II', 'Ⅲ': 'III', 'Ⅳ': 'IV', 'Ⅴ': 'V',
+            'Ⅵ': 'VI', 'Ⅶ': 'VII', 'Ⅷ': 'VIII', 'Ⅸ': 'IX', 'Ⅹ': 'X',
+            'Ⅺ': 'XI', 'Ⅻ': 'XII', 'Ⅼ': 'L', 'Ⅽ': 'C', 'Ⅾ': 'D', 'Ⅿ': 'M',
+            '—': '-', '√': 'Root'
+        }
+        
+        for old, new in replacements.items():
+            filename = filename.replace(old, new)
+        
+        # Replace accented characters
+        accents = {
+            'àâá@äå': 'a', 'ÀÂÁÄÅ': 'A', 'èêéë': 'e', 'ÈÊÉË': 'E',
+            'ìîíï': 'i', 'ÌÎÍÏ': 'I', 'òôóöø': 'o', 'ÒÔÓÖØ': 'O',
+            'ùûúü': 'u', 'ÙÛÚÜ': 'U'
+        }
+        
+        for chars, replacement in accents.items():
+            for char in chars:
+                filename = filename.replace(char, replacement)
+        
+        # Clean up quotes and spaces
+        filename = filename.replace("'", "'")
+        filename = re.sub(r'\s+', ' ', filename)
+        filename = filename.strip()
+        
+        return filename
 
 
 def main():
