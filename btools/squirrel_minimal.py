@@ -576,6 +576,7 @@ class CompressionHandler:
         try:
             with open(input_path, "rb") as f:
                 header = f.read(0x4000)
+                magic = NCZSection._read_int64(f)
                 section_count = NCZSection._read_int64(f)
                 sections = [NCZSection(f) for _ in range(section_count)]
 
