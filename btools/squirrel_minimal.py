@@ -1478,8 +1478,11 @@ class SquirrelMinimal:
             else:
                 return None
             
+            # Add mgame indicator if multiple base games
+            mgame = '(mgame)' if basecount > 1 else ''
+            
             # Build final filename
-            endname = f"{ctitl} {target_id}{target_ver} {ccount}".strip()
+            endname = f"{ctitl} {target_id}{target_ver} {ccount} {mgame}".strip()
             
             # Clean up filename
             endname = self._clean_filename(endname)
