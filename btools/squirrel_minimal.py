@@ -9,9 +9,9 @@ import struct
 import sys
 import tempfile
 import traceback
-from hashlib import sha256
 from struct import pack as pk
 from Crypto.Cipher import AES
+from Crypto.Hash import SHA256
 from Crypto.Util import Counter
 import zstandard
 
@@ -870,9 +870,9 @@ class XCIGenerator:
         root_list = ["update", "normal", "secure"]
         root_file_sizes = [upd_size, norm_size, sec_size]
         root_hash_list = [
-            sha256(upd_header).hexdigest(),
-            sha256(norm_header).hexdigest(),
-            sha256(sec_header).hexdigest(),
+            SHA256.new(upd_header).hexdigest(),
+            SHA256.new(norm_header).hexdigest(),
+            SHA256.new(sec_header).hexdigest(),
         ]
 
         root_header, root_size, root_multiplier = HeaderGenerator.generate_hfs0_header(
@@ -902,7 +902,7 @@ class XCIGenerator:
         iv = (0x5B408B145E277E81E5BF677C94888D7B).to_bytes(16, byteorder="big")
         hfs0_offset = (Config.XCI_HEADER_OFFSET).to_bytes(8, byteorder="little")
         len_rhfs0 = (len(root_header)).to_bytes(8, byteorder="little")
-        sha_rheader = sha256(root_header[0x00:0x200]).digest()
+        sha_rheader = SHA256.new(root_header[0x00:0x200]).digest()
         sha_ini_data = bytes.fromhex(
             "1AB7C7B263E74E44CD3C68E40F7EF4A4D6571551D043FCA8ECF5C489F2C66E7E"
         )
@@ -1247,7 +1247,7 @@ class SquirrelMinimal:
                                         nsp_file.seek(file_entry["offset"])
                                         header_block = nsp_file.read(0x200)
                                         if len(header_block) == 0x200:
-                                            sha = sha256(header_block).hexdigest()
+                                            sha = SHA256.new(header_block).hexdigest()
                                     break
                         except Exception:
                             pass
@@ -1259,7 +1259,7 @@ class SquirrelMinimal:
                             with open(filepath, "rb") as nca_file:
                                 header_block = nca_file.read(0x200)
                                 if len(header_block) == 0x200:
-                                    sha = sha256(header_block).hexdigest()
+                                    sha = SHA256.new(header_block).hexdigest()
                         except Exception:
                             pass
 
